@@ -49,6 +49,20 @@ map a unique-index violation to the same result. MRNs are normalized by `Patient
 both storage and comparison, so `" review-1 "` and `REVIEW-1` are the same patient. `Admission.Discharge`
 takes its check and write under one lock, so a double discharge cannot publish two events.
 
+## Database fixtures
+
+Run the SQL files in order against SQL Server:
+
+```
+001_initial_hospital_schema.sql
+002_seed_mock_data.sql
+003_expand_full_hospital_mock_data.sql
+```
+
+The third migration expands the original three-patient fixture to one synthetic hospital with 5 floors,
+20 wards, 120 rooms, 720 beds, 500 patients, 480 active admissions and 270 staff members. It is a
+forward-only migration and is intended to be run once after the first two scripts.
+
 The concurrency tests run sixteen real threads released by a barrier; `Task.Run` is unsuitable because
 blocking on a barrier starves the thread pool and the release is drip-fed.
 

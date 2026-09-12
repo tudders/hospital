@@ -2,7 +2,7 @@
 
 Design for a synthetic hospital: register patients, record conditions, admit them, queue and deliver treatments, move them between ward beds, and discharge them. Preserve the timing of each step so we can monitor patient flow and capacity, then compare simulated scenarios.
 
-This is a proposed schema, not a migration. Start with one hospital and synthetic patients. The existing Patients and Admissions domains remain the starting point; wards, beds and treatment scheduling extend them.
+The tracked SQL migrations implement one hospital and synthetic patients. The existing Patients and Admissions domains remain the starting point; the physical hierarchy, staffing and treatment scheduling extend them.
 
 ## Conventions
 
@@ -18,12 +18,18 @@ This is a proposed schema, not a migration. Start with one hospital and syntheti
 
 | Table | Main columns | Purpose |
 |---|---|---|
+| `hospitals` | `id`, `code`, `name` | Hospital identity. The full mock fixture seeds one hospital. |
+| `floors` | `id`, `hospital_id`, `floor_number`, `code`, `name` | Physical floors within a hospital. |
 | `patients` | `id`, `mrn`, `given_name`, `family_name`, `date_of_birth`, `gender`, `registered_at` | Patient identity. Gender supports unknown/not specified. MRN is normalized and unique. |
 | `patient_weight_measurements` | `id`, `patient_id`, `weight_kg`, `measured_at` | Weight history; latest measurement at a given time supplies the patient's weight. |
 | `condition_types` | `id`, `code`, `name`, `description` | Catalogue of synthetic conditions. |
 | `patient_conditions` | `id`, `patient_id`, `condition_type_id`, `onset_at`, `recorded_at`, `expected_resolved_at`, `resolved_at`, `severity` | A condition episode. Actual duration is onset to resolution, or elapsed time for an ongoing condition. Recurrences get separate rows. |
-| `wards` | `id`, `code`, `name`, `ward_type` | Ward identity, such as ED, ICU or a general ward. Capacity comes from beds and staffing intervals below. |
-| `beds` | `id`, `ward_id`, `code`, `bed_type`, `available_from`, `retired_at` | Physical bed inventory. Bed code is unique within a ward; bed type supports treatment compatibility. |
+| `wards` | `id`, `floor_id`, `code`, `name`, `ward_type` | Ward identity, such as ED, ICU or a general ward. Capacity comes from beds and staffing intervals below. |
+| `rooms` | `id`, `floor_id`, `ward_id`, `room_number`, `code`, `name` | Six rooms per ward in the full mock fixture. |
+| `beds` | `id`, `room_id`, `ward_id`, `bed_number`, `code`, `bed_type`, `available_from`, `retired_at` | Physical bed inventory. The full mock fixture has six beds per room. |
+| `staff_members` | `id`, `hospital_id`, `employee_number`, `given_name`, `family_name`, `role`, `specialty` | Synthetic hospital staff. |
+| `staff_ward_assignments` | `staff_id`, `ward_id`, `shift_code`, `starts_at`, `ends_at` | Shift-level ward staffing. |
+| `patient_care_assignments` | `admission_id`, `staff_id`, `assignment_role`, `starts_at`, `ends_at` | Patient-linked care teams for active admissions. |
 | `ward_capacity_periods` | `id`, `ward_id`, `starts_at`, `ends_at`, `staffed_bed_limit` | Time-varying staffing limit. A ward with 20 physical beds may only staff 15. |
 | `bed_blocks` | `id`, `bed_id`, `starts_at`, `ends_at`, `reason` | Periods when a bed cannot accept patients: cleaning, maintenance or closure. |
 | `treatment_types` | `id`, `code`, `name`, `description`, `default_duration_minutes`, `requires_bed`, `required_bed_type` | Catalogue of treatments and their initial planned durations. |
