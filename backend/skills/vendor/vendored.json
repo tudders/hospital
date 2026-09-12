@@ -1,0 +1,36 @@
+{
+  "$comment": "Third-party skills copied verbatim from upstream at a pinned commit. Run update.mjs to refresh. Never edit skills/vendor/<name>/ by hand.",
+  "sources": {
+    "dotnet": {
+      "repo": "https://github.com/dotnet/skills",
+      "ref": "4c72b17fa2c2aaa307d8f1e337ec75cab45ac5c7",
+      "license": "MIT"
+    },
+    "pocock": {
+      "repo": "https://github.com/mattpocock/skills",
+      "ref": "3cca18b368ae95cdbdebbff572ccafa662551015",
+      "license": "MIT"
+    }
+  },
+  "skills": [
+    { "name": "dotnet-webapi", "source": "dotnet", "path": "plugins/dotnet-aspnetcore/skills/dotnet-webapi" },
+    { "name": "configuring-opentelemetry-dotnet", "source": "dotnet", "path": "plugins/dotnet-aspnetcore/skills/configuring-opentelemetry-dotnet" },
+    { "name": "assertion-quality", "source": "dotnet", "path": "plugins/dotnet-test/skills/assertion-quality" },
+    { "name": "test-anti-patterns", "source": "dotnet", "path": "plugins/dotnet-test/skills/test-anti-patterns" },
+    { "name": "test-smell-detection", "source": "dotnet", "path": "plugins/dotnet-test/skills/test-smell-detection" },
+    { "name": "test-gap-analysis", "source": "dotnet", "path": "plugins/dotnet-test/skills/test-gap-analysis" },
+    { "name": "coverage-analysis", "source": "dotnet", "path": "plugins/dotnet-test/skills/coverage-analysis" },
+    { "name": "find-untested-sources", "source": "dotnet", "path": "plugins/dotnet-test/skills/find-untested-sources" },
+    { "name": "detect-static-dependencies", "source": "dotnet", "path": "plugins/dotnet-test/skills/detect-static-dependencies" },
+    { "name": "testability-obstacle", "source": "dotnet", "path": "plugins/dotnet-test/skills/testability-obstacle" },
+    { "name": "analyzing-dotnet-performance", "source": "dotnet", "path": "plugins/dotnet-diag/skills/analyzing-dotnet-performance" },
+    { "name": "codebase-design", "source": "pocock", "path": "skills/engineering/codebase-design" },
+    { "name": "diagnosing-bugs", "source": "pocock", "path": "skills/engineering/diagnosing-bugs" },
+    { "name": "domain-modeling", "source": "pocock", "path": "skills/engineering/domain-modeling" },
+    { "name": "research", "source": "pocock", "path": "skills/engineering/research" },
+    { "name": "resolving-merge-conflicts", "source": "pocock", "path": "skills/engineering/resolving-merge-conflicts" },
+    { "name": "grilling", "source": "pocock", "path": "skills/productivity/grilling" },
+    { "name": "handoff", "source": "pocock", "path": "skills/productivity/handoff" },
+    { "name": "writing-for-agents", "source": "pocock", "path": "skills/productivity/writing-for-agents" }
+  ]
+}
