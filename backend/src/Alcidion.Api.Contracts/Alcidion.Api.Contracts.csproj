@@ -41,6 +41,7 @@
   <ItemGroup>
     <!-- ToCommand() hands each request to the domain as a plain record. -->
     <ProjectReference Include="..\Alcidion.Patients\Alcidion.Patients.csproj" />
+    <ProjectReference Include="..\Alcidion.Admissions\Alcidion.Admissions.csproj" />
   </ItemGroup>
 
 </Project>

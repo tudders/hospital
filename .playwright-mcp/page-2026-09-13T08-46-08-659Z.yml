@@ -1,0 +1,1053 @@
+- generic [ref=f4e3]:
+  - banner [ref=f4e16]:
+    - heading "Alcidion patient flow" [level=1] [ref=f4e17]
+    - generic [ref=f4e18]:
+      - text: doctor · clinician · session
+      - code [ref=f4e19]: f28603c2
+      - button "Sign out" [ref=f4e20] [cursor=pointer]
+  - navigation "Application navigation" [ref=f4e21]:
+    - button "▥ Hospital overview" [ref=f4e22] [cursor=pointer]
+    - button "Patients & admissions" [ref=f4e23] [cursor=pointer]
+  - generic [ref=f4e24]:
+    - generic [ref=f4e25]:
+      - generic [ref=f4e26]:
+        - paragraph [ref=f4e27]: OPERATIONS / SPATIAL OVERVIEW
+        - heading "Hospital at a glance." [level=2] [ref=f4e28]
+        - paragraph [ref=f4e29]: Every floor. Every room. A clearer picture of capacity.
+      - status [ref=f4e30]: Auto-refresh · every 15s
+    - generic [ref=f4e32]:
+      - generic [ref=f4e33]:
+        - generic [ref=f4e34]: DATA SOURCE
+        - combobox "Occupancy data source" [ref=f4e35]:
+          - option "Hospital database" [selected]
+          - option "Sample hospital"
+      - generic [ref=f4e36]:
+        - generic [ref=f4e37]:
+          - text: Occupancy at local time
+          - textbox "Snapshot local date and time" [ref=f4e38]: 2026-09-13T18:16
+        - button "View time" [ref=f4e39] [cursor=pointer]
+      - button "Now" [ref=f4e40] [cursor=pointer]
+      - generic [ref=f4e41]:
+        - checkbox "Auto-refresh" [checked] [ref=f4e42]
+        - text: Auto-refresh
+      - button "↻ Refresh" [ref=f4e43] [cursor=pointer]
+    - generic [ref=f4e44]:
+      - generic [ref=f4e45]:
+        - generic [ref=f4e46]: Total beds
+        - strong [ref=f4e47]:
+          - text: "720"
+          - generic [ref=f4e48]: across 5 floors
+      - generic [ref=f4e49]:
+        - generic [ref=f4e50]: Occupied
+        - strong [ref=f4e52]:
+          - text: "480"
+          - generic [ref=f4e53]: 67% of active inventory
+      - generic [ref=f4e54]:
+        - generic [ref=f4e55]: Available
+        - strong [ref=f4e57]:
+          - text: "240"
+          - generic [ref=f4e58]: unoccupied & unblocked
+      - generic [ref=f4e59]:
+        - generic [ref=f4e60]: Blocked / inactive
+        - strong [ref=f4e62]:
+          - text: "0"
+          - generic [ref=f4e63]: 0 blocked · 0 inactive
+    - generic [ref=f4e64]:
+      - generic [ref=f4e65]:
+        - generic [ref=f4e66]:
+          - generic [ref=f4e67]:
+            - heading "Alcidion Synthetic University Hospital" [level=3] [ref=f4e68]
+            - paragraph [ref=f4e69]: All floors / 20 wards / 720 beds
+          - generic [ref=f4e70]: 3D OCCUPANCY
+        - generic "Floor selection" [ref=f4e71]:
+          - button "All floors" [pressed] [ref=f4e72] [cursor=pointer]
+          - button "Level 1" [ref=f4e73] [cursor=pointer]
+          - button "Level 2" [ref=f4e74] [cursor=pointer]
+          - button "Level 3" [ref=f4e75] [cursor=pointer]
+          - button "Level 4" [ref=f4e76] [cursor=pointer]
+          - button "Level 5" [ref=f4e77] [cursor=pointer]
+        - group "Three dimensional hospital occupancy model. Use the adjacent floor and room controls for keyboard navigation." [ref=f4e78]:
+          - generic [ref=f4e81]:
+            - generic [ref=f4e86]: "01"
+            - generic [ref=f4e87]: 96/144
+            - generic [ref=f4e88]:
+              - generic [ref=f4e90]:
+                - 'generic "Floor 1, Emergency Department, Room 1, Bed 1: occupied" [ref=f4e95] [cursor=pointer]'
+                - 'generic "Floor 1, Emergency Department, Room 1, Bed 2: occupied" [ref=f4e100] [cursor=pointer]'
+                - 'generic "Floor 1, Emergency Department, Room 1, Bed 3: occupied" [ref=f4e105] [cursor=pointer]'
+                - 'generic "Floor 1, Emergency Department, Room 1, Bed 4: occupied" [ref=f4e110] [cursor=pointer]'
+                - 'generic "Floor 1, Emergency Department, Room 1, Bed 5: occupied" [ref=f4e115] [cursor=pointer]'
+                - 'generic "Floor 1, Emergency Department, Room 1, Bed 6: occupied" [ref=f4e120] [cursor=pointer]'
+              - generic [ref=f4e125]:
+                - 'generic "Floor 1, Emergency Department, Room 2, Bed 1: occupied" [ref=f4e130] [cursor=pointer]'
+                - 'generic "Floor 1, Emergency Department, Room 2, Bed 2: occupied" [ref=f4e135] [cursor=pointer]'
+                - 'generic "Floor 1, Emergency Department, Room 2, Bed 3: occupied" [ref=f4e140] [cursor=pointer]'
+                - 'generic "Floor 1, Emergency Department, Room 2, Bed 4: occupied" [ref=f4e145] [cursor=pointer]'
+                - 'generic "Floor 1, Emergency Department, Room 2, Bed 5: occupied" [ref=f4e150] [cursor=pointer]'
+                - 'generic "Floor 1, Emergency Department, Room 2, Bed 6: occupied" [ref=f4e155] [cursor=pointer]'
+              - generic [ref=f4e160]:
+                - 'generic "Floor 1, Emergency Department, Room 3, Bed 1: occupied" [ref=f4e165] [cursor=pointer]'
+                - 'generic "Floor 1, Emergency Department, Room 3, Bed 2: occupied" [ref=f4e170] [cursor=pointer]'
+                - 'generic "Floor 1, Emergency Department, Room 3, Bed 3: occupied" [ref=f4e175] [cursor=pointer]'
+                - 'generic "Floor 1, Emergency Department, Room 3, Bed 4: occupied" [ref=f4e180] [cursor=pointer]'
+                - 'generic "Floor 1, Emergency Department, Room 3, Bed 5: occupied" [ref=f4e185] [cursor=pointer]'
+                - 'generic "Floor 1, Emergency Department, Room 3, Bed 6: occupied" [ref=f4e190] [cursor=pointer]'
+              - generic [ref=f4e195]:
+                - 'generic "Floor 1, Emergency Department, Room 4, Bed 1: occupied" [ref=f4e200] [cursor=pointer]'
+                - 'generic "Floor 1, Emergency Department, Room 4, Bed 2: occupied" [ref=f4e205] [cursor=pointer]'
+                - 'generic "Floor 1, Emergency Department, Room 4, Bed 3: occupied" [ref=f4e210] [cursor=pointer]'
+                - 'generic "Floor 1, Emergency Department, Room 4, Bed 4: occupied" [ref=f4e215] [cursor=pointer]'
+                - 'generic "Floor 1, Emergency Department, Room 4, Bed 5: occupied" [ref=f4e220] [cursor=pointer]'
+                - 'generic "Floor 1, Emergency Department, Room 4, Bed 6: occupied" [ref=f4e225] [cursor=pointer]'
+              - generic [ref=f4e230]:
+                - 'generic "Floor 1, Emergency Department, Room 5, Bed 1: available" [ref=f4e235] [cursor=pointer]'
+                - 'generic "Floor 1, Emergency Department, Room 5, Bed 2: available" [ref=f4e240] [cursor=pointer]'
+                - 'generic "Floor 1, Emergency Department, Room 5, Bed 3: available" [ref=f4e245] [cursor=pointer]'
+                - 'generic "Floor 1, Emergency Department, Room 5, Bed 4: available" [ref=f4e250] [cursor=pointer]'
+                - 'generic "Floor 1, Emergency Department, Room 5, Bed 5: available" [ref=f4e255] [cursor=pointer]'
+                - 'generic "Floor 1, Emergency Department, Room 5, Bed 6: available" [ref=f4e260] [cursor=pointer]'
+              - generic [ref=f4e265]:
+                - 'generic "Floor 1, Emergency Department, Room 6, Bed 1: available" [ref=f4e270] [cursor=pointer]'
+                - 'generic "Floor 1, Emergency Department, Room 6, Bed 2: available" [ref=f4e275] [cursor=pointer]'
+                - 'generic "Floor 1, Emergency Department, Room 6, Bed 3: available" [ref=f4e280] [cursor=pointer]'
+                - 'generic "Floor 1, Emergency Department, Room 6, Bed 4: available" [ref=f4e285] [cursor=pointer]'
+                - 'generic "Floor 1, Emergency Department, Room 6, Bed 5: available" [ref=f4e290] [cursor=pointer]'
+                - 'generic "Floor 1, Emergency Department, Room 6, Bed 6: available" [ref=f4e295] [cursor=pointer]'
+            - generic [ref=f4e300]:
+              - generic [ref=f4e302]:
+                - 'generic "Floor 1, General Medicine, Room 1, Bed 1: occupied" [ref=f4e307] [cursor=pointer]'
+                - 'generic "Floor 1, General Medicine, Room 1, Bed 2: occupied" [ref=f4e312] [cursor=pointer]'
+                - 'generic "Floor 1, General Medicine, Room 1, Bed 3: occupied" [ref=f4e317] [cursor=pointer]'
+                - 'generic "Floor 1, General Medicine, Room 1, Bed 4: occupied" [ref=f4e322] [cursor=pointer]'
+                - 'generic "Floor 1, General Medicine, Room 1, Bed 5: occupied" [ref=f4e327] [cursor=pointer]'
+                - 'generic "Floor 1, General Medicine, Room 1, Bed 6: occupied" [ref=f4e332] [cursor=pointer]'
+              - generic [ref=f4e337]:
+                - 'generic "Floor 1, General Medicine, Room 2, Bed 1: occupied" [ref=f4e342] [cursor=pointer]'
+                - 'generic "Floor 1, General Medicine, Room 2, Bed 2: occupied" [ref=f4e347] [cursor=pointer]'
+                - 'generic "Floor 1, General Medicine, Room 2, Bed 3: occupied" [ref=f4e352] [cursor=pointer]'
+                - 'generic "Floor 1, General Medicine, Room 2, Bed 4: occupied" [ref=f4e357] [cursor=pointer]'
+                - 'generic "Floor 1, General Medicine, Room 2, Bed 5: occupied" [ref=f4e362] [cursor=pointer]'
+                - 'generic "Floor 1, General Medicine, Room 2, Bed 6: occupied" [ref=f4e367] [cursor=pointer]'
+              - generic [ref=f4e372]:
+                - 'generic "Floor 1, General Medicine, Room 3, Bed 1: occupied" [ref=f4e377] [cursor=pointer]'
+                - 'generic "Floor 1, General Medicine, Room 3, Bed 2: occupied" [ref=f4e382] [cursor=pointer]'
+                - 'generic "Floor 1, General Medicine, Room 3, Bed 3: occupied" [ref=f4e387] [cursor=pointer]'
+                - 'generic "Floor 1, General Medicine, Room 3, Bed 4: occupied" [ref=f4e392] [cursor=pointer]'
+                - 'generic "Floor 1, General Medicine, Room 3, Bed 5: occupied" [ref=f4e397] [cursor=pointer]'
+                - 'generic "Floor 1, General Medicine, Room 3, Bed 6: occupied" [ref=f4e402] [cursor=pointer]'
+              - generic [ref=f4e407]:
+                - 'generic "Floor 1, General Medicine, Room 4, Bed 1: occupied" [ref=f4e412] [cursor=pointer]'
+                - 'generic "Floor 1, General Medicine, Room 4, Bed 2: occupied" [ref=f4e417] [cursor=pointer]'
+                - 'generic "Floor 1, General Medicine, Room 4, Bed 3: occupied" [ref=f4e422] [cursor=pointer]'
+                - 'generic "Floor 1, General Medicine, Room 4, Bed 4: occupied" [ref=f4e427] [cursor=pointer]'
+                - 'generic "Floor 1, General Medicine, Room 4, Bed 5: occupied" [ref=f4e432] [cursor=pointer]'
+                - 'generic "Floor 1, General Medicine, Room 4, Bed 6: occupied" [ref=f4e437] [cursor=pointer]'
+              - generic [ref=f4e442]:
+                - 'generic "Floor 1, General Medicine, Room 5, Bed 1: available" [ref=f4e447] [cursor=pointer]'
+                - 'generic "Floor 1, General Medicine, Room 5, Bed 2: available" [ref=f4e452] [cursor=pointer]'
+                - 'generic "Floor 1, General Medicine, Room 5, Bed 3: available" [ref=f4e457] [cursor=pointer]'
+                - 'generic "Floor 1, General Medicine, Room 5, Bed 4: available" [ref=f4e462] [cursor=pointer]'
+                - 'generic "Floor 1, General Medicine, Room 5, Bed 5: available" [ref=f4e467] [cursor=pointer]'
+                - 'generic "Floor 1, General Medicine, Room 5, Bed 6: available" [ref=f4e472] [cursor=pointer]'
+              - generic [ref=f4e477]:
+                - 'generic "Floor 1, General Medicine, Room 6, Bed 1: available" [ref=f4e482] [cursor=pointer]'
+                - 'generic "Floor 1, General Medicine, Room 6, Bed 2: available" [ref=f4e487] [cursor=pointer]'
+                - 'generic "Floor 1, General Medicine, Room 6, Bed 3: available" [ref=f4e492] [cursor=pointer]'
+                - 'generic "Floor 1, General Medicine, Room 6, Bed 4: available" [ref=f4e497] [cursor=pointer]'
+                - 'generic "Floor 1, General Medicine, Room 6, Bed 5: available" [ref=f4e502] [cursor=pointer]'
+                - 'generic "Floor 1, General Medicine, Room 6, Bed 6: available" [ref=f4e507] [cursor=pointer]'
+            - generic [ref=f4e512]:
+              - generic [ref=f4e514]:
+                - 'generic "Floor 1, Intensive Care Unit, Room 1, Bed 1: occupied" [ref=f4e519] [cursor=pointer]'
+                - 'generic "Floor 1, Intensive Care Unit, Room 1, Bed 2: occupied" [ref=f4e524] [cursor=pointer]'
+                - 'generic "Floor 1, Intensive Care Unit, Room 1, Bed 3: occupied" [ref=f4e529] [cursor=pointer]'
+                - 'generic "Floor 1, Intensive Care Unit, Room 1, Bed 4: occupied" [ref=f4e534] [cursor=pointer]'
+                - 'generic "Floor 1, Intensive Care Unit, Room 1, Bed 5: occupied" [ref=f4e539] [cursor=pointer]'
+                - 'generic "Floor 1, Intensive Care Unit, Room 1, Bed 6: occupied" [ref=f4e544] [cursor=pointer]'
+              - generic [ref=f4e549]:
+                - 'generic "Floor 1, Intensive Care Unit, Room 2, Bed 1: occupied" [ref=f4e554] [cursor=pointer]'
+                - 'generic "Floor 1, Intensive Care Unit, Room 2, Bed 2: occupied" [ref=f4e559] [cursor=pointer]'
+                - 'generic "Floor 1, Intensive Care Unit, Room 2, Bed 3: occupied" [ref=f4e564] [cursor=pointer]'
+                - 'generic "Floor 1, Intensive Care Unit, Room 2, Bed 4: occupied" [ref=f4e569] [cursor=pointer]'
+                - 'generic "Floor 1, Intensive Care Unit, Room 2, Bed 5: occupied" [ref=f4e574] [cursor=pointer]'
+                - 'generic "Floor 1, Intensive Care Unit, Room 2, Bed 6: occupied" [ref=f4e579] [cursor=pointer]'
+              - generic [ref=f4e584]:
+                - 'generic "Floor 1, Intensive Care Unit, Room 3, Bed 1: occupied" [ref=f4e589] [cursor=pointer]'
+                - 'generic "Floor 1, Intensive Care Unit, Room 3, Bed 2: occupied" [ref=f4e594] [cursor=pointer]'
+                - 'generic "Floor 1, Intensive Care Unit, Room 3, Bed 3: occupied" [ref=f4e599] [cursor=pointer]'
+                - 'generic "Floor 1, Intensive Care Unit, Room 3, Bed 4: occupied" [ref=f4e604] [cursor=pointer]'
+                - 'generic "Floor 1, Intensive Care Unit, Room 3, Bed 5: occupied" [ref=f4e609] [cursor=pointer]'
+                - 'generic "Floor 1, Intensive Care Unit, Room 3, Bed 6: occupied" [ref=f4e614] [cursor=pointer]'
+              - generic [ref=f4e619]:
+                - 'generic "Floor 1, Intensive Care Unit, Room 4, Bed 1: occupied" [ref=f4e624] [cursor=pointer]'
+                - 'generic "Floor 1, Intensive Care Unit, Room 4, Bed 2: occupied" [ref=f4e629] [cursor=pointer]'
+                - 'generic "Floor 1, Intensive Care Unit, Room 4, Bed 3: occupied" [ref=f4e634] [cursor=pointer]'
+                - 'generic "Floor 1, Intensive Care Unit, Room 4, Bed 4: occupied" [ref=f4e639] [cursor=pointer]'
+                - 'generic "Floor 1, Intensive Care Unit, Room 4, Bed 5: occupied" [ref=f4e644] [cursor=pointer]'
+                - 'generic "Floor 1, Intensive Care Unit, Room 4, Bed 6: occupied" [ref=f4e649] [cursor=pointer]'
+              - generic [ref=f4e654]:
+                - 'generic "Floor 1, Intensive Care Unit, Room 5, Bed 1: available" [ref=f4e659] [cursor=pointer]'
+                - 'generic "Floor 1, Intensive Care Unit, Room 5, Bed 2: available" [ref=f4e664] [cursor=pointer]'
+                - 'generic "Floor 1, Intensive Care Unit, Room 5, Bed 3: available" [ref=f4e669] [cursor=pointer]'
+                - 'generic "Floor 1, Intensive Care Unit, Room 5, Bed 4: available" [ref=f4e674] [cursor=pointer]'
+                - 'generic "Floor 1, Intensive Care Unit, Room 5, Bed 5: available" [ref=f4e679] [cursor=pointer]'
+                - 'generic "Floor 1, Intensive Care Unit, Room 5, Bed 6: available" [ref=f4e684] [cursor=pointer]'
+              - generic [ref=f4e689]:
+                - 'generic "Floor 1, Intensive Care Unit, Room 6, Bed 1: available" [ref=f4e694] [cursor=pointer]'
+                - 'generic "Floor 1, Intensive Care Unit, Room 6, Bed 2: available" [ref=f4e699] [cursor=pointer]'
+                - 'generic "Floor 1, Intensive Care Unit, Room 6, Bed 3: available" [ref=f4e704] [cursor=pointer]'
+                - 'generic "Floor 1, Intensive Care Unit, Room 6, Bed 4: available" [ref=f4e709] [cursor=pointer]'
+                - 'generic "Floor 1, Intensive Care Unit, Room 6, Bed 5: available" [ref=f4e714] [cursor=pointer]'
+                - 'generic "Floor 1, Intensive Care Unit, Room 6, Bed 6: available" [ref=f4e719] [cursor=pointer]'
+            - generic [ref=f4e724]:
+              - generic [ref=f4e726]:
+                - 'generic "Floor 1, Ward 4 - Rehabilitation, Room 1, Bed 1: occupied" [ref=f4e731] [cursor=pointer]'
+                - 'generic "Floor 1, Ward 4 - Rehabilitation, Room 1, Bed 2: occupied" [ref=f4e736] [cursor=pointer]'
+                - 'generic "Floor 1, Ward 4 - Rehabilitation, Room 1, Bed 3: occupied" [ref=f4e741] [cursor=pointer]'
+                - 'generic "Floor 1, Ward 4 - Rehabilitation, Room 1, Bed 4: occupied" [ref=f4e746] [cursor=pointer]'
+                - 'generic "Floor 1, Ward 4 - Rehabilitation, Room 1, Bed 5: occupied" [ref=f4e751] [cursor=pointer]'
+                - 'generic "Floor 1, Ward 4 - Rehabilitation, Room 1, Bed 6: occupied" [ref=f4e756] [cursor=pointer]'
+              - generic [ref=f4e761]:
+                - 'generic "Floor 1, Ward 4 - Rehabilitation, Room 2, Bed 1: occupied" [ref=f4e766] [cursor=pointer]'
+                - 'generic "Floor 1, Ward 4 - Rehabilitation, Room 2, Bed 2: occupied" [ref=f4e771] [cursor=pointer]'
+                - 'generic "Floor 1, Ward 4 - Rehabilitation, Room 2, Bed 3: occupied" [ref=f4e776] [cursor=pointer]'
+                - 'generic "Floor 1, Ward 4 - Rehabilitation, Room 2, Bed 4: occupied" [ref=f4e781] [cursor=pointer]'
+                - 'generic "Floor 1, Ward 4 - Rehabilitation, Room 2, Bed 5: occupied" [ref=f4e786] [cursor=pointer]'
+                - 'generic "Floor 1, Ward 4 - Rehabilitation, Room 2, Bed 6: occupied" [ref=f4e791] [cursor=pointer]'
+              - generic [ref=f4e796]:
+                - 'generic "Floor 1, Ward 4 - Rehabilitation, Room 3, Bed 1: occupied" [ref=f4e801] [cursor=pointer]'
+                - 'generic "Floor 1, Ward 4 - Rehabilitation, Room 3, Bed 2: occupied" [ref=f4e806] [cursor=pointer]'
+                - 'generic "Floor 1, Ward 4 - Rehabilitation, Room 3, Bed 3: occupied" [ref=f4e811] [cursor=pointer]'
+                - 'generic "Floor 1, Ward 4 - Rehabilitation, Room 3, Bed 4: occupied" [ref=f4e816] [cursor=pointer]'
+                - 'generic "Floor 1, Ward 4 - Rehabilitation, Room 3, Bed 5: occupied" [ref=f4e821] [cursor=pointer]'
+                - 'generic "Floor 1, Ward 4 - Rehabilitation, Room 3, Bed 6: occupied" [ref=f4e826] [cursor=pointer]'
+              - generic [ref=f4e831]:
+                - 'generic "Floor 1, Ward 4 - Rehabilitation, Room 4, Bed 1: occupied" [ref=f4e836] [cursor=pointer]'
+                - 'generic "Floor 1, Ward 4 - Rehabilitation, Room 4, Bed 2: occupied" [ref=f4e841] [cursor=pointer]'
+                - 'generic "Floor 1, Ward 4 - Rehabilitation, Room 4, Bed 3: occupied" [ref=f4e846] [cursor=pointer]'
+                - 'generic "Floor 1, Ward 4 - Rehabilitation, Room 4, Bed 4: occupied" [ref=f4e851] [cursor=pointer]'
+                - 'generic "Floor 1, Ward 4 - Rehabilitation, Room 4, Bed 5: occupied" [ref=f4e856] [cursor=pointer]'
+                - 'generic "Floor 1, Ward 4 - Rehabilitation, Room 4, Bed 6: occupied" [ref=f4e861] [cursor=pointer]'
+              - generic [ref=f4e866]:
+                - 'generic "Floor 1, Ward 4 - Rehabilitation, Room 5, Bed 1: available" [ref=f4e871] [cursor=pointer]'
+                - 'generic "Floor 1, Ward 4 - Rehabilitation, Room 5, Bed 2: available" [ref=f4e876] [cursor=pointer]'
+                - 'generic "Floor 1, Ward 4 - Rehabilitation, Room 5, Bed 3: available" [ref=f4e881] [cursor=pointer]'
+                - 'generic "Floor 1, Ward 4 - Rehabilitation, Room 5, Bed 4: available" [ref=f4e886] [cursor=pointer]'
+                - 'generic "Floor 1, Ward 4 - Rehabilitation, Room 5, Bed 5: available" [ref=f4e891] [cursor=pointer]'
+                - 'generic "Floor 1, Ward 4 - Rehabilitation, Room 5, Bed 6: available" [ref=f4e896] [cursor=pointer]'
+              - generic [ref=f4e901]:
+                - 'generic "Floor 1, Ward 4 - Rehabilitation, Room 6, Bed 1: available" [ref=f4e906] [cursor=pointer]'
+                - 'generic "Floor 1, Ward 4 - Rehabilitation, Room 6, Bed 2: available" [ref=f4e911] [cursor=pointer]'
+                - 'generic "Floor 1, Ward 4 - Rehabilitation, Room 6, Bed 3: available" [ref=f4e916] [cursor=pointer]'
+                - 'generic "Floor 1, Ward 4 - Rehabilitation, Room 6, Bed 4: available" [ref=f4e921] [cursor=pointer]'
+                - 'generic "Floor 1, Ward 4 - Rehabilitation, Room 6, Bed 5: available" [ref=f4e926] [cursor=pointer]'
+                - 'generic "Floor 1, Ward 4 - Rehabilitation, Room 6, Bed 6: available" [ref=f4e931] [cursor=pointer]'
+          - generic [ref=f4e936]:
+            - generic [ref=f4e941]: "02"
+            - generic [ref=f4e942]: 96/144
+            - generic [ref=f4e943]:
+              - generic [ref=f4e945]:
+                - 'generic "Floor 2, Ward 5 - General Medicine, Room 1, Bed 1: occupied" [ref=f4e950] [cursor=pointer]'
+                - 'generic "Floor 2, Ward 5 - General Medicine, Room 1, Bed 2: occupied" [ref=f4e955] [cursor=pointer]'
+                - 'generic "Floor 2, Ward 5 - General Medicine, Room 1, Bed 3: occupied" [ref=f4e960] [cursor=pointer]'
+                - 'generic "Floor 2, Ward 5 - General Medicine, Room 1, Bed 4: occupied" [ref=f4e965] [cursor=pointer]'
+                - 'generic "Floor 2, Ward 5 - General Medicine, Room 1, Bed 5: occupied" [ref=f4e970] [cursor=pointer]'
+                - 'generic "Floor 2, Ward 5 - General Medicine, Room 1, Bed 6: occupied" [ref=f4e975] [cursor=pointer]'
+              - generic [ref=f4e980]:
+                - 'generic "Floor 2, Ward 5 - General Medicine, Room 2, Bed 1: occupied" [ref=f4e985] [cursor=pointer]'
+                - 'generic "Floor 2, Ward 5 - General Medicine, Room 2, Bed 2: occupied" [ref=f4e990] [cursor=pointer]'
+                - 'generic "Floor 2, Ward 5 - General Medicine, Room 2, Bed 3: occupied" [ref=f4e995] [cursor=pointer]'
+                - 'generic "Floor 2, Ward 5 - General Medicine, Room 2, Bed 4: occupied" [ref=f4e1000] [cursor=pointer]'
+                - 'generic "Floor 2, Ward 5 - General Medicine, Room 2, Bed 5: occupied" [ref=f4e1005] [cursor=pointer]'
+                - 'generic "Floor 2, Ward 5 - General Medicine, Room 2, Bed 6: occupied" [ref=f4e1010] [cursor=pointer]'
+              - generic [ref=f4e1015]:
+                - 'generic "Floor 2, Ward 5 - General Medicine, Room 3, Bed 1: occupied" [ref=f4e1020] [cursor=pointer]'
+                - 'generic "Floor 2, Ward 5 - General Medicine, Room 3, Bed 2: occupied" [ref=f4e1025] [cursor=pointer]'
+                - 'generic "Floor 2, Ward 5 - General Medicine, Room 3, Bed 3: occupied" [ref=f4e1030] [cursor=pointer]'
+                - 'generic "Floor 2, Ward 5 - General Medicine, Room 3, Bed 4: occupied" [ref=f4e1035] [cursor=pointer]'
+                - 'generic "Floor 2, Ward 5 - General Medicine, Room 3, Bed 5: occupied" [ref=f4e1040] [cursor=pointer]'
+                - 'generic "Floor 2, Ward 5 - General Medicine, Room 3, Bed 6: occupied" [ref=f4e1045] [cursor=pointer]'
+              - generic [ref=f4e1050]:
+                - 'generic "Floor 2, Ward 5 - General Medicine, Room 4, Bed 1: occupied" [ref=f4e1055] [cursor=pointer]'
+                - 'generic "Floor 2, Ward 5 - General Medicine, Room 4, Bed 2: occupied" [ref=f4e1060] [cursor=pointer]'
+                - 'generic "Floor 2, Ward 5 - General Medicine, Room 4, Bed 3: occupied" [ref=f4e1065] [cursor=pointer]'
+                - 'generic "Floor 2, Ward 5 - General Medicine, Room 4, Bed 4: occupied" [ref=f4e1070] [cursor=pointer]'
+                - 'generic "Floor 2, Ward 5 - General Medicine, Room 4, Bed 5: occupied" [ref=f4e1075] [cursor=pointer]'
+                - 'generic "Floor 2, Ward 5 - General Medicine, Room 4, Bed 6: occupied" [ref=f4e1080] [cursor=pointer]'
+              - generic [ref=f4e1085]:
+                - 'generic "Floor 2, Ward 5 - General Medicine, Room 5, Bed 1: available" [ref=f4e1090] [cursor=pointer]'
+                - 'generic "Floor 2, Ward 5 - General Medicine, Room 5, Bed 2: available" [ref=f4e1095] [cursor=pointer]'
+                - 'generic "Floor 2, Ward 5 - General Medicine, Room 5, Bed 3: available" [ref=f4e1100] [cursor=pointer]'
+                - 'generic "Floor 2, Ward 5 - General Medicine, Room 5, Bed 4: available" [ref=f4e1105] [cursor=pointer]'
+                - 'generic "Floor 2, Ward 5 - General Medicine, Room 5, Bed 5: available" [ref=f4e1110] [cursor=pointer]'
+                - 'generic "Floor 2, Ward 5 - General Medicine, Room 5, Bed 6: available" [ref=f4e1115] [cursor=pointer]'
+              - generic [ref=f4e1120]:
+                - 'generic "Floor 2, Ward 5 - General Medicine, Room 6, Bed 1: available" [ref=f4e1125] [cursor=pointer]'
+                - 'generic "Floor 2, Ward 5 - General Medicine, Room 6, Bed 2: available" [ref=f4e1130] [cursor=pointer]'
+                - 'generic "Floor 2, Ward 5 - General Medicine, Room 6, Bed 3: available" [ref=f4e1135] [cursor=pointer]'
+                - 'generic "Floor 2, Ward 5 - General Medicine, Room 6, Bed 4: available" [ref=f4e1140] [cursor=pointer]'
+                - 'generic "Floor 2, Ward 5 - General Medicine, Room 6, Bed 5: available" [ref=f4e1145] [cursor=pointer]'
+                - 'generic "Floor 2, Ward 5 - General Medicine, Room 6, Bed 6: available" [ref=f4e1150] [cursor=pointer]'
+            - generic [ref=f4e1155]:
+              - generic [ref=f4e1157]:
+                - 'generic "Floor 2, Ward 6 - Surgical Services, Room 1, Bed 1: occupied" [ref=f4e1162] [cursor=pointer]'
+                - 'generic "Floor 2, Ward 6 - Surgical Services, Room 1, Bed 2: occupied" [ref=f4e1167] [cursor=pointer]'
+                - 'generic "Floor 2, Ward 6 - Surgical Services, Room 1, Bed 3: occupied" [ref=f4e1172] [cursor=pointer]'
+                - 'generic "Floor 2, Ward 6 - Surgical Services, Room 1, Bed 4: occupied" [ref=f4e1177] [cursor=pointer]'
+                - 'generic "Floor 2, Ward 6 - Surgical Services, Room 1, Bed 5: occupied" [ref=f4e1182] [cursor=pointer]'
+                - 'generic "Floor 2, Ward 6 - Surgical Services, Room 1, Bed 6: occupied" [ref=f4e1187] [cursor=pointer]'
+              - generic [ref=f4e1192]:
+                - 'generic "Floor 2, Ward 6 - Surgical Services, Room 2, Bed 1: occupied" [ref=f4e1197] [cursor=pointer]'
+                - 'generic "Floor 2, Ward 6 - Surgical Services, Room 2, Bed 2: occupied" [ref=f4e1202] [cursor=pointer]'
+                - 'generic "Floor 2, Ward 6 - Surgical Services, Room 2, Bed 3: occupied" [ref=f4e1207] [cursor=pointer]'
+                - 'generic "Floor 2, Ward 6 - Surgical Services, Room 2, Bed 4: occupied" [ref=f4e1212] [cursor=pointer]'
+                - 'generic "Floor 2, Ward 6 - Surgical Services, Room 2, Bed 5: occupied" [ref=f4e1217] [cursor=pointer]'
+                - 'generic "Floor 2, Ward 6 - Surgical Services, Room 2, Bed 6: occupied" [ref=f4e1222] [cursor=pointer]'
+              - generic [ref=f4e1227]:
+                - 'generic "Floor 2, Ward 6 - Surgical Services, Room 3, Bed 1: occupied" [ref=f4e1232] [cursor=pointer]'
+                - 'generic "Floor 2, Ward 6 - Surgical Services, Room 3, Bed 2: occupied" [ref=f4e1237] [cursor=pointer]'
+                - 'generic "Floor 2, Ward 6 - Surgical Services, Room 3, Bed 3: occupied" [ref=f4e1242] [cursor=pointer]'
+                - 'generic "Floor 2, Ward 6 - Surgical Services, Room 3, Bed 4: occupied" [ref=f4e1247] [cursor=pointer]'
+                - 'generic "Floor 2, Ward 6 - Surgical Services, Room 3, Bed 5: occupied" [ref=f4e1252] [cursor=pointer]'
+                - 'generic "Floor 2, Ward 6 - Surgical Services, Room 3, Bed 6: occupied" [ref=f4e1257] [cursor=pointer]'
+              - generic [ref=f4e1262]:
+                - 'generic "Floor 2, Ward 6 - Surgical Services, Room 4, Bed 1: occupied" [ref=f4e1267] [cursor=pointer]'
+                - 'generic "Floor 2, Ward 6 - Surgical Services, Room 4, Bed 2: occupied" [ref=f4e1272] [cursor=pointer]'
+                - 'generic "Floor 2, Ward 6 - Surgical Services, Room 4, Bed 3: occupied" [ref=f4e1277] [cursor=pointer]'
+                - 'generic "Floor 2, Ward 6 - Surgical Services, Room 4, Bed 4: occupied" [ref=f4e1282] [cursor=pointer]'
+                - 'generic "Floor 2, Ward 6 - Surgical Services, Room 4, Bed 5: occupied" [ref=f4e1287] [cursor=pointer]'
+                - 'generic "Floor 2, Ward 6 - Surgical Services, Room 4, Bed 6: occupied" [ref=f4e1292] [cursor=pointer]'
+              - generic [ref=f4e1297]:
+                - 'generic "Floor 2, Ward 6 - Surgical Services, Room 5, Bed 1: available" [ref=f4e1302] [cursor=pointer]'
+                - 'generic "Floor 2, Ward 6 - Surgical Services, Room 5, Bed 2: available" [ref=f4e1307] [cursor=pointer]'
+                - 'generic "Floor 2, Ward 6 - Surgical Services, Room 5, Bed 3: available" [ref=f4e1312] [cursor=pointer]'
+                - 'generic "Floor 2, Ward 6 - Surgical Services, Room 5, Bed 4: available" [ref=f4e1317] [cursor=pointer]'
+                - 'generic "Floor 2, Ward 6 - Surgical Services, Room 5, Bed 5: available" [ref=f4e1322] [cursor=pointer]'
+                - 'generic "Floor 2, Ward 6 - Surgical Services, Room 5, Bed 6: available" [ref=f4e1327] [cursor=pointer]'
+              - generic [ref=f4e1332]:
+                - 'generic "Floor 2, Ward 6 - Surgical Services, Room 6, Bed 1: available" [ref=f4e1337] [cursor=pointer]'
+                - 'generic "Floor 2, Ward 6 - Surgical Services, Room 6, Bed 2: available" [ref=f4e1342] [cursor=pointer]'
+                - 'generic "Floor 2, Ward 6 - Surgical Services, Room 6, Bed 3: available" [ref=f4e1347] [cursor=pointer]'
+                - 'generic "Floor 2, Ward 6 - Surgical Services, Room 6, Bed 4: available" [ref=f4e1352] [cursor=pointer]'
+                - 'generic "Floor 2, Ward 6 - Surgical Services, Room 6, Bed 5: available" [ref=f4e1357] [cursor=pointer]'
+                - 'generic "Floor 2, Ward 6 - Surgical Services, Room 6, Bed 6: available" [ref=f4e1362] [cursor=pointer]'
+            - generic [ref=f4e1367]:
+              - generic [ref=f4e1369]:
+                - 'generic "Floor 2, Ward 7 - Women''s Health, Room 1, Bed 1: occupied" [ref=f4e1374] [cursor=pointer]'
+                - 'generic "Floor 2, Ward 7 - Women''s Health, Room 1, Bed 2: occupied" [ref=f4e1379] [cursor=pointer]'
+                - 'generic "Floor 2, Ward 7 - Women''s Health, Room 1, Bed 3: occupied" [ref=f4e1384] [cursor=pointer]'
+                - 'generic "Floor 2, Ward 7 - Women''s Health, Room 1, Bed 4: occupied" [ref=f4e1389] [cursor=pointer]'
+                - 'generic "Floor 2, Ward 7 - Women''s Health, Room 1, Bed 5: occupied" [ref=f4e1394] [cursor=pointer]'
+                - 'generic "Floor 2, Ward 7 - Women''s Health, Room 1, Bed 6: occupied" [ref=f4e1399] [cursor=pointer]'
+              - generic [ref=f4e1404]:
+                - 'generic "Floor 2, Ward 7 - Women''s Health, Room 2, Bed 1: occupied" [ref=f4e1409] [cursor=pointer]'
+                - 'generic "Floor 2, Ward 7 - Women''s Health, Room 2, Bed 2: occupied" [ref=f4e1414] [cursor=pointer]'
+                - 'generic "Floor 2, Ward 7 - Women''s Health, Room 2, Bed 3: occupied" [ref=f4e1419] [cursor=pointer]'
+                - 'generic "Floor 2, Ward 7 - Women''s Health, Room 2, Bed 4: occupied" [ref=f4e1424] [cursor=pointer]'
+                - 'generic "Floor 2, Ward 7 - Women''s Health, Room 2, Bed 5: occupied" [ref=f4e1429] [cursor=pointer]'
+                - 'generic "Floor 2, Ward 7 - Women''s Health, Room 2, Bed 6: occupied" [ref=f4e1434] [cursor=pointer]'
+              - generic [ref=f4e1439]:
+                - 'generic "Floor 2, Ward 7 - Women''s Health, Room 3, Bed 1: occupied" [ref=f4e1444] [cursor=pointer]'
+                - 'generic "Floor 2, Ward 7 - Women''s Health, Room 3, Bed 2: occupied" [ref=f4e1449] [cursor=pointer]'
+                - 'generic "Floor 2, Ward 7 - Women''s Health, Room 3, Bed 3: occupied" [ref=f4e1454] [cursor=pointer]'
+                - 'generic "Floor 2, Ward 7 - Women''s Health, Room 3, Bed 4: occupied" [ref=f4e1459] [cursor=pointer]'
+                - 'generic "Floor 2, Ward 7 - Women''s Health, Room 3, Bed 5: occupied" [ref=f4e1464] [cursor=pointer]'
+                - 'generic "Floor 2, Ward 7 - Women''s Health, Room 3, Bed 6: occupied" [ref=f4e1469] [cursor=pointer]'
+              - generic [ref=f4e1474]:
+                - 'generic "Floor 2, Ward 7 - Women''s Health, Room 4, Bed 1: occupied" [ref=f4e1479] [cursor=pointer]'
+                - 'generic "Floor 2, Ward 7 - Women''s Health, Room 4, Bed 2: occupied" [ref=f4e1484] [cursor=pointer]'
+                - 'generic "Floor 2, Ward 7 - Women''s Health, Room 4, Bed 3: occupied" [ref=f4e1489] [cursor=pointer]'
+                - 'generic "Floor 2, Ward 7 - Women''s Health, Room 4, Bed 4: occupied" [ref=f4e1494] [cursor=pointer]'
+                - 'generic "Floor 2, Ward 7 - Women''s Health, Room 4, Bed 5: occupied" [ref=f4e1499] [cursor=pointer]'
+                - 'generic "Floor 2, Ward 7 - Women''s Health, Room 4, Bed 6: occupied" [ref=f4e1504] [cursor=pointer]'
+              - generic [ref=f4e1509]:
+                - 'generic "Floor 2, Ward 7 - Women''s Health, Room 5, Bed 1: available" [ref=f4e1514] [cursor=pointer]'
+                - 'generic "Floor 2, Ward 7 - Women''s Health, Room 5, Bed 2: available" [ref=f4e1519] [cursor=pointer]'
+                - 'generic "Floor 2, Ward 7 - Women''s Health, Room 5, Bed 3: available" [ref=f4e1524] [cursor=pointer]'
+                - 'generic "Floor 2, Ward 7 - Women''s Health, Room 5, Bed 4: available" [ref=f4e1529] [cursor=pointer]'
+                - 'generic "Floor 2, Ward 7 - Women''s Health, Room 5, Bed 5: available" [ref=f4e1534] [cursor=pointer]'
+                - 'generic "Floor 2, Ward 7 - Women''s Health, Room 5, Bed 6: available" [ref=f4e1539] [cursor=pointer]'
+              - generic [ref=f4e1544]:
+                - 'generic "Floor 2, Ward 7 - Women''s Health, Room 6, Bed 1: available" [ref=f4e1549] [cursor=pointer]'
+                - 'generic "Floor 2, Ward 7 - Women''s Health, Room 6, Bed 2: available" [ref=f4e1554] [cursor=pointer]'
+                - 'generic "Floor 2, Ward 7 - Women''s Health, Room 6, Bed 3: available" [ref=f4e1559] [cursor=pointer]'
+                - 'generic "Floor 2, Ward 7 - Women''s Health, Room 6, Bed 4: available" [ref=f4e1564] [cursor=pointer]'
+                - 'generic "Floor 2, Ward 7 - Women''s Health, Room 6, Bed 5: available" [ref=f4e1569] [cursor=pointer]'
+                - 'generic "Floor 2, Ward 7 - Women''s Health, Room 6, Bed 6: available" [ref=f4e1574] [cursor=pointer]'
+            - generic [ref=f4e1579]:
+              - generic [ref=f4e1581]:
+                - 'generic "Floor 2, Ward 8 - Rehabilitation, Room 1, Bed 1: occupied" [ref=f4e1586] [cursor=pointer]'
+                - 'generic "Floor 2, Ward 8 - Rehabilitation, Room 1, Bed 2: occupied" [ref=f4e1591] [cursor=pointer]'
+                - 'generic "Floor 2, Ward 8 - Rehabilitation, Room 1, Bed 3: occupied" [ref=f4e1596] [cursor=pointer]'
+                - 'generic "Floor 2, Ward 8 - Rehabilitation, Room 1, Bed 4: occupied" [ref=f4e1601] [cursor=pointer]'
+                - 'generic "Floor 2, Ward 8 - Rehabilitation, Room 1, Bed 5: occupied" [ref=f4e1606] [cursor=pointer]'
+                - 'generic "Floor 2, Ward 8 - Rehabilitation, Room 1, Bed 6: occupied" [ref=f4e1611] [cursor=pointer]'
+              - generic [ref=f4e1616]:
+                - 'generic "Floor 2, Ward 8 - Rehabilitation, Room 2, Bed 1: occupied" [ref=f4e1621] [cursor=pointer]'
+                - 'generic "Floor 2, Ward 8 - Rehabilitation, Room 2, Bed 2: occupied" [ref=f4e1626] [cursor=pointer]'
+                - 'generic "Floor 2, Ward 8 - Rehabilitation, Room 2, Bed 3: occupied" [ref=f4e1631] [cursor=pointer]'
+                - 'generic "Floor 2, Ward 8 - Rehabilitation, Room 2, Bed 4: occupied" [ref=f4e1636] [cursor=pointer]'
+                - 'generic "Floor 2, Ward 8 - Rehabilitation, Room 2, Bed 5: occupied" [ref=f4e1641] [cursor=pointer]'
+                - 'generic "Floor 2, Ward 8 - Rehabilitation, Room 2, Bed 6: occupied" [ref=f4e1646] [cursor=pointer]'
+              - generic [ref=f4e1651]:
+                - 'generic "Floor 2, Ward 8 - Rehabilitation, Room 3, Bed 1: occupied" [ref=f4e1656] [cursor=pointer]'
+                - 'generic "Floor 2, Ward 8 - Rehabilitation, Room 3, Bed 2: occupied" [ref=f4e1661] [cursor=pointer]'
+                - 'generic "Floor 2, Ward 8 - Rehabilitation, Room 3, Bed 3: occupied" [ref=f4e1666] [cursor=pointer]'
+                - 'generic "Floor 2, Ward 8 - Rehabilitation, Room 3, Bed 4: occupied" [ref=f4e1671] [cursor=pointer]'
+                - 'generic "Floor 2, Ward 8 - Rehabilitation, Room 3, Bed 5: occupied" [ref=f4e1676] [cursor=pointer]'
+                - 'generic "Floor 2, Ward 8 - Rehabilitation, Room 3, Bed 6: occupied" [ref=f4e1681] [cursor=pointer]'
+              - generic [ref=f4e1686]:
+                - 'generic "Floor 2, Ward 8 - Rehabilitation, Room 4, Bed 1: occupied" [ref=f4e1691] [cursor=pointer]'
+                - 'generic "Floor 2, Ward 8 - Rehabilitation, Room 4, Bed 2: occupied" [ref=f4e1696] [cursor=pointer]'
+                - 'generic "Floor 2, Ward 8 - Rehabilitation, Room 4, Bed 3: occupied" [ref=f4e1701] [cursor=pointer]'
+                - 'generic "Floor 2, Ward 8 - Rehabilitation, Room 4, Bed 4: occupied" [ref=f4e1706] [cursor=pointer]'
+                - 'generic "Floor 2, Ward 8 - Rehabilitation, Room 4, Bed 5: occupied" [ref=f4e1711] [cursor=pointer]'
+                - 'generic "Floor 2, Ward 8 - Rehabilitation, Room 4, Bed 6: occupied" [ref=f4e1716] [cursor=pointer]'
+              - generic [ref=f4e1721]:
+                - 'generic "Floor 2, Ward 8 - Rehabilitation, Room 5, Bed 1: available" [ref=f4e1726] [cursor=pointer]'
+                - 'generic "Floor 2, Ward 8 - Rehabilitation, Room 5, Bed 2: available" [ref=f4e1731] [cursor=pointer]'
+                - 'generic "Floor 2, Ward 8 - Rehabilitation, Room 5, Bed 3: available" [ref=f4e1736] [cursor=pointer]'
+                - 'generic "Floor 2, Ward 8 - Rehabilitation, Room 5, Bed 4: available" [ref=f4e1741] [cursor=pointer]'
+                - 'generic "Floor 2, Ward 8 - Rehabilitation, Room 5, Bed 5: available" [ref=f4e1746] [cursor=pointer]'
+                - 'generic "Floor 2, Ward 8 - Rehabilitation, Room 5, Bed 6: available" [ref=f4e1751] [cursor=pointer]'
+              - generic [ref=f4e1756]:
+                - 'generic "Floor 2, Ward 8 - Rehabilitation, Room 6, Bed 1: available" [ref=f4e1761] [cursor=pointer]'
+                - 'generic "Floor 2, Ward 8 - Rehabilitation, Room 6, Bed 2: available" [ref=f4e1766] [cursor=pointer]'
+                - 'generic "Floor 2, Ward 8 - Rehabilitation, Room 6, Bed 3: available" [ref=f4e1771] [cursor=pointer]'
+                - 'generic "Floor 2, Ward 8 - Rehabilitation, Room 6, Bed 4: available" [ref=f4e1776] [cursor=pointer]'
+                - 'generic "Floor 2, Ward 8 - Rehabilitation, Room 6, Bed 5: available" [ref=f4e1781] [cursor=pointer]'
+                - 'generic "Floor 2, Ward 8 - Rehabilitation, Room 6, Bed 6: available" [ref=f4e1786] [cursor=pointer]'
+          - generic [ref=f4e1791]:
+            - generic [ref=f4e1796]: "03"
+            - generic [ref=f4e1797]: 96/144
+            - generic [ref=f4e1798]:
+              - generic [ref=f4e1800]:
+                - 'generic "Floor 3, Ward 9 - General Medicine, Room 1, Bed 1: occupied" [ref=f4e1805] [cursor=pointer]'
+                - 'generic "Floor 3, Ward 9 - General Medicine, Room 1, Bed 2: occupied" [ref=f4e1810] [cursor=pointer]'
+                - 'generic "Floor 3, Ward 9 - General Medicine, Room 1, Bed 3: occupied" [ref=f4e1815] [cursor=pointer]'
+                - 'generic "Floor 3, Ward 9 - General Medicine, Room 1, Bed 4: occupied" [ref=f4e1820] [cursor=pointer]'
+                - 'generic "Floor 3, Ward 9 - General Medicine, Room 1, Bed 5: occupied" [ref=f4e1825] [cursor=pointer]'
+                - 'generic "Floor 3, Ward 9 - General Medicine, Room 1, Bed 6: occupied" [ref=f4e1830] [cursor=pointer]'
+              - generic [ref=f4e1835]:
+                - 'generic "Floor 3, Ward 9 - General Medicine, Room 2, Bed 1: occupied" [ref=f4e1840] [cursor=pointer]'
+                - 'generic "Floor 3, Ward 9 - General Medicine, Room 2, Bed 2: occupied" [ref=f4e1845] [cursor=pointer]'
+                - 'generic "Floor 3, Ward 9 - General Medicine, Room 2, Bed 3: occupied" [ref=f4e1850] [cursor=pointer]'
+                - 'generic "Floor 3, Ward 9 - General Medicine, Room 2, Bed 4: occupied" [ref=f4e1855] [cursor=pointer]'
+                - 'generic "Floor 3, Ward 9 - General Medicine, Room 2, Bed 5: occupied" [ref=f4e1860] [cursor=pointer]'
+                - 'generic "Floor 3, Ward 9 - General Medicine, Room 2, Bed 6: occupied" [ref=f4e1865] [cursor=pointer]'
+              - generic [ref=f4e1870]:
+                - 'generic "Floor 3, Ward 9 - General Medicine, Room 3, Bed 1: occupied" [ref=f4e1875] [cursor=pointer]'
+                - 'generic "Floor 3, Ward 9 - General Medicine, Room 3, Bed 2: occupied" [ref=f4e1880] [cursor=pointer]'
+                - 'generic "Floor 3, Ward 9 - General Medicine, Room 3, Bed 3: occupied" [ref=f4e1885] [cursor=pointer]'
+                - 'generic "Floor 3, Ward 9 - General Medicine, Room 3, Bed 4: occupied" [ref=f4e1890] [cursor=pointer]'
+                - 'generic "Floor 3, Ward 9 - General Medicine, Room 3, Bed 5: occupied" [ref=f4e1895] [cursor=pointer]'
+                - 'generic "Floor 3, Ward 9 - General Medicine, Room 3, Bed 6: occupied" [ref=f4e1900] [cursor=pointer]'
+              - generic [ref=f4e1905]:
+                - 'generic "Floor 3, Ward 9 - General Medicine, Room 4, Bed 1: occupied" [ref=f4e1910] [cursor=pointer]'
+                - 'generic "Floor 3, Ward 9 - General Medicine, Room 4, Bed 2: occupied" [ref=f4e1915] [cursor=pointer]'
+                - 'generic "Floor 3, Ward 9 - General Medicine, Room 4, Bed 3: occupied" [ref=f4e1920] [cursor=pointer]'
+                - 'generic "Floor 3, Ward 9 - General Medicine, Room 4, Bed 4: occupied" [ref=f4e1925] [cursor=pointer]'
+                - 'generic "Floor 3, Ward 9 - General Medicine, Room 4, Bed 5: occupied" [ref=f4e1930] [cursor=pointer]'
+                - 'generic "Floor 3, Ward 9 - General Medicine, Room 4, Bed 6: occupied" [ref=f4e1935] [cursor=pointer]'
+              - generic [ref=f4e1940]:
+                - 'generic "Floor 3, Ward 9 - General Medicine, Room 5, Bed 1: available" [ref=f4e1945] [cursor=pointer]'
+                - 'generic "Floor 3, Ward 9 - General Medicine, Room 5, Bed 2: available" [ref=f4e1950] [cursor=pointer]'
+                - 'generic "Floor 3, Ward 9 - General Medicine, Room 5, Bed 3: available" [ref=f4e1955] [cursor=pointer]'
+                - 'generic "Floor 3, Ward 9 - General Medicine, Room 5, Bed 4: available" [ref=f4e1960] [cursor=pointer]'
+                - 'generic "Floor 3, Ward 9 - General Medicine, Room 5, Bed 5: available" [ref=f4e1965] [cursor=pointer]'
+                - 'generic "Floor 3, Ward 9 - General Medicine, Room 5, Bed 6: available" [ref=f4e1970] [cursor=pointer]'
+              - generic [ref=f4e1975]:
+                - 'generic "Floor 3, Ward 9 - General Medicine, Room 6, Bed 1: available" [ref=f4e1980] [cursor=pointer]'
+                - 'generic "Floor 3, Ward 9 - General Medicine, Room 6, Bed 2: available" [ref=f4e1985] [cursor=pointer]'
+                - 'generic "Floor 3, Ward 9 - General Medicine, Room 6, Bed 3: available" [ref=f4e1990] [cursor=pointer]'
+                - 'generic "Floor 3, Ward 9 - General Medicine, Room 6, Bed 4: available" [ref=f4e1995] [cursor=pointer]'
+                - 'generic "Floor 3, Ward 9 - General Medicine, Room 6, Bed 5: available" [ref=f4e2000] [cursor=pointer]'
+                - 'generic "Floor 3, Ward 9 - General Medicine, Room 6, Bed 6: available" [ref=f4e2005] [cursor=pointer]'
+            - generic [ref=f4e2010]:
+              - generic [ref=f4e2012]:
+                - 'generic "Floor 3, Ward 10 - Surgical Services, Room 1, Bed 1: occupied" [ref=f4e2017] [cursor=pointer]'
+                - 'generic "Floor 3, Ward 10 - Surgical Services, Room 1, Bed 2: occupied" [ref=f4e2022] [cursor=pointer]'
+                - 'generic "Floor 3, Ward 10 - Surgical Services, Room 1, Bed 3: occupied" [ref=f4e2027] [cursor=pointer]'
+                - 'generic "Floor 3, Ward 10 - Surgical Services, Room 1, Bed 4: occupied" [ref=f4e2032] [cursor=pointer]'
+                - 'generic "Floor 3, Ward 10 - Surgical Services, Room 1, Bed 5: occupied" [ref=f4e2037] [cursor=pointer]'
+                - 'generic "Floor 3, Ward 10 - Surgical Services, Room 1, Bed 6: occupied" [ref=f4e2042] [cursor=pointer]'
+              - generic [ref=f4e2047]:
+                - 'generic "Floor 3, Ward 10 - Surgical Services, Room 2, Bed 1: occupied" [ref=f4e2052] [cursor=pointer]'
+                - 'generic "Floor 3, Ward 10 - Surgical Services, Room 2, Bed 2: occupied" [ref=f4e2057] [cursor=pointer]'
+                - 'generic "Floor 3, Ward 10 - Surgical Services, Room 2, Bed 3: occupied" [ref=f4e2062] [cursor=pointer]'
+                - 'generic "Floor 3, Ward 10 - Surgical Services, Room 2, Bed 4: occupied" [ref=f4e2067] [cursor=pointer]'
+                - 'generic "Floor 3, Ward 10 - Surgical Services, Room 2, Bed 5: occupied" [ref=f4e2072] [cursor=pointer]'
+                - 'generic "Floor 3, Ward 10 - Surgical Services, Room 2, Bed 6: occupied" [ref=f4e2077] [cursor=pointer]'
+              - generic [ref=f4e2082]:
+                - 'generic "Floor 3, Ward 10 - Surgical Services, Room 3, Bed 1: occupied" [ref=f4e2087] [cursor=pointer]'
+                - 'generic "Floor 3, Ward 10 - Surgical Services, Room 3, Bed 2: occupied" [ref=f4e2092] [cursor=pointer]'
+                - 'generic "Floor 3, Ward 10 - Surgical Services, Room 3, Bed 3: occupied" [ref=f4e2097] [cursor=pointer]'
+                - 'generic "Floor 3, Ward 10 - Surgical Services, Room 3, Bed 4: occupied" [ref=f4e2102] [cursor=pointer]'
+                - 'generic "Floor 3, Ward 10 - Surgical Services, Room 3, Bed 5: occupied" [ref=f4e2107] [cursor=pointer]'
+                - 'generic "Floor 3, Ward 10 - Surgical Services, Room 3, Bed 6: occupied" [ref=f4e2112] [cursor=pointer]'
+              - generic [ref=f4e2117]:
+                - 'generic "Floor 3, Ward 10 - Surgical Services, Room 4, Bed 1: occupied" [ref=f4e2122] [cursor=pointer]'
+                - 'generic "Floor 3, Ward 10 - Surgical Services, Room 4, Bed 2: occupied" [ref=f4e2127] [cursor=pointer]'
+                - 'generic "Floor 3, Ward 10 - Surgical Services, Room 4, Bed 3: occupied" [ref=f4e2132] [cursor=pointer]'
+                - 'generic "Floor 3, Ward 10 - Surgical Services, Room 4, Bed 4: occupied" [ref=f4e2137] [cursor=pointer]'
+                - 'generic "Floor 3, Ward 10 - Surgical Services, Room 4, Bed 5: occupied" [ref=f4e2142] [cursor=pointer]'
+                - 'generic "Floor 3, Ward 10 - Surgical Services, Room 4, Bed 6: occupied" [ref=f4e2147] [cursor=pointer]'
+              - generic [ref=f4e2152]:
+                - 'generic "Floor 3, Ward 10 - Surgical Services, Room 5, Bed 1: available" [ref=f4e2157] [cursor=pointer]'
+                - 'generic "Floor 3, Ward 10 - Surgical Services, Room 5, Bed 2: available" [ref=f4e2162] [cursor=pointer]'
+                - 'generic "Floor 3, Ward 10 - Surgical Services, Room 5, Bed 3: available" [ref=f4e2167] [cursor=pointer]'
+                - 'generic "Floor 3, Ward 10 - Surgical Services, Room 5, Bed 4: available" [ref=f4e2172] [cursor=pointer]'
+                - 'generic "Floor 3, Ward 10 - Surgical Services, Room 5, Bed 5: available" [ref=f4e2177] [cursor=pointer]'
+                - 'generic "Floor 3, Ward 10 - Surgical Services, Room 5, Bed 6: available" [ref=f4e2182] [cursor=pointer]'
+              - generic [ref=f4e2187]:
+                - 'generic "Floor 3, Ward 10 - Surgical Services, Room 6, Bed 1: available" [ref=f4e2192] [cursor=pointer]'
+                - 'generic "Floor 3, Ward 10 - Surgical Services, Room 6, Bed 2: available" [ref=f4e2197] [cursor=pointer]'
+                - 'generic "Floor 3, Ward 10 - Surgical Services, Room 6, Bed 3: available" [ref=f4e2202] [cursor=pointer]'
+                - 'generic "Floor 3, Ward 10 - Surgical Services, Room 6, Bed 4: available" [ref=f4e2207] [cursor=pointer]'
+                - 'generic "Floor 3, Ward 10 - Surgical Services, Room 6, Bed 5: available" [ref=f4e2212] [cursor=pointer]'
+                - 'generic "Floor 3, Ward 10 - Surgical Services, Room 6, Bed 6: available" [ref=f4e2217] [cursor=pointer]'
+            - generic [ref=f4e2222]:
+              - generic [ref=f4e2224]:
+                - 'generic "Floor 3, Ward 11 - Women''s Health, Room 1, Bed 1: occupied" [ref=f4e2229] [cursor=pointer]'
+                - 'generic "Floor 3, Ward 11 - Women''s Health, Room 1, Bed 2: occupied" [ref=f4e2234] [cursor=pointer]'
+                - 'generic "Floor 3, Ward 11 - Women''s Health, Room 1, Bed 3: occupied" [ref=f4e2239] [cursor=pointer]'
+                - 'generic "Floor 3, Ward 11 - Women''s Health, Room 1, Bed 4: occupied" [ref=f4e2244] [cursor=pointer]'
+                - 'generic "Floor 3, Ward 11 - Women''s Health, Room 1, Bed 5: occupied" [ref=f4e2249] [cursor=pointer]'
+                - 'generic "Floor 3, Ward 11 - Women''s Health, Room 1, Bed 6: occupied" [ref=f4e2254] [cursor=pointer]'
+              - generic [ref=f4e2259]:
+                - 'generic "Floor 3, Ward 11 - Women''s Health, Room 2, Bed 1: occupied" [ref=f4e2264] [cursor=pointer]'
+                - 'generic "Floor 3, Ward 11 - Women''s Health, Room 2, Bed 2: occupied" [ref=f4e2269] [cursor=pointer]'
+                - 'generic "Floor 3, Ward 11 - Women''s Health, Room 2, Bed 3: occupied" [ref=f4e2274] [cursor=pointer]'
+                - 'generic "Floor 3, Ward 11 - Women''s Health, Room 2, Bed 4: occupied" [ref=f4e2279] [cursor=pointer]'
+                - 'generic "Floor 3, Ward 11 - Women''s Health, Room 2, Bed 5: occupied" [ref=f4e2284] [cursor=pointer]'
+                - 'generic "Floor 3, Ward 11 - Women''s Health, Room 2, Bed 6: occupied" [ref=f4e2289] [cursor=pointer]'
+              - generic [ref=f4e2294]:
+                - 'generic "Floor 3, Ward 11 - Women''s Health, Room 3, Bed 1: occupied" [ref=f4e2299] [cursor=pointer]'
+                - 'generic "Floor 3, Ward 11 - Women''s Health, Room 3, Bed 2: occupied" [ref=f4e2304] [cursor=pointer]'
+                - 'generic "Floor 3, Ward 11 - Women''s Health, Room 3, Bed 3: occupied" [ref=f4e2309] [cursor=pointer]'
+                - 'generic "Floor 3, Ward 11 - Women''s Health, Room 3, Bed 4: occupied" [ref=f4e2314] [cursor=pointer]'
+                - 'generic "Floor 3, Ward 11 - Women''s Health, Room 3, Bed 5: occupied" [ref=f4e2319] [cursor=pointer]'
+                - 'generic "Floor 3, Ward 11 - Women''s Health, Room 3, Bed 6: occupied" [ref=f4e2324] [cursor=pointer]'
+              - generic [ref=f4e2329]:
+                - 'generic "Floor 3, Ward 11 - Women''s Health, Room 4, Bed 1: occupied" [ref=f4e2334] [cursor=pointer]'
+                - 'generic "Floor 3, Ward 11 - Women''s Health, Room 4, Bed 2: occupied" [ref=f4e2339] [cursor=pointer]'
+                - 'generic "Floor 3, Ward 11 - Women''s Health, Room 4, Bed 3: occupied" [ref=f4e2344] [cursor=pointer]'
+                - 'generic "Floor 3, Ward 11 - Women''s Health, Room 4, Bed 4: occupied" [ref=f4e2349] [cursor=pointer]'
+                - 'generic "Floor 3, Ward 11 - Women''s Health, Room 4, Bed 5: occupied" [ref=f4e2354] [cursor=pointer]'
+                - 'generic "Floor 3, Ward 11 - Women''s Health, Room 4, Bed 6: occupied" [ref=f4e2359] [cursor=pointer]'
+              - generic [ref=f4e2364]:
+                - 'generic "Floor 3, Ward 11 - Women''s Health, Room 5, Bed 1: available" [ref=f4e2369] [cursor=pointer]'
+                - 'generic "Floor 3, Ward 11 - Women''s Health, Room 5, Bed 2: available" [ref=f4e2374] [cursor=pointer]'
+                - 'generic "Floor 3, Ward 11 - Women''s Health, Room 5, Bed 3: available" [ref=f4e2379] [cursor=pointer]'
+                - 'generic "Floor 3, Ward 11 - Women''s Health, Room 5, Bed 4: available" [ref=f4e2384] [cursor=pointer]'
+                - 'generic "Floor 3, Ward 11 - Women''s Health, Room 5, Bed 5: available" [ref=f4e2389] [cursor=pointer]'
+                - 'generic "Floor 3, Ward 11 - Women''s Health, Room 5, Bed 6: available" [ref=f4e2394] [cursor=pointer]'
+              - generic [ref=f4e2399]:
+                - 'generic "Floor 3, Ward 11 - Women''s Health, Room 6, Bed 1: available" [ref=f4e2404] [cursor=pointer]'
+                - 'generic "Floor 3, Ward 11 - Women''s Health, Room 6, Bed 2: available" [ref=f4e2409] [cursor=pointer]'
+                - 'generic "Floor 3, Ward 11 - Women''s Health, Room 6, Bed 3: available" [ref=f4e2414] [cursor=pointer]'
+                - 'generic "Floor 3, Ward 11 - Women''s Health, Room 6, Bed 4: available" [ref=f4e2419] [cursor=pointer]'
+                - 'generic "Floor 3, Ward 11 - Women''s Health, Room 6, Bed 5: available" [ref=f4e2424] [cursor=pointer]'
+                - 'generic "Floor 3, Ward 11 - Women''s Health, Room 6, Bed 6: available" [ref=f4e2429] [cursor=pointer]'
+            - generic [ref=f4e2434]:
+              - generic [ref=f4e2436]:
+                - 'generic "Floor 3, Ward 12 - Rehabilitation, Room 1, Bed 1: occupied" [ref=f4e2441] [cursor=pointer]'
+                - 'generic "Floor 3, Ward 12 - Rehabilitation, Room 1, Bed 2: occupied" [ref=f4e2446] [cursor=pointer]'
+                - 'generic "Floor 3, Ward 12 - Rehabilitation, Room 1, Bed 3: occupied" [ref=f4e2451] [cursor=pointer]'
+                - 'generic "Floor 3, Ward 12 - Rehabilitation, Room 1, Bed 4: occupied" [ref=f4e2456] [cursor=pointer]'
+                - 'generic "Floor 3, Ward 12 - Rehabilitation, Room 1, Bed 5: occupied" [ref=f4e2461] [cursor=pointer]'
+                - 'generic "Floor 3, Ward 12 - Rehabilitation, Room 1, Bed 6: occupied" [ref=f4e2466] [cursor=pointer]'
+              - generic [ref=f4e2471]:
+                - 'generic "Floor 3, Ward 12 - Rehabilitation, Room 2, Bed 1: occupied" [ref=f4e2476] [cursor=pointer]'
+                - 'generic "Floor 3, Ward 12 - Rehabilitation, Room 2, Bed 2: occupied" [ref=f4e2481] [cursor=pointer]'
+                - 'generic "Floor 3, Ward 12 - Rehabilitation, Room 2, Bed 3: occupied" [ref=f4e2486] [cursor=pointer]'
+                - 'generic "Floor 3, Ward 12 - Rehabilitation, Room 2, Bed 4: occupied" [ref=f4e2491] [cursor=pointer]'
+                - 'generic "Floor 3, Ward 12 - Rehabilitation, Room 2, Bed 5: occupied" [ref=f4e2496] [cursor=pointer]'
+                - 'generic "Floor 3, Ward 12 - Rehabilitation, Room 2, Bed 6: occupied" [ref=f4e2501] [cursor=pointer]'
+              - generic [ref=f4e2506]:
+                - 'generic "Floor 3, Ward 12 - Rehabilitation, Room 3, Bed 1: occupied" [ref=f4e2511] [cursor=pointer]'
+                - 'generic "Floor 3, Ward 12 - Rehabilitation, Room 3, Bed 2: occupied" [ref=f4e2516] [cursor=pointer]'
+                - 'generic "Floor 3, Ward 12 - Rehabilitation, Room 3, Bed 3: occupied" [ref=f4e2521] [cursor=pointer]'
+                - 'generic "Floor 3, Ward 12 - Rehabilitation, Room 3, Bed 4: occupied" [ref=f4e2526] [cursor=pointer]'
+                - 'generic "Floor 3, Ward 12 - Rehabilitation, Room 3, Bed 5: occupied" [ref=f4e2531] [cursor=pointer]'
+                - 'generic "Floor 3, Ward 12 - Rehabilitation, Room 3, Bed 6: occupied" [ref=f4e2536] [cursor=pointer]'
+              - generic [ref=f4e2541]:
+                - 'generic "Floor 3, Ward 12 - Rehabilitation, Room 4, Bed 1: occupied" [ref=f4e2546] [cursor=pointer]'
+                - 'generic "Floor 3, Ward 12 - Rehabilitation, Room 4, Bed 2: occupied" [ref=f4e2551] [cursor=pointer]'
+                - 'generic "Floor 3, Ward 12 - Rehabilitation, Room 4, Bed 3: occupied" [ref=f4e2556] [cursor=pointer]'
+                - 'generic "Floor 3, Ward 12 - Rehabilitation, Room 4, Bed 4: occupied" [ref=f4e2561] [cursor=pointer]'
+                - 'generic "Floor 3, Ward 12 - Rehabilitation, Room 4, Bed 5: occupied" [ref=f4e2566] [cursor=pointer]'
+                - 'generic "Floor 3, Ward 12 - Rehabilitation, Room 4, Bed 6: occupied" [ref=f4e2571] [cursor=pointer]'
+              - generic [ref=f4e2576]:
+                - 'generic "Floor 3, Ward 12 - Rehabilitation, Room 5, Bed 1: available" [ref=f4e2581] [cursor=pointer]'
+                - 'generic "Floor 3, Ward 12 - Rehabilitation, Room 5, Bed 2: available" [ref=f4e2586] [cursor=pointer]'
+                - 'generic "Floor 3, Ward 12 - Rehabilitation, Room 5, Bed 3: available" [ref=f4e2591] [cursor=pointer]'
+                - 'generic "Floor 3, Ward 12 - Rehabilitation, Room 5, Bed 4: available" [ref=f4e2596] [cursor=pointer]'
+                - 'generic "Floor 3, Ward 12 - Rehabilitation, Room 5, Bed 5: available" [ref=f4e2601] [cursor=pointer]'
+                - 'generic "Floor 3, Ward 12 - Rehabilitation, Room 5, Bed 6: available" [ref=f4e2606] [cursor=pointer]'
+              - generic [ref=f4e2611]:
+                - 'generic "Floor 3, Ward 12 - Rehabilitation, Room 6, Bed 1: available" [ref=f4e2616] [cursor=pointer]'
+                - 'generic "Floor 3, Ward 12 - Rehabilitation, Room 6, Bed 2: available" [ref=f4e2621] [cursor=pointer]'
+                - 'generic "Floor 3, Ward 12 - Rehabilitation, Room 6, Bed 3: available" [ref=f4e2626] [cursor=pointer]'
+                - 'generic "Floor 3, Ward 12 - Rehabilitation, Room 6, Bed 4: available" [ref=f4e2631] [cursor=pointer]'
+                - 'generic "Floor 3, Ward 12 - Rehabilitation, Room 6, Bed 5: available" [ref=f4e2636] [cursor=pointer]'
+                - 'generic "Floor 3, Ward 12 - Rehabilitation, Room 6, Bed 6: available" [ref=f4e2641] [cursor=pointer]'
+          - generic [ref=f4e2646]:
+            - generic [ref=f4e2651]: "04"
+            - generic [ref=f4e2652]: 96/144
+            - generic [ref=f4e2653]:
+              - generic [ref=f4e2655]:
+                - 'generic "Floor 4, Ward 13 - General Medicine, Room 1, Bed 1: occupied" [ref=f4e2660] [cursor=pointer]'
+                - 'generic "Floor 4, Ward 13 - General Medicine, Room 1, Bed 2: occupied" [ref=f4e2665] [cursor=pointer]'
+                - 'generic "Floor 4, Ward 13 - General Medicine, Room 1, Bed 3: occupied" [ref=f4e2670] [cursor=pointer]'
+                - 'generic "Floor 4, Ward 13 - General Medicine, Room 1, Bed 4: occupied" [ref=f4e2675] [cursor=pointer]'
+                - 'generic "Floor 4, Ward 13 - General Medicine, Room 1, Bed 5: occupied" [ref=f4e2680] [cursor=pointer]'
+                - 'generic "Floor 4, Ward 13 - General Medicine, Room 1, Bed 6: occupied" [ref=f4e2685] [cursor=pointer]'
+              - generic [ref=f4e2690]:
+                - 'generic "Floor 4, Ward 13 - General Medicine, Room 2, Bed 1: occupied" [ref=f4e2695] [cursor=pointer]'
+                - 'generic "Floor 4, Ward 13 - General Medicine, Room 2, Bed 2: occupied" [ref=f4e2700] [cursor=pointer]'
+                - 'generic "Floor 4, Ward 13 - General Medicine, Room 2, Bed 3: occupied" [ref=f4e2705] [cursor=pointer]'
+                - 'generic "Floor 4, Ward 13 - General Medicine, Room 2, Bed 4: occupied" [ref=f4e2710] [cursor=pointer]'
+                - 'generic "Floor 4, Ward 13 - General Medicine, Room 2, Bed 5: occupied" [ref=f4e2715] [cursor=pointer]'
+                - 'generic "Floor 4, Ward 13 - General Medicine, Room 2, Bed 6: occupied" [ref=f4e2720] [cursor=pointer]'
+              - generic [ref=f4e2725]:
+                - 'generic "Floor 4, Ward 13 - General Medicine, Room 3, Bed 1: occupied" [ref=f4e2730] [cursor=pointer]'
+                - 'generic "Floor 4, Ward 13 - General Medicine, Room 3, Bed 2: occupied" [ref=f4e2735] [cursor=pointer]'
+                - 'generic "Floor 4, Ward 13 - General Medicine, Room 3, Bed 3: occupied" [ref=f4e2740] [cursor=pointer]'
+                - 'generic "Floor 4, Ward 13 - General Medicine, Room 3, Bed 4: occupied" [ref=f4e2745] [cursor=pointer]'
+                - 'generic "Floor 4, Ward 13 - General Medicine, Room 3, Bed 5: occupied" [ref=f4e2750] [cursor=pointer]'
+                - 'generic "Floor 4, Ward 13 - General Medicine, Room 3, Bed 6: occupied" [ref=f4e2755] [cursor=pointer]'
+              - generic [ref=f4e2760]:
+                - 'generic "Floor 4, Ward 13 - General Medicine, Room 4, Bed 1: occupied" [ref=f4e2765] [cursor=pointer]'
+                - 'generic "Floor 4, Ward 13 - General Medicine, Room 4, Bed 2: occupied" [ref=f4e2770] [cursor=pointer]'
+                - 'generic "Floor 4, Ward 13 - General Medicine, Room 4, Bed 3: occupied" [ref=f4e2775] [cursor=pointer]'
+                - 'generic "Floor 4, Ward 13 - General Medicine, Room 4, Bed 4: occupied" [ref=f4e2780] [cursor=pointer]'
+                - 'generic "Floor 4, Ward 13 - General Medicine, Room 4, Bed 5: occupied" [ref=f4e2785] [cursor=pointer]'
+                - 'generic "Floor 4, Ward 13 - General Medicine, Room 4, Bed 6: occupied" [ref=f4e2790] [cursor=pointer]'
+              - generic [ref=f4e2795]:
+                - 'generic "Floor 4, Ward 13 - General Medicine, Room 5, Bed 1: available" [ref=f4e2800] [cursor=pointer]'
+                - 'generic "Floor 4, Ward 13 - General Medicine, Room 5, Bed 2: available" [ref=f4e2805] [cursor=pointer]'
+                - 'generic "Floor 4, Ward 13 - General Medicine, Room 5, Bed 3: available" [ref=f4e2810] [cursor=pointer]'
+                - 'generic "Floor 4, Ward 13 - General Medicine, Room 5, Bed 4: available" [ref=f4e2815] [cursor=pointer]'
+                - 'generic "Floor 4, Ward 13 - General Medicine, Room 5, Bed 5: available" [ref=f4e2820] [cursor=pointer]'
+                - 'generic "Floor 4, Ward 13 - General Medicine, Room 5, Bed 6: available" [ref=f4e2825] [cursor=pointer]'
+              - generic [ref=f4e2830]:
+                - 'generic "Floor 4, Ward 13 - General Medicine, Room 6, Bed 1: available" [ref=f4e2835] [cursor=pointer]'
+                - 'generic "Floor 4, Ward 13 - General Medicine, Room 6, Bed 2: available" [ref=f4e2840] [cursor=pointer]'
+                - 'generic "Floor 4, Ward 13 - General Medicine, Room 6, Bed 3: available" [ref=f4e2845] [cursor=pointer]'
+                - 'generic "Floor 4, Ward 13 - General Medicine, Room 6, Bed 4: available" [ref=f4e2850] [cursor=pointer]'
+                - 'generic "Floor 4, Ward 13 - General Medicine, Room 6, Bed 5: available" [ref=f4e2855] [cursor=pointer]'
+                - 'generic "Floor 4, Ward 13 - General Medicine, Room 6, Bed 6: available" [ref=f4e2860] [cursor=pointer]'
+            - generic [ref=f4e2865]:
+              - generic [ref=f4e2867]:
+                - 'generic "Floor 4, Ward 14 - Surgical Services, Room 1, Bed 1: occupied" [ref=f4e2872] [cursor=pointer]'
+                - 'generic "Floor 4, Ward 14 - Surgical Services, Room 1, Bed 2: occupied" [ref=f4e2877] [cursor=pointer]'
+                - 'generic "Floor 4, Ward 14 - Surgical Services, Room 1, Bed 3: occupied" [ref=f4e2882] [cursor=pointer]'
+                - 'generic "Floor 4, Ward 14 - Surgical Services, Room 1, Bed 4: occupied" [ref=f4e2887] [cursor=pointer]'
+                - 'generic "Floor 4, Ward 14 - Surgical Services, Room 1, Bed 5: occupied" [ref=f4e2892] [cursor=pointer]'
+                - 'generic "Floor 4, Ward 14 - Surgical Services, Room 1, Bed 6: occupied" [ref=f4e2897] [cursor=pointer]'
+              - generic [ref=f4e2902]:
+                - 'generic "Floor 4, Ward 14 - Surgical Services, Room 2, Bed 1: occupied" [ref=f4e2907] [cursor=pointer]'
+                - 'generic "Floor 4, Ward 14 - Surgical Services, Room 2, Bed 2: occupied" [ref=f4e2912] [cursor=pointer]'
+                - 'generic "Floor 4, Ward 14 - Surgical Services, Room 2, Bed 3: occupied" [ref=f4e2917] [cursor=pointer]'
+                - 'generic "Floor 4, Ward 14 - Surgical Services, Room 2, Bed 4: occupied" [ref=f4e2922] [cursor=pointer]'
+                - 'generic "Floor 4, Ward 14 - Surgical Services, Room 2, Bed 5: occupied" [ref=f4e2927] [cursor=pointer]'
+                - 'generic "Floor 4, Ward 14 - Surgical Services, Room 2, Bed 6: occupied" [ref=f4e2932] [cursor=pointer]'
+              - generic [ref=f4e2937]:
+                - 'generic "Floor 4, Ward 14 - Surgical Services, Room 3, Bed 1: occupied" [ref=f4e2942] [cursor=pointer]'
+                - 'generic "Floor 4, Ward 14 - Surgical Services, Room 3, Bed 2: occupied" [ref=f4e2947] [cursor=pointer]'
+                - 'generic "Floor 4, Ward 14 - Surgical Services, Room 3, Bed 3: occupied" [ref=f4e2952] [cursor=pointer]'
+                - 'generic "Floor 4, Ward 14 - Surgical Services, Room 3, Bed 4: occupied" [ref=f4e2957] [cursor=pointer]'
+                - 'generic "Floor 4, Ward 14 - Surgical Services, Room 3, Bed 5: occupied" [ref=f4e2962] [cursor=pointer]'
+                - 'generic "Floor 4, Ward 14 - Surgical Services, Room 3, Bed 6: occupied" [ref=f4e2967] [cursor=pointer]'
+              - generic [ref=f4e2972]:
+                - 'generic "Floor 4, Ward 14 - Surgical Services, Room 4, Bed 1: occupied" [ref=f4e2977] [cursor=pointer]'
+                - 'generic "Floor 4, Ward 14 - Surgical Services, Room 4, Bed 2: occupied" [ref=f4e2982] [cursor=pointer]'
+                - 'generic "Floor 4, Ward 14 - Surgical Services, Room 4, Bed 3: occupied" [ref=f4e2987] [cursor=pointer]'
+                - 'generic "Floor 4, Ward 14 - Surgical Services, Room 4, Bed 4: occupied" [ref=f4e2992] [cursor=pointer]'
+                - 'generic "Floor 4, Ward 14 - Surgical Services, Room 4, Bed 5: occupied" [ref=f4e2997] [cursor=pointer]'
+                - 'generic "Floor 4, Ward 14 - Surgical Services, Room 4, Bed 6: occupied" [ref=f4e3002] [cursor=pointer]'
+              - generic [ref=f4e3007]:
+                - 'generic "Floor 4, Ward 14 - Surgical Services, Room 5, Bed 1: available" [ref=f4e3012] [cursor=pointer]'
+                - 'generic "Floor 4, Ward 14 - Surgical Services, Room 5, Bed 2: available" [ref=f4e3017] [cursor=pointer]'
+                - 'generic "Floor 4, Ward 14 - Surgical Services, Room 5, Bed 3: available" [ref=f4e3022] [cursor=pointer]'
+                - 'generic "Floor 4, Ward 14 - Surgical Services, Room 5, Bed 4: available" [ref=f4e3027] [cursor=pointer]'
+                - 'generic "Floor 4, Ward 14 - Surgical Services, Room 5, Bed 5: available" [ref=f4e3032] [cursor=pointer]'
+                - 'generic "Floor 4, Ward 14 - Surgical Services, Room 5, Bed 6: available" [ref=f4e3037] [cursor=pointer]'
+              - generic [ref=f4e3042]:
+                - 'generic "Floor 4, Ward 14 - Surgical Services, Room 6, Bed 1: available" [ref=f4e3047] [cursor=pointer]'
+                - 'generic "Floor 4, Ward 14 - Surgical Services, Room 6, Bed 2: available" [ref=f4e3052] [cursor=pointer]'
+                - 'generic "Floor 4, Ward 14 - Surgical Services, Room 6, Bed 3: available" [ref=f4e3057] [cursor=pointer]'
+                - 'generic "Floor 4, Ward 14 - Surgical Services, Room 6, Bed 4: available" [ref=f4e3062] [cursor=pointer]'
+                - 'generic "Floor 4, Ward 14 - Surgical Services, Room 6, Bed 5: available" [ref=f4e3067] [cursor=pointer]'
+                - 'generic "Floor 4, Ward 14 - Surgical Services, Room 6, Bed 6: available" [ref=f4e3072] [cursor=pointer]'
+            - generic [ref=f4e3077]:
+              - generic [ref=f4e3079]:
+                - 'generic "Floor 4, Ward 15 - Women''s Health, Room 1, Bed 1: occupied" [ref=f4e3084] [cursor=pointer]'
+                - 'generic "Floor 4, Ward 15 - Women''s Health, Room 1, Bed 2: occupied" [ref=f4e3089] [cursor=pointer]'
+                - 'generic "Floor 4, Ward 15 - Women''s Health, Room 1, Bed 3: occupied" [ref=f4e3094] [cursor=pointer]'
+                - 'generic "Floor 4, Ward 15 - Women''s Health, Room 1, Bed 4: occupied" [ref=f4e3099] [cursor=pointer]'
+                - 'generic "Floor 4, Ward 15 - Women''s Health, Room 1, Bed 5: occupied" [ref=f4e3104] [cursor=pointer]'
+                - 'generic "Floor 4, Ward 15 - Women''s Health, Room 1, Bed 6: occupied" [ref=f4e3109] [cursor=pointer]'
+              - generic [ref=f4e3114]:
+                - 'generic "Floor 4, Ward 15 - Women''s Health, Room 2, Bed 1: occupied" [ref=f4e3119] [cursor=pointer]'
+                - 'generic "Floor 4, Ward 15 - Women''s Health, Room 2, Bed 2: occupied" [ref=f4e3124] [cursor=pointer]'
+                - 'generic "Floor 4, Ward 15 - Women''s Health, Room 2, Bed 3: occupied" [ref=f4e3129] [cursor=pointer]'
+                - 'generic "Floor 4, Ward 15 - Women''s Health, Room 2, Bed 4: occupied" [ref=f4e3134] [cursor=pointer]'
+                - 'generic "Floor 4, Ward 15 - Women''s Health, Room 2, Bed 5: occupied" [ref=f4e3139] [cursor=pointer]'
+                - 'generic "Floor 4, Ward 15 - Women''s Health, Room 2, Bed 6: occupied" [ref=f4e3144] [cursor=pointer]'
+              - generic [ref=f4e3149]:
+                - 'generic "Floor 4, Ward 15 - Women''s Health, Room 3, Bed 1: occupied" [ref=f4e3154] [cursor=pointer]'
+                - 'generic "Floor 4, Ward 15 - Women''s Health, Room 3, Bed 2: occupied" [ref=f4e3159] [cursor=pointer]'
+                - 'generic "Floor 4, Ward 15 - Women''s Health, Room 3, Bed 3: occupied" [ref=f4e3164] [cursor=pointer]'
+                - 'generic "Floor 4, Ward 15 - Women''s Health, Room 3, Bed 4: occupied" [ref=f4e3169] [cursor=pointer]'
+                - 'generic "Floor 4, Ward 15 - Women''s Health, Room 3, Bed 5: occupied" [ref=f4e3174] [cursor=pointer]'
+                - 'generic "Floor 4, Ward 15 - Women''s Health, Room 3, Bed 6: occupied" [ref=f4e3179] [cursor=pointer]'
+              - generic [ref=f4e3184]:
+                - 'generic "Floor 4, Ward 15 - Women''s Health, Room 4, Bed 1: occupied" [ref=f4e3189] [cursor=pointer]'
+                - 'generic "Floor 4, Ward 15 - Women''s Health, Room 4, Bed 2: occupied" [ref=f4e3194] [cursor=pointer]'
+                - 'generic "Floor 4, Ward 15 - Women''s Health, Room 4, Bed 3: occupied" [ref=f4e3199] [cursor=pointer]'
+                - 'generic "Floor 4, Ward 15 - Women''s Health, Room 4, Bed 4: occupied" [ref=f4e3204] [cursor=pointer]'
+                - 'generic "Floor 4, Ward 15 - Women''s Health, Room 4, Bed 5: occupied" [ref=f4e3209] [cursor=pointer]'
+                - 'generic "Floor 4, Ward 15 - Women''s Health, Room 4, Bed 6: occupied" [ref=f4e3214] [cursor=pointer]'
+              - generic [ref=f4e3219]:
+                - 'generic "Floor 4, Ward 15 - Women''s Health, Room 5, Bed 1: available" [ref=f4e3224] [cursor=pointer]'
+                - 'generic "Floor 4, Ward 15 - Women''s Health, Room 5, Bed 2: available" [ref=f4e3229] [cursor=pointer]'
+                - 'generic "Floor 4, Ward 15 - Women''s Health, Room 5, Bed 3: available" [ref=f4e3234] [cursor=pointer]'
+                - 'generic "Floor 4, Ward 15 - Women''s Health, Room 5, Bed 4: available" [ref=f4e3239] [cursor=pointer]'
+                - 'generic "Floor 4, Ward 15 - Women''s Health, Room 5, Bed 5: available" [ref=f4e3244] [cursor=pointer]'
+                - 'generic "Floor 4, Ward 15 - Women''s Health, Room 5, Bed 6: available" [ref=f4e3249] [cursor=pointer]'
+              - generic [ref=f4e3254]:
+                - 'generic "Floor 4, Ward 15 - Women''s Health, Room 6, Bed 1: available" [ref=f4e3259] [cursor=pointer]'
+                - 'generic "Floor 4, Ward 15 - Women''s Health, Room 6, Bed 2: available" [ref=f4e3264] [cursor=pointer]'
+                - 'generic "Floor 4, Ward 15 - Women''s Health, Room 6, Bed 3: available" [ref=f4e3269] [cursor=pointer]'
+                - 'generic "Floor 4, Ward 15 - Women''s Health, Room 6, Bed 4: available" [ref=f4e3274] [cursor=pointer]'
+                - 'generic "Floor 4, Ward 15 - Women''s Health, Room 6, Bed 5: available" [ref=f4e3279] [cursor=pointer]'
+                - 'generic "Floor 4, Ward 15 - Women''s Health, Room 6, Bed 6: available" [ref=f4e3284] [cursor=pointer]'
+            - generic [ref=f4e3289]:
+              - generic [ref=f4e3291]:
+                - 'generic "Floor 4, Ward 16 - Rehabilitation, Room 1, Bed 1: occupied" [ref=f4e3296] [cursor=pointer]'
+                - 'generic "Floor 4, Ward 16 - Rehabilitation, Room 1, Bed 2: occupied" [ref=f4e3301] [cursor=pointer]'
+                - 'generic "Floor 4, Ward 16 - Rehabilitation, Room 1, Bed 3: occupied" [ref=f4e3306] [cursor=pointer]'
+                - 'generic "Floor 4, Ward 16 - Rehabilitation, Room 1, Bed 4: occupied" [ref=f4e3311] [cursor=pointer]'
+                - 'generic "Floor 4, Ward 16 - Rehabilitation, Room 1, Bed 5: occupied" [ref=f4e3316] [cursor=pointer]'
+                - 'generic "Floor 4, Ward 16 - Rehabilitation, Room 1, Bed 6: occupied" [ref=f4e3321] [cursor=pointer]'
+              - generic [ref=f4e3326]:
+                - 'generic "Floor 4, Ward 16 - Rehabilitation, Room 2, Bed 1: occupied" [ref=f4e3331] [cursor=pointer]'
+                - 'generic "Floor 4, Ward 16 - Rehabilitation, Room 2, Bed 2: occupied" [ref=f4e3336] [cursor=pointer]'
+                - 'generic "Floor 4, Ward 16 - Rehabilitation, Room 2, Bed 3: occupied" [ref=f4e3341] [cursor=pointer]'
+                - 'generic "Floor 4, Ward 16 - Rehabilitation, Room 2, Bed 4: occupied" [ref=f4e3346] [cursor=pointer]'
+                - 'generic "Floor 4, Ward 16 - Rehabilitation, Room 2, Bed 5: occupied" [ref=f4e3351] [cursor=pointer]'
+                - 'generic "Floor 4, Ward 16 - Rehabilitation, Room 2, Bed 6: occupied" [ref=f4e3356] [cursor=pointer]'
+              - generic [ref=f4e3361]:
+                - 'generic "Floor 4, Ward 16 - Rehabilitation, Room 3, Bed 1: occupied" [ref=f4e3366] [cursor=pointer]'
+                - 'generic "Floor 4, Ward 16 - Rehabilitation, Room 3, Bed 2: occupied" [ref=f4e3371] [cursor=pointer]'
+                - 'generic "Floor 4, Ward 16 - Rehabilitation, Room 3, Bed 3: occupied" [ref=f4e3376] [cursor=pointer]'
+                - 'generic "Floor 4, Ward 16 - Rehabilitation, Room 3, Bed 4: occupied" [ref=f4e3381] [cursor=pointer]'
+                - 'generic "Floor 4, Ward 16 - Rehabilitation, Room 3, Bed 5: occupied" [ref=f4e3386] [cursor=pointer]'
+                - 'generic "Floor 4, Ward 16 - Rehabilitation, Room 3, Bed 6: occupied" [ref=f4e3391] [cursor=pointer]'
+              - generic [ref=f4e3396]:
+                - 'generic "Floor 4, Ward 16 - Rehabilitation, Room 4, Bed 1: occupied" [ref=f4e3401] [cursor=pointer]'
+                - 'generic "Floor 4, Ward 16 - Rehabilitation, Room 4, Bed 2: occupied" [ref=f4e3406] [cursor=pointer]'
+                - 'generic "Floor 4, Ward 16 - Rehabilitation, Room 4, Bed 3: occupied" [ref=f4e3411] [cursor=pointer]'
+                - 'generic "Floor 4, Ward 16 - Rehabilitation, Room 4, Bed 4: occupied" [ref=f4e3416] [cursor=pointer]'
+                - 'generic "Floor 4, Ward 16 - Rehabilitation, Room 4, Bed 5: occupied" [ref=f4e3421] [cursor=pointer]'
+                - 'generic "Floor 4, Ward 16 - Rehabilitation, Room 4, Bed 6: occupied" [ref=f4e3426] [cursor=pointer]'
+              - generic [ref=f4e3431]:
+                - 'generic "Floor 4, Ward 16 - Rehabilitation, Room 5, Bed 1: available" [ref=f4e3436] [cursor=pointer]'
+                - 'generic "Floor 4, Ward 16 - Rehabilitation, Room 5, Bed 2: available" [ref=f4e3441] [cursor=pointer]'
+                - 'generic "Floor 4, Ward 16 - Rehabilitation, Room 5, Bed 3: available" [ref=f4e3446] [cursor=pointer]'
+                - 'generic "Floor 4, Ward 16 - Rehabilitation, Room 5, Bed 4: available" [ref=f4e3451] [cursor=pointer]'
+                - 'generic "Floor 4, Ward 16 - Rehabilitation, Room 5, Bed 5: available" [ref=f4e3456] [cursor=pointer]'
+                - 'generic "Floor 4, Ward 16 - Rehabilitation, Room 5, Bed 6: available" [ref=f4e3461] [cursor=pointer]'
+              - generic [ref=f4e3466]:
+                - 'generic "Floor 4, Ward 16 - Rehabilitation, Room 6, Bed 1: available" [ref=f4e3471] [cursor=pointer]'
+                - 'generic "Floor 4, Ward 16 - Rehabilitation, Room 6, Bed 2: available" [ref=f4e3476] [cursor=pointer]'
+                - 'generic "Floor 4, Ward 16 - Rehabilitation, Room 6, Bed 3: available" [ref=f4e3481] [cursor=pointer]'
+                - 'generic "Floor 4, Ward 16 - Rehabilitation, Room 6, Bed 4: available" [ref=f4e3486] [cursor=pointer]'
+                - 'generic "Floor 4, Ward 16 - Rehabilitation, Room 6, Bed 5: available" [ref=f4e3491] [cursor=pointer]'
+                - 'generic "Floor 4, Ward 16 - Rehabilitation, Room 6, Bed 6: available" [ref=f4e3496] [cursor=pointer]'
+          - generic [ref=f4e3501]:
+            - generic [ref=f4e3506]: "05"
+            - generic [ref=f4e3507]: 96/144
+            - generic [ref=f4e3508]:
+              - generic [ref=f4e3510]:
+                - 'generic "Floor 5, Ward 17 - General Medicine, Room 1, Bed 1: occupied" [ref=f4e3515] [cursor=pointer]'
+                - 'generic "Floor 5, Ward 17 - General Medicine, Room 1, Bed 2: occupied" [ref=f4e3520] [cursor=pointer]'
+                - 'generic "Floor 5, Ward 17 - General Medicine, Room 1, Bed 3: occupied" [ref=f4e3525] [cursor=pointer]'
+                - 'generic "Floor 5, Ward 17 - General Medicine, Room 1, Bed 4: occupied" [ref=f4e3530] [cursor=pointer]'
+                - 'generic "Floor 5, Ward 17 - General Medicine, Room 1, Bed 5: occupied" [ref=f4e3535] [cursor=pointer]'
+                - 'generic "Floor 5, Ward 17 - General Medicine, Room 1, Bed 6: occupied" [ref=f4e3540] [cursor=pointer]'
+              - generic [ref=f4e3545]:
+                - 'generic "Floor 5, Ward 17 - General Medicine, Room 2, Bed 1: occupied" [ref=f4e3550] [cursor=pointer]'
+                - 'generic "Floor 5, Ward 17 - General Medicine, Room 2, Bed 2: occupied" [ref=f4e3555] [cursor=pointer]'
+                - 'generic "Floor 5, Ward 17 - General Medicine, Room 2, Bed 3: occupied" [ref=f4e3560] [cursor=pointer]'
+                - 'generic "Floor 5, Ward 17 - General Medicine, Room 2, Bed 4: occupied" [ref=f4e3565] [cursor=pointer]'
+                - 'generic "Floor 5, Ward 17 - General Medicine, Room 2, Bed 5: occupied" [ref=f4e3570] [cursor=pointer]'
+                - 'generic "Floor 5, Ward 17 - General Medicine, Room 2, Bed 6: occupied" [ref=f4e3575] [cursor=pointer]'
+              - generic [ref=f4e3580]:
+                - 'generic "Floor 5, Ward 17 - General Medicine, Room 3, Bed 1: occupied" [ref=f4e3585] [cursor=pointer]'
+                - 'generic "Floor 5, Ward 17 - General Medicine, Room 3, Bed 2: occupied" [ref=f4e3590] [cursor=pointer]'
+                - 'generic "Floor 5, Ward 17 - General Medicine, Room 3, Bed 3: occupied" [ref=f4e3595] [cursor=pointer]'
+                - 'generic "Floor 5, Ward 17 - General Medicine, Room 3, Bed 4: occupied" [ref=f4e3600] [cursor=pointer]'
+                - 'generic "Floor 5, Ward 17 - General Medicine, Room 3, Bed 5: occupied" [ref=f4e3605] [cursor=pointer]'
+                - 'generic "Floor 5, Ward 17 - General Medicine, Room 3, Bed 6: occupied" [ref=f4e3610] [cursor=pointer]'
+              - generic [ref=f4e3615]:
+                - 'generic "Floor 5, Ward 17 - General Medicine, Room 4, Bed 1: occupied" [ref=f4e3620] [cursor=pointer]'
+                - 'generic "Floor 5, Ward 17 - General Medicine, Room 4, Bed 2: occupied" [ref=f4e3625] [cursor=pointer]'
+                - 'generic "Floor 5, Ward 17 - General Medicine, Room 4, Bed 3: occupied" [ref=f4e3630] [cursor=pointer]'
+                - 'generic "Floor 5, Ward 17 - General Medicine, Room 4, Bed 4: occupied" [ref=f4e3635] [cursor=pointer]'
+                - 'generic "Floor 5, Ward 17 - General Medicine, Room 4, Bed 5: occupied" [ref=f4e3640] [cursor=pointer]'
+                - 'generic "Floor 5, Ward 17 - General Medicine, Room 4, Bed 6: occupied" [ref=f4e3645] [cursor=pointer]'
+              - generic [ref=f4e3650]:
+                - 'generic "Floor 5, Ward 17 - General Medicine, Room 5, Bed 1: available" [ref=f4e3655] [cursor=pointer]'
+                - 'generic "Floor 5, Ward 17 - General Medicine, Room 5, Bed 2: available" [ref=f4e3660] [cursor=pointer]'
+                - 'generic "Floor 5, Ward 17 - General Medicine, Room 5, Bed 3: available" [ref=f4e3665] [cursor=pointer]'
+                - 'generic "Floor 5, Ward 17 - General Medicine, Room 5, Bed 4: available" [ref=f4e3670] [cursor=pointer]'
+                - 'generic "Floor 5, Ward 17 - General Medicine, Room 5, Bed 5: available" [ref=f4e3675] [cursor=pointer]'
+                - 'generic "Floor 5, Ward 17 - General Medicine, Room 5, Bed 6: available" [ref=f4e3680] [cursor=pointer]'
+              - generic [ref=f4e3685]:
+                - 'generic "Floor 5, Ward 17 - General Medicine, Room 6, Bed 1: available" [ref=f4e3690] [cursor=pointer]'
+                - 'generic "Floor 5, Ward 17 - General Medicine, Room 6, Bed 2: available" [ref=f4e3695] [cursor=pointer]'
+                - 'generic "Floor 5, Ward 17 - General Medicine, Room 6, Bed 3: available" [ref=f4e3700] [cursor=pointer]'
+                - 'generic "Floor 5, Ward 17 - General Medicine, Room 6, Bed 4: available" [ref=f4e3705] [cursor=pointer]'
+                - 'generic "Floor 5, Ward 17 - General Medicine, Room 6, Bed 5: available" [ref=f4e3710] [cursor=pointer]'
+                - 'generic "Floor 5, Ward 17 - General Medicine, Room 6, Bed 6: available" [ref=f4e3715] [cursor=pointer]'
+            - generic [ref=f4e3720]:
+              - generic [ref=f4e3722]:
+                - 'generic "Floor 5, Ward 18 - Surgical Services, Room 1, Bed 1: occupied" [ref=f4e3727] [cursor=pointer]'
+                - 'generic "Floor 5, Ward 18 - Surgical Services, Room 1, Bed 2: occupied" [ref=f4e3732] [cursor=pointer]'
+                - 'generic "Floor 5, Ward 18 - Surgical Services, Room 1, Bed 3: occupied" [ref=f4e3737] [cursor=pointer]'
+                - 'generic "Floor 5, Ward 18 - Surgical Services, Room 1, Bed 4: occupied" [ref=f4e3742] [cursor=pointer]'
+                - 'generic "Floor 5, Ward 18 - Surgical Services, Room 1, Bed 5: occupied" [ref=f4e3747] [cursor=pointer]'
+                - 'generic "Floor 5, Ward 18 - Surgical Services, Room 1, Bed 6: occupied" [ref=f4e3752] [cursor=pointer]'
+              - generic [ref=f4e3757]:
+                - 'generic "Floor 5, Ward 18 - Surgical Services, Room 2, Bed 1: occupied" [ref=f4e3762] [cursor=pointer]'
+                - 'generic "Floor 5, Ward 18 - Surgical Services, Room 2, Bed 2: occupied" [ref=f4e3767] [cursor=pointer]'
+                - 'generic "Floor 5, Ward 18 - Surgical Services, Room 2, Bed 3: occupied" [ref=f4e3772] [cursor=pointer]'
+                - 'generic "Floor 5, Ward 18 - Surgical Services, Room 2, Bed 4: occupied" [ref=f4e3777] [cursor=pointer]'
+                - 'generic "Floor 5, Ward 18 - Surgical Services, Room 2, Bed 5: occupied" [ref=f4e3782] [cursor=pointer]'
+                - 'generic "Floor 5, Ward 18 - Surgical Services, Room 2, Bed 6: occupied" [ref=f4e3787] [cursor=pointer]'
+              - generic [ref=f4e3792]:
+                - 'generic "Floor 5, Ward 18 - Surgical Services, Room 3, Bed 1: occupied" [ref=f4e3797] [cursor=pointer]'
+                - 'generic "Floor 5, Ward 18 - Surgical Services, Room 3, Bed 2: occupied" [ref=f4e3802] [cursor=pointer]'
+                - 'generic "Floor 5, Ward 18 - Surgical Services, Room 3, Bed 3: occupied" [ref=f4e3807] [cursor=pointer]'
+                - 'generic "Floor 5, Ward 18 - Surgical Services, Room 3, Bed 4: occupied" [ref=f4e3812] [cursor=pointer]'
+                - 'generic "Floor 5, Ward 18 - Surgical Services, Room 3, Bed 5: occupied" [ref=f4e3817] [cursor=pointer]'
+                - 'generic "Floor 5, Ward 18 - Surgical Services, Room 3, Bed 6: occupied" [ref=f4e3822] [cursor=pointer]'
+              - generic [ref=f4e3827]:
+                - 'generic "Floor 5, Ward 18 - Surgical Services, Room 4, Bed 1: occupied" [ref=f4e3832] [cursor=pointer]'
+                - 'generic "Floor 5, Ward 18 - Surgical Services, Room 4, Bed 2: occupied" [ref=f4e3837] [cursor=pointer]'
+                - 'generic "Floor 5, Ward 18 - Surgical Services, Room 4, Bed 3: occupied" [ref=f4e3842] [cursor=pointer]'
+                - 'generic "Floor 5, Ward 18 - Surgical Services, Room 4, Bed 4: occupied" [ref=f4e3847] [cursor=pointer]'
+                - 'generic "Floor 5, Ward 18 - Surgical Services, Room 4, Bed 5: occupied" [ref=f4e3852] [cursor=pointer]'
+                - 'generic "Floor 5, Ward 18 - Surgical Services, Room 4, Bed 6: occupied" [ref=f4e3857] [cursor=pointer]'
+              - generic [ref=f4e3862]:
+                - 'generic "Floor 5, Ward 18 - Surgical Services, Room 5, Bed 1: available" [ref=f4e3867] [cursor=pointer]'
+                - 'generic "Floor 5, Ward 18 - Surgical Services, Room 5, Bed 2: available" [ref=f4e3872] [cursor=pointer]'
+                - 'generic "Floor 5, Ward 18 - Surgical Services, Room 5, Bed 3: available" [ref=f4e3877] [cursor=pointer]'
+                - 'generic "Floor 5, Ward 18 - Surgical Services, Room 5, Bed 4: available" [ref=f4e3882] [cursor=pointer]'
+                - 'generic "Floor 5, Ward 18 - Surgical Services, Room 5, Bed 5: available" [ref=f4e3887] [cursor=pointer]'
+                - 'generic "Floor 5, Ward 18 - Surgical Services, Room 5, Bed 6: available" [ref=f4e3892] [cursor=pointer]'
+              - generic [ref=f4e3897]:
+                - 'generic "Floor 5, Ward 18 - Surgical Services, Room 6, Bed 1: available" [ref=f4e3902] [cursor=pointer]'
+                - 'generic "Floor 5, Ward 18 - Surgical Services, Room 6, Bed 2: available" [ref=f4e3907] [cursor=pointer]'
+                - 'generic "Floor 5, Ward 18 - Surgical Services, Room 6, Bed 3: available" [ref=f4e3912] [cursor=pointer]'
+                - 'generic "Floor 5, Ward 18 - Surgical Services, Room 6, Bed 4: available" [ref=f4e3917] [cursor=pointer]'
+                - 'generic "Floor 5, Ward 18 - Surgical Services, Room 6, Bed 5: available" [ref=f4e3922] [cursor=pointer]'
+                - 'generic "Floor 5, Ward 18 - Surgical Services, Room 6, Bed 6: available" [ref=f4e3927] [cursor=pointer]'
+            - generic [ref=f4e3932]:
+              - generic [ref=f4e3934]:
+                - 'generic "Floor 5, Ward 19 - Women''s Health, Room 1, Bed 1: occupied" [ref=f4e3939] [cursor=pointer]'
+                - 'generic "Floor 5, Ward 19 - Women''s Health, Room 1, Bed 2: occupied" [ref=f4e3944] [cursor=pointer]'
+                - 'generic "Floor 5, Ward 19 - Women''s Health, Room 1, Bed 3: occupied" [ref=f4e3949] [cursor=pointer]'
+                - 'generic "Floor 5, Ward 19 - Women''s Health, Room 1, Bed 4: occupied" [ref=f4e3954] [cursor=pointer]'
+                - 'generic "Floor 5, Ward 19 - Women''s Health, Room 1, Bed 5: occupied" [ref=f4e3959] [cursor=pointer]'
+                - 'generic "Floor 5, Ward 19 - Women''s Health, Room 1, Bed 6: occupied" [ref=f4e3964] [cursor=pointer]'
+              - generic [ref=f4e3969]:
+                - 'generic "Floor 5, Ward 19 - Women''s Health, Room 2, Bed 1: occupied" [ref=f4e3974] [cursor=pointer]'
+                - 'generic "Floor 5, Ward 19 - Women''s Health, Room 2, Bed 2: occupied" [ref=f4e3979] [cursor=pointer]'
+                - 'generic "Floor 5, Ward 19 - Women''s Health, Room 2, Bed 3: occupied" [ref=f4e3984] [cursor=pointer]'
+                - 'generic "Floor 5, Ward 19 - Women''s Health, Room 2, Bed 4: occupied" [ref=f4e3989] [cursor=pointer]'
+                - 'generic "Floor 5, Ward 19 - Women''s Health, Room 2, Bed 5: occupied" [ref=f4e3994] [cursor=pointer]'
+                - 'generic "Floor 5, Ward 19 - Women''s Health, Room 2, Bed 6: occupied" [ref=f4e3999] [cursor=pointer]'
+              - generic [ref=f4e4004]:
+                - 'generic "Floor 5, Ward 19 - Women''s Health, Room 3, Bed 1: occupied" [ref=f4e4009] [cursor=pointer]'
+                - 'generic "Floor 5, Ward 19 - Women''s Health, Room 3, Bed 2: occupied" [ref=f4e4014] [cursor=pointer]'
+                - 'generic "Floor 5, Ward 19 - Women''s Health, Room 3, Bed 3: occupied" [ref=f4e4019] [cursor=pointer]'
+                - 'generic "Floor 5, Ward 19 - Women''s Health, Room 3, Bed 4: occupied" [ref=f4e4024] [cursor=pointer]'
+                - 'generic "Floor 5, Ward 19 - Women''s Health, Room 3, Bed 5: occupied" [ref=f4e4029] [cursor=pointer]'
+                - 'generic "Floor 5, Ward 19 - Women''s Health, Room 3, Bed 6: occupied" [ref=f4e4034] [cursor=pointer]'
+              - generic [ref=f4e4039]:
+                - 'generic "Floor 5, Ward 19 - Women''s Health, Room 4, Bed 1: occupied" [ref=f4e4044] [cursor=pointer]'
+                - 'generic "Floor 5, Ward 19 - Women''s Health, Room 4, Bed 2: occupied" [ref=f4e4049] [cursor=pointer]'
+                - 'generic "Floor 5, Ward 19 - Women''s Health, Room 4, Bed 3: occupied" [ref=f4e4054] [cursor=pointer]'
+                - 'generic "Floor 5, Ward 19 - Women''s Health, Room 4, Bed 4: occupied" [ref=f4e4059] [cursor=pointer]'
+                - 'generic "Floor 5, Ward 19 - Women''s Health, Room 4, Bed 5: occupied" [ref=f4e4064] [cursor=pointer]'
+                - 'generic "Floor 5, Ward 19 - Women''s Health, Room 4, Bed 6: occupied" [ref=f4e4069] [cursor=pointer]'
+              - generic [ref=f4e4074]:
+                - 'generic "Floor 5, Ward 19 - Women''s Health, Room 5, Bed 1: available" [ref=f4e4079] [cursor=pointer]'
+                - 'generic "Floor 5, Ward 19 - Women''s Health, Room 5, Bed 2: available" [ref=f4e4084] [cursor=pointer]'
+                - 'generic "Floor 5, Ward 19 - Women''s Health, Room 5, Bed 3: available" [ref=f4e4089] [cursor=pointer]'
+                - 'generic "Floor 5, Ward 19 - Women''s Health, Room 5, Bed 4: available" [ref=f4e4094] [cursor=pointer]'
+                - 'generic "Floor 5, Ward 19 - Women''s Health, Room 5, Bed 5: available" [ref=f4e4099] [cursor=pointer]'
+                - 'generic "Floor 5, Ward 19 - Women''s Health, Room 5, Bed 6: available" [ref=f4e4104] [cursor=pointer]'
+              - generic [ref=f4e4109]:
+                - 'generic "Floor 5, Ward 19 - Women''s Health, Room 6, Bed 1: available" [ref=f4e4114] [cursor=pointer]'
+                - 'generic "Floor 5, Ward 19 - Women''s Health, Room 6, Bed 2: available" [ref=f4e4119] [cursor=pointer]'
+                - 'generic "Floor 5, Ward 19 - Women''s Health, Room 6, Bed 3: available" [ref=f4e4124] [cursor=pointer]'
+                - 'generic "Floor 5, Ward 19 - Women''s Health, Room 6, Bed 4: available" [ref=f4e4129] [cursor=pointer]'
+                - 'generic "Floor 5, Ward 19 - Women''s Health, Room 6, Bed 5: available" [ref=f4e4134] [cursor=pointer]'
+                - 'generic "Floor 5, Ward 19 - Women''s Health, Room 6, Bed 6: available" [ref=f4e4139] [cursor=pointer]'
+            - generic [ref=f4e4144]:
+              - generic [ref=f4e4146]:
+                - 'generic "Floor 5, Ward 20 - Rehabilitation, Room 1, Bed 1: occupied" [ref=f4e4151] [cursor=pointer]'
+                - 'generic "Floor 5, Ward 20 - Rehabilitation, Room 1, Bed 2: occupied" [ref=f4e4156] [cursor=pointer]'
+                - 'generic "Floor 5, Ward 20 - Rehabilitation, Room 1, Bed 3: occupied" [ref=f4e4161] [cursor=pointer]'
+                - 'generic "Floor 5, Ward 20 - Rehabilitation, Room 1, Bed 4: occupied" [ref=f4e4166] [cursor=pointer]'
+                - 'generic "Floor 5, Ward 20 - Rehabilitation, Room 1, Bed 5: occupied" [ref=f4e4171] [cursor=pointer]'
+                - 'generic "Floor 5, Ward 20 - Rehabilitation, Room 1, Bed 6: occupied" [ref=f4e4176] [cursor=pointer]'
+              - generic [ref=f4e4181]:
+                - 'generic "Floor 5, Ward 20 - Rehabilitation, Room 2, Bed 1: occupied" [ref=f4e4186] [cursor=pointer]'
+                - 'generic "Floor 5, Ward 20 - Rehabilitation, Room 2, Bed 2: occupied" [ref=f4e4191] [cursor=pointer]'
+                - 'generic "Floor 5, Ward 20 - Rehabilitation, Room 2, Bed 3: occupied" [ref=f4e4196] [cursor=pointer]'
+                - 'generic "Floor 5, Ward 20 - Rehabilitation, Room 2, Bed 4: occupied" [ref=f4e4201] [cursor=pointer]'
+                - 'generic "Floor 5, Ward 20 - Rehabilitation, Room 2, Bed 5: occupied" [ref=f4e4206] [cursor=pointer]'
+                - 'generic "Floor 5, Ward 20 - Rehabilitation, Room 2, Bed 6: occupied" [ref=f4e4211] [cursor=pointer]'
+              - generic [ref=f4e4216]:
+                - 'generic "Floor 5, Ward 20 - Rehabilitation, Room 3, Bed 1: occupied" [ref=f4e4221] [cursor=pointer]'
+                - 'generic "Floor 5, Ward 20 - Rehabilitation, Room 3, Bed 2: occupied" [ref=f4e4226] [cursor=pointer]'
+                - 'generic "Floor 5, Ward 20 - Rehabilitation, Room 3, Bed 3: occupied" [ref=f4e4231] [cursor=pointer]'
+                - 'generic "Floor 5, Ward 20 - Rehabilitation, Room 3, Bed 4: occupied" [ref=f4e4236] [cursor=pointer]'
+                - 'generic "Floor 5, Ward 20 - Rehabilitation, Room 3, Bed 5: occupied" [ref=f4e4241] [cursor=pointer]'
+                - 'generic "Floor 5, Ward 20 - Rehabilitation, Room 3, Bed 6: occupied" [ref=f4e4246] [cursor=pointer]'
+              - generic [ref=f4e4251]:
+                - 'generic "Floor 5, Ward 20 - Rehabilitation, Room 4, Bed 1: occupied" [ref=f4e4256] [cursor=pointer]'
+                - 'generic "Floor 5, Ward 20 - Rehabilitation, Room 4, Bed 2: occupied" [ref=f4e4261] [cursor=pointer]'
+                - 'generic "Floor 5, Ward 20 - Rehabilitation, Room 4, Bed 3: occupied" [ref=f4e4266] [cursor=pointer]'
+                - 'generic "Floor 5, Ward 20 - Rehabilitation, Room 4, Bed 4: occupied" [ref=f4e4271] [cursor=pointer]'
+                - 'generic "Floor 5, Ward 20 - Rehabilitation, Room 4, Bed 5: occupied" [ref=f4e4276] [cursor=pointer]'
+                - 'generic "Floor 5, Ward 20 - Rehabilitation, Room 4, Bed 6: occupied" [ref=f4e4281] [cursor=pointer]'
+              - generic [ref=f4e4286]:
+                - 'generic "Floor 5, Ward 20 - Rehabilitation, Room 5, Bed 1: available" [ref=f4e4291] [cursor=pointer]'
+                - 'generic "Floor 5, Ward 20 - Rehabilitation, Room 5, Bed 2: available" [ref=f4e4296] [cursor=pointer]'
+                - 'generic "Floor 5, Ward 20 - Rehabilitation, Room 5, Bed 3: available" [ref=f4e4301] [cursor=pointer]'
+                - 'generic "Floor 5, Ward 20 - Rehabilitation, Room 5, Bed 4: available" [ref=f4e4306] [cursor=pointer]'
+                - 'generic "Floor 5, Ward 20 - Rehabilitation, Room 5, Bed 5: available" [ref=f4e4311] [cursor=pointer]'
+                - 'generic "Floor 5, Ward 20 - Rehabilitation, Room 5, Bed 6: available" [ref=f4e4316] [cursor=pointer]'
+              - generic [ref=f4e4321]:
+                - 'generic "Floor 5, Ward 20 - Rehabilitation, Room 6, Bed 1: available" [ref=f4e4326] [cursor=pointer]'
+                - 'generic "Floor 5, Ward 20 - Rehabilitation, Room 6, Bed 2: available" [ref=f4e4331] [cursor=pointer]'
+                - 'generic "Floor 5, Ward 20 - Rehabilitation, Room 6, Bed 3: available" [ref=f4e4336] [cursor=pointer]'
+                - 'generic "Floor 5, Ward 20 - Rehabilitation, Room 6, Bed 4: available" [ref=f4e4341] [cursor=pointer]'
+                - 'generic "Floor 5, Ward 20 - Rehabilitation, Room 6, Bed 5: available" [ref=f4e4346] [cursor=pointer]'
+                - 'generic "Floor 5, Ward 20 - Rehabilitation, Room 6, Bed 6: available" [ref=f4e4351] [cursor=pointer]'
+        - generic [ref=f4e4356]:
+          - generic [ref=f4e4357]:
+            - button "Rotate hospital left" [ref=f4e4358] [cursor=pointer]: ↶
+            - button "Rotate hospital right" [ref=f4e4359] [cursor=pointer]: ↷
+            - button "Reset view" [ref=f4e4360] [cursor=pointer]
+          - button "↕ Exploded" [pressed] [ref=f4e4361] [cursor=pointer]
+        - generic [ref=f4e4362]:
+          - generic [ref=f4e4363]: Hover to inspect · click a bed to explore
+          - generic [ref=f4e4364]:
+            - generic [ref=f4e4365]: Occupied
+            - generic [ref=f4e4367]: Available
+            - generic [ref=f4e4369]: Blocked
+            - generic [ref=f4e4371]: Inactive
+      - complementary [ref=f4e4373]:
+        - generic [ref=f4e4374]:
+          - paragraph [ref=f4e4375]: OCCUPANCY SNAPSHOT
+          - paragraph [ref=f4e4376]: Whole hospital
+          - heading "Alcidion Synthetic University Hospital" [level=3] [ref=f4e4377]
+          - generic [ref=f4e4378]:
+            - text: "480"
+            - generic [ref=f4e4379]: / 720 beds occupied
+          - generic [ref=f4e4383]:
+            - generic [ref=f4e4384]: 240 available
+            - generic [ref=f4e4385]: 0 blocked
+            - generic [ref=f4e4386]: 0 inactive
+          - paragraph [ref=f4e4387]: As of 13 Sept 2026, 18:16
+        - generic [ref=f4e4388]:
+          - paragraph [ref=f4e4389]: EXPLORE THE HOSPITAL
+          - generic [ref=f4e4390]:
+            - text: Floor
+            - combobox "Explore floor" [ref=f4e4391]:
+              - option "Floor 1 · 96/144 occupied" [selected]
+              - option "Floor 2 · 96/144 occupied"
+              - option "Floor 3 · 96/144 occupied"
+              - option "Floor 4 · 96/144 occupied"
+              - option "Floor 5 · 96/144 occupied"
+          - generic [ref=f4e4392]:
+            - text: Ward
+            - combobox "Explore ward" [ref=f4e4393]:
+              - option "Emergency Department" [selected]
+              - option "General Medicine"
+              - option "Intensive Care Unit"
+              - option "Ward 4 - Rehabilitation"
+          - paragraph [ref=f4e4394]:
+            - text: Rooms
+            - generic [ref=f4e4395]: 6 rooms · 36 beds
+          - generic [ref=f4e4396]:
+            - button "Room 1 6/6" [pressed] [ref=f4e4397] [cursor=pointer]:
+              - generic: Room 1
+              - strong:
+                - text: "6"
+                - generic: /6
+            - button "Room 2 6/6" [ref=f4e4398] [cursor=pointer]:
+              - generic: Room 2
+              - strong:
+                - text: "6"
+                - generic: /6
+            - button "Room 3 6/6" [ref=f4e4399] [cursor=pointer]:
+              - generic: Room 3
+              - strong:
+                - text: "6"
+                - generic: /6
+            - button "Room 4 6/6" [ref=f4e4400] [cursor=pointer]:
+              - generic: Room 4
+              - strong:
+                - text: "6"
+                - generic: /6
+            - button "Room 5 0/6" [ref=f4e4401] [cursor=pointer]:
+              - generic: Room 5
+              - strong:
+                - text: "0"
+                - generic: /6
+            - button "Room 6 0/6" [ref=f4e4402] [cursor=pointer]:
+              - generic: Room 6
+              - strong:
+                - text: "0"
+                - generic: /6
+          - paragraph [ref=f4e4403]:
+            - text: Room 1
+            - generic [ref=f4e4404]: Select a bed
+          - generic [ref=f4e4405]:
+            - button "Bed 1 occupied" [ref=f4e4406] [cursor=pointer]:
+              - generic [aria-hidden]: ▰
+              - strong: Bed 1
+              - generic: occupied
+            - button "Bed 2 occupied" [ref=f4e4407] [cursor=pointer]:
+              - generic [aria-hidden]: ▰
+              - strong: Bed 2
+              - generic: occupied
+            - button "Bed 3 occupied" [ref=f4e4408] [cursor=pointer]:
+              - generic [aria-hidden]: ▰
+              - strong: Bed 3
+              - generic: occupied
+            - button "Bed 4 occupied" [ref=f4e4409] [cursor=pointer]:
+              - generic [aria-hidden]: ▰
+              - strong: Bed 4
+              - generic: occupied
+            - button "Bed 5 occupied" [ref=f4e4410] [cursor=pointer]:
+              - generic [aria-hidden]: ▰
+              - strong: Bed 5
+              - generic: occupied
+            - button "Bed 6 occupied" [ref=f4e4411] [cursor=pointer]:
+              - generic [aria-hidden]: ▰
+              - strong: Bed 6
+              - generic: occupied
+          - paragraph [ref=f4e4412]: Occupancy only. Patient identities are not included.
+    - generic [ref=f4e4413]:
+      - generic [ref=f4e4414]: Snapshot captured 13 Sept 2026, 18:16 · Times shown in Australia/Adelaide
+      - generic [ref=f4e4415]: Physical inventory; availability does not include staffing or clinical suitability.

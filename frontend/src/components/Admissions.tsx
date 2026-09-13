@@ -1,5 +1,6 @@
 import { useState, type FormEvent } from 'react'
-import { api } from '../lib/api'
+import { api, fieldErrors } from '../lib/api'
+import type { AdmitPatientRequest } from '../lib/contracts'
 import { track } from '../lib/telemetry'
 import type { Admission, Patient } from '../lib/types'
 import { ErrorAlert } from './ErrorAlert'
@@ -14,11 +15,20 @@ type Props = {
 
 const WARDS = ['ED', 'ICU', 'Ward 3B', 'Maternity', 'Paediatrics']
 
+/** The inputs below carry their own messages, so ErrorAlert must not repeat them. */
+const FORM_FIELDS = ['patientId', 'ward']
+
 export function Admissions({ admissions, patients, canWrite, onChanged, onViewHospital }: Props) {
   const [patientId, setPatientId] = useState('')
   const [ward, setWard] = useState(WARDS[0])
   const [error, setError] = useState<unknown>(null)
   const [busy, setBusy] = useState(false)
+
+  // Keyed by the field name the API was sent, which is the name each input binds to.
+  const invalid = fieldErrors(error)
+
+  const messageFor = (name: keyof AdmitPatientRequest) =>
+    invalid[name] ? <span className="field-error">{invalid[name].join(' ')}</span> : null
 
   const nameOf = (id: string) => {
     const p = patients.find((x) => x.id === id)
@@ -41,8 +51,9 @@ export function Admissions({ admissions, patients, canWrite, onChanged, onViewHo
 
   function admit(e: FormEvent) {
     e.preventDefault()
+    const body: AdmitPatientRequest = { patientId, ward }
     run('admission.admitted', () =>
-      api<Admission>('/api/admissions', { method: 'POST', body: JSON.stringify({ patientId, ward }) }),
+      api<Admission>('/api/admissions', { method: 'POST', body: JSON.stringify(body) }),
     )
   }
 
@@ -61,23 +72,25 @@ export function Admissions({ admissions, patients, canWrite, onChanged, onViewHo
         <form className="row" onSubmit={admit}>
           <label>
             Patient
-            <select required name="patientId" value={patientId} onChange={(e) => setPatientId(e.target.value)}>
+            <select required name="patientId" aria-invalid={invalid.patientId ? true : undefined} value={patientId} onChange={(e) => setPatientId(e.target.value)}>
               <option value="">Select…</option>
               {patients.map((p) => (
                 <option key={p.id} value={p.id}>{p.givenName} {p.familyName} ({p.mrn})</option>
               ))}
             </select>
+            {messageFor('patientId')}
           </label>
           <label>
             Ward
-            <select name="ward" value={ward} onChange={(e) => setWard(e.target.value)}>
+            <select name="ward" aria-invalid={invalid.ward ? true : undefined} value={ward} onChange={(e) => setWard(e.target.value)}>
               {WARDS.map((w) => <option key={w}>{w}</option>)}
             </select>
+            {messageFor('ward')}
           </label>
           <button className="btn" type="submit" data-track="admit" disabled={busy || !patientId}>Admit</button>
         </form>
       )}
-      <ErrorAlert error={error} />
+      <ErrorAlert error={error} handled={FORM_FIELDS} />
 
       {admissions.length === 0 ? (
         <div className="empty">No admissions yet.</div>

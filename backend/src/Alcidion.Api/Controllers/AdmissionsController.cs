@@ -1,6 +1,7 @@
 using Alcidion.Admissions.Application;
 using Alcidion.Admissions.Domain;
 using Alcidion.Api.Auth;
+using Alcidion.Api.Contracts;
 using Alcidion.Api.Observability;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -27,9 +28,9 @@ public sealed class AdmissionsController(AdmissionService admissions) : ApiContr
     [ProducesResponseType<ValidationProblemDetails>(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status409Conflict)]
-    public async Task<ActionResult<AdmissionDto>> Admit([FromBody] AdmitPatientCommand cmd, CancellationToken ct)
+    public async Task<ActionResult<AdmissionDto>> Admit([FromBody] AdmitPatientRequest body, CancellationToken ct)
     {
-        var result = await admissions.AdmitAsync(cmd, ct);
+        var result = await admissions.AdmitAsync(body.ToCommand(), ct);
         if (result.IsSuccess) Telemetry.PatientsAdmitted.Add(1);
         return result.Match<ActionResult>(
             a => Created($"/api/admissions/{a.Id}", AdmissionDto.From(a)),

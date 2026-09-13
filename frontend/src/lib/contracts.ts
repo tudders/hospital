@@ -3,6 +3,27 @@
 // Run `npm run contracts` after changing a schema; `npm run build` fails if this is stale.
 
 /**
+ * Body of POST /api/admissions. Shape, length and format only - whether the patient exists, and
+ * whether they are already admitted, stay with the Admissions aggregate.
+ * Open: the API ignores properties not listed here rather than refusing them.
+ * Generated from admit-patient-request.json.
+ */
+export type AdmitPatientRequest = {
+  /**
+   * The patient to admit. Whether the id names a patient on file is a lookup rather than a shape:
+   * a well-formed id that is not on file is a 404, not a 400.
+   * format: uuid
+   */
+  patientId: string
+  /**
+   * Ward name, free text. Leading and trailing whitespace is accepted and trimmed. The
+   * 200-character bound is the widest a ward name is stored anywhere in this system.
+   * minLength: 1, maxLength: 200, pattern: \S
+   */
+  ward: string
+}
+
+/**
  * One recorded frontend event.
  * Open: the API ignores properties not listed here rather than refusing them.
  * Element of ClientEventBatch.
@@ -49,6 +70,28 @@ export type ClientEvent = {
  * Generated from client-event-batch.json.
  */
 export type ClientEventBatch = ClientEvent[]
+
+/**
+ * Body of POST /api/auth/login. Shape only: whether the credentials are right is a 401 from the
+ * issuer, and this document deliberately describes nothing that would narrow the guess space for
+ * one.
+ * Open: the API ignores properties not listed here rather than refusing them.
+ * Generated from login-request.json.
+ */
+export type LoginRequest = {
+  /**
+   * Identifies the user; matched case-insensitively.
+   * minLength: 1, maxLength: 64, pattern: \S
+   */
+  username: string
+  /**
+   * Any characters the user chose, leading and trailing spaces included: there is deliberately no
+   * format rule here. The 256-character ceiling bounds the request body and is not a password
+   * policy.
+   * minLength: 1, maxLength: 256
+   */
+  password: string
+}
 
 /**
  * Body of POST /api/patients. Shape, length and format only - meaning stays with the Patient

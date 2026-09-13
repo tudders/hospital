@@ -187,11 +187,23 @@ public sealed class JsonSchemaInputFormatter : InputFormatter
     /// <c>/properties/mrn</c> or <c>/items</c>, not <c>/properties/mrn/pattern</c>.
     /// </summary>
     /// <remarks>
+    /// <para>
     /// Only the containers this codebase's schemas use are listed, on the same terms as the OpenAPI
     /// transformer: a missed one costs a redundant message, not a missed error.
+    /// </para>
+    /// <para>
+    /// An empty location is one of them. Corvus reports the schema location relative to the schema
+    /// being evaluated, and a property it generates as an entity of its own - "patientId", a string
+    /// whose only keyword is a format - is evaluated as a root, so its whole-schema result arrives
+    /// with no location at all while the keyword under it arrives as "/format". Reading the empty
+    /// one as a keyword result is what used to put "The value was expected to match the subschema."
+    /// in front of a caller alongside the message that actually said what was wrong.
+    /// </para>
     /// </remarks>
     private static bool IsSubschema(string schemaLocation)
     {
+        if (schemaLocation.Length == 0) return true;
+
         var lastSlash = schemaLocation.LastIndexOf('/');
         if (lastSlash < 0) return false;
 

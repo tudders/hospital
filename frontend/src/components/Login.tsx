@@ -1,14 +1,23 @@
 import { useState, type FormEvent } from 'react'
-import { api } from '../lib/api'
+import { api, fieldErrors } from '../lib/api'
 import { setToken, type Me } from '../lib/auth'
+import type { LoginRequest } from '../lib/contracts'
 import { track } from '../lib/telemetry'
 import { ErrorAlert } from './ErrorAlert'
 
+const DEMO: LoginRequest = { username: 'nurse', password: 'nurse' }
+
+/** The inputs below carry their own messages, so ErrorAlert must not repeat them. */
+const FORM_FIELDS = Object.keys(DEMO)
+
 export function Login({ onLoggedIn }: { onLoggedIn: (me: Me) => void }) {
-  const [username, setUsername] = useState('nurse')
-  const [password, setPassword] = useState('nurse')
+  const [form, setForm] = useState<LoginRequest>(DEMO)
   const [error, setError] = useState<unknown>(null)
   const [busy, setBusy] = useState(false)
+
+  // Keyed by the field name the API was sent. A wrong password is a 401 and names no field, so
+  // this stays empty for it and ErrorAlert shows "Invalid credentials" on its own.
+  const invalid = fieldErrors(error)
 
   async function submit(e: FormEvent) {
     e.preventDefault()
@@ -17,7 +26,7 @@ export function Login({ onLoggedIn }: { onLoggedIn: (me: Me) => void }) {
     try {
       const { accessToken } = await api<{ accessToken: string }>('/api/auth/login', {
         method: 'POST',
-        body: JSON.stringify({ username, password }),
+        body: JSON.stringify(form),
       })
       setToken(accessToken)
       const me = await api<Me>('/api/auth/me')
@@ -31,18 +40,35 @@ export function Login({ onLoggedIn }: { onLoggedIn: (me: Me) => void }) {
     }
   }
 
+  function field(name: keyof LoginRequest) {
+    return {
+      name,
+      value: form[name],
+      'aria-invalid': invalid[name] ? true : undefined,
+      onChange: (e: React.ChangeEvent<HTMLInputElement>) => setForm({ ...form, [name]: e.target.value }),
+    }
+  }
+
+  function message(name: keyof LoginRequest) {
+    const messages = invalid[name]
+    return messages ? <span className="field-error">{messages.join(' ')}</span> : null
+  }
+
   return (
     <form className="card login stack" data-region="login" onSubmit={submit}>
       <h1>Sign in</h1>
       <label>
         Username
-        <input name="username" value={username} onChange={(e) => setUsername(e.target.value)} autoComplete="username" />
+        {/* maxLength matches the schema's, so the input cannot produce a value that 400s. */}
+        <input required maxLength={64} autoComplete="username" {...field('username')} />
+        {message('username')}
       </label>
       <label>
         Password
-        <input type="password" name="password" value={password} onChange={(e) => setPassword(e.target.value)} autoComplete="current-password" />
+        <input required type="password" maxLength={256} autoComplete="current-password" {...field('password')} />
+        {message('password')}
       </label>
-      <ErrorAlert error={error} />
+      <ErrorAlert error={error} handled={FORM_FIELDS} />
       <button className="btn" type="submit" disabled={busy}>
         {busy ? 'Signing in…' : 'Sign in'}
       </button>

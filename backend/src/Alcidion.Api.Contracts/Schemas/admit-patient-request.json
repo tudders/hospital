@@ -1,0 +1,22 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://alcidion.health/schemas/admit-patient-request.json",
+  "title": "AdmitPatientRequest",
+  "description": "Body of POST /api/admissions. Shape, length and format only - whether the patient exists, and whether they are already admitted, stay with the Admissions aggregate.",
+  "type": "object",
+  "required": ["patientId", "ward"],
+  "properties": {
+    "patientId": {
+      "description": "The patient to admit. Whether the id names a patient on file is a lookup rather than a shape: a well-formed id that is not on file is a 404, not a 400.",
+      "type": "string",
+      "format": "uuid"
+    },
+    "ward": {
+      "description": "Ward name, free text. Leading and trailing whitespace is accepted and trimmed. The 200-character bound is the widest a ward name is stored anywhere in this system.",
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 200,
+      "pattern": "\\S"
+    }
+  }
+}

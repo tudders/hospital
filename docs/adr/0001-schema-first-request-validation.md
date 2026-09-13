@@ -45,5 +45,13 @@ removes â€” hand-maintaining the same rules in two languages â€” is per-endpoint
   single project the frontend's codegen points at.
 - A guardrail test — `RequestBodyContractTests` — reflects over every controller action and asserts
   that each body type on a body-carrying verb is schema-generated, so endpoint 31 cannot ship
-  unvalidated silently. Bodies from before this ADR (`AdmitPatientCommand`, `LoginRequest`) are on a
-  named list the test prints and refuses to let grow.
+  unvalidated silently. Its list of exceptions is now empty: `AdmitPatientRequest` and
+  `LoginRequest` were the last two bound C#-first, and every body the API accepts is generated
+  from a schema document. The list stays in place so the next exception has to be a deliberate
+  act with a name on it. `ContractDocumentTests` asserts the same property from the document
+  side: a published request body carrying no `title` is one reflected off a C# type rather than
+  read from a schema, and fails the build.
+- Shape is all the edge asserts, and for `POST /api/auth/login` that is the whole of it. Wrong
+  credentials stay a 401 naming no field — a 400 would tell a caller which half of the pair to
+  keep — and the password carries no published pattern, because a rule there would describe the
+  credential format to everyone who can read the document.

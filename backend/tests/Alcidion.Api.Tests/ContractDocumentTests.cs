@@ -22,6 +22,14 @@ public class ContractDocumentTests(ApiFixture api) : IClassFixture<ApiFixture>
     private async Task<JsonElement> RegisterPatientSchema() =>
         (await Document()).GetProperty("components").GetProperty("schemas").GetProperty("RegisterPatientRequest");
 
+    /// <summary>Follows a <c>$ref</c> into <c>components.schemas</c>; anything else is already the
+    /// schema.</summary>
+    private static JsonElement Resolve(JsonElement document, JsonElement schema) =>
+        schema.TryGetProperty("$ref", out var reference)
+            ? document.GetProperty("components").GetProperty("schemas")
+                .GetProperty(reference.GetString()!.Split('/')[^1])
+            : schema;
+
     /// <summary>The body schema of a POST. An array body has no component of its own, so this reads
     /// it where it is published rather than out of <c>components.schemas</c>.</summary>
     private static JsonElement RequestBody(JsonElement document, string path) =>
@@ -76,6 +84,58 @@ public class ContractDocumentTests(ApiFixture api) : IClassFixture<ApiFixture>
             item.GetProperty("required").EnumerateArray().Select(e => e.GetString()).Order(StringComparer.Ordinal));
         Assert.Equal("date-time", item.GetProperty("properties").GetProperty("at").GetProperty("format").GetString());
         Assert.Equal(64, item.GetProperty("properties").GetProperty("name").GetProperty("maxLength").GetInt32());
+    }
+
+    [Fact]
+    public async Task The_published_admission_contract_carries_its_constraints()
+    {
+        var schema = Resolve(await Document(), RequestBody(await Document(), "/api/admissions"));
+
+        Assert.Equal(
+            ["patientId", "ward"],
+            schema.GetProperty("required").EnumerateArray().Select(e => e.GetString()).Order(StringComparer.Ordinal));
+        Assert.Equal("uuid", schema.GetProperty("properties").GetProperty("patientId").GetProperty("format").GetString());
+        Assert.Equal(200, schema.GetProperty("properties").GetProperty("ward").GetProperty("maxLength").GetInt32());
+    }
+
+    [Fact]
+    public async Task The_published_login_contract_describes_the_username_and_not_the_password()
+    {
+        // The username's bounds are useful to a caller. A published password pattern would describe
+        // the credential format to everyone who can read the document, so the schema carries none
+        // and this asserts it stays that way.
+        var schema = Resolve(await Document(), RequestBody(await Document(), "/api/auth/login"));
+        var properties = schema.GetProperty("properties");
+
+        Assert.Equal(64, properties.GetProperty("username").GetProperty("maxLength").GetInt32());
+        Assert.False(properties.GetProperty("password").TryGetProperty("pattern", out _),
+            "the login schema must not publish a password pattern");
+    }
+
+    [Fact]
+    public async Task Every_published_request_body_comes_from_a_schema_document()
+    {
+        // The document-side twin of RequestBodyContractTests: a body reflected off a C# type has no
+        // title, because a title is something only the schema document gives it. This is what
+        // catches an endpoint whose rules are real in code but absent from what clients generate.
+        var document = await Document();
+        var untitled = new List<string>();
+
+        foreach (var path in document.GetProperty("paths").EnumerateObject())
+        {
+            foreach (var operation in path.Value.EnumerateObject())
+            {
+                if (!operation.Value.TryGetProperty("requestBody", out var body)) continue;
+                if (!body.GetProperty("content").TryGetProperty("application/json", out var json)) continue;
+
+                var schema = Resolve(document, json.GetProperty("schema"));
+                if (!schema.TryGetProperty("title", out _)) untitled.Add($"{operation.Name.ToUpperInvariant()} {path.Name}");
+            }
+        }
+
+        Assert.True(untitled.Count == 0,
+            "These request bodies are published without the schema document that defines them, so a " +
+            "generated client cannot see their rules:" + Environment.NewLine + string.Join(Environment.NewLine, untitled));
     }
 
     [Theory]

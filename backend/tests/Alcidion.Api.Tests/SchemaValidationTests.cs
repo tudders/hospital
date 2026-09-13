@@ -16,21 +16,13 @@ public class SchemaValidationTests(ApiFixture api) : IClassFixture<ApiFixture>
     private async Task<HttpResponseMessage> Post(object body) =>
         await (await api.ClientAs("nurse")).PostAsJsonAsync("/api/patients", body);
 
-    private static async Task<Dictionary<string, string[]>> FieldErrors(HttpResponseMessage res)
-    {
-        var body = await res.Content.ReadFromJsonAsync<JsonElement>();
-        Assert.True(body.TryGetProperty("errors", out var errors),
-            $"expected a per-field 'errors' dictionary, got: {body}");
-        return errors.Deserialize<Dictionary<string, string[]>>()!;
-    }
-
     [Fact]
     public async Task A_missing_required_field_names_the_field()
     {
         var res = await Post(new { givenName = "Ada", familyName = "Lovelace", dateOfBirth = "1990-01-01" });
 
         Assert.Equal(HttpStatusCode.BadRequest, res.StatusCode);
-        Assert.Contains("mrn", (await FieldErrors(res)).Keys);
+        Assert.Contains("mrn", (await res.FieldErrors()).Keys);
     }
 
     [Theory]
@@ -42,7 +34,7 @@ public class SchemaValidationTests(ApiFixture api) : IClassFixture<ApiFixture>
         var res = await Post(new { mrn, givenName = "Ada", familyName = "Lovelace", dateOfBirth = "1990-01-01" });
 
         Assert.Equal(HttpStatusCode.BadRequest, res.StatusCode);
-        Assert.Contains("mrn", (await FieldErrors(res)).Keys);
+        Assert.Contains("mrn", (await res.FieldErrors()).Keys);
     }
 
     [Fact]
@@ -53,7 +45,7 @@ public class SchemaValidationTests(ApiFixture api) : IClassFixture<ApiFixture>
         var res = await Post(new { mrn = "BLANK-1", givenName = "   ", familyName = "Lovelace", dateOfBirth = "1990-01-01" });
 
         Assert.Equal(HttpStatusCode.BadRequest, res.StatusCode);
-        Assert.Contains("givenName", (await FieldErrors(res)).Keys);
+        Assert.Contains("givenName", (await res.FieldErrors()).Keys);
     }
 
     [Theory]
@@ -65,7 +57,7 @@ public class SchemaValidationTests(ApiFixture api) : IClassFixture<ApiFixture>
         var res = await Post(new { mrn = "DOB-1", givenName = "Ada", familyName = "Lovelace", dateOfBirth });
 
         Assert.Equal(HttpStatusCode.BadRequest, res.StatusCode);
-        Assert.Contains("dateOfBirth", (await FieldErrors(res)).Keys);
+        Assert.Contains("dateOfBirth", (await res.FieldErrors()).Keys);
     }
 
     [Fact]
@@ -75,7 +67,7 @@ public class SchemaValidationTests(ApiFixture api) : IClassFixture<ApiFixture>
         var res = await Post(new { mrn = "bad mrn", givenName = "", familyName = "", dateOfBirth = "nope" });
 
         Assert.Equal(HttpStatusCode.BadRequest, res.StatusCode);
-        var errors = await FieldErrors(res);
+        var errors = await res.FieldErrors();
         Assert.Equal(
             ["dateOfBirth", "familyName", "givenName", "mrn"],
             errors.Keys.OrderBy(k => k, StringComparer.Ordinal).ToArray());
@@ -88,7 +80,7 @@ public class SchemaValidationTests(ApiFixture api) : IClassFixture<ApiFixture>
         // typed an MRN wrong.
         var res = await Post(new { mrn = "bad mrn", givenName = "Ada", familyName = "Lovelace", dateOfBirth = "1990-01-01" });
 
-        var messages = (await FieldErrors(res)).Values.SelectMany(m => m).ToList();
+        var messages = await res.Messages();
         Assert.DoesNotContain(messages, m => m.Contains("[A-Za-z0-9]", StringComparison.Ordinal));
         Assert.Contains("The mrn field is not in the expected format.", messages);
     }
@@ -98,7 +90,7 @@ public class SchemaValidationTests(ApiFixture api) : IClassFixture<ApiFixture>
     {
         var res = await Post(new { givenName = "Ada", familyName = "Lovelace", dateOfBirth = "1990-01-01" });
 
-        Assert.Contains("The mrn field is required.", (await FieldErrors(res))["mrn"]);
+        Assert.Contains("The mrn field is required.", (await res.FieldErrors())["mrn"]);
     }
 
     [Fact]

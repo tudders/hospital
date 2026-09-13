@@ -19,7 +19,12 @@ public class RequestBodyContractTests(ITestOutputHelper output)
     /// constraints the published contract does not carry; delete a line when its schema lands.
     /// A new endpoint may not be added to this list - that is the point of it being a list.
     /// </summary>
-    private static readonly string[] OutstandingMigrations = ["AdmitPatientCommand", "LoginRequest"];
+    /// <remarks>
+    /// Empty as of the admit and login schemas: every body the API accepts is now generated from a
+    /// schema document, and the list stays here so that the next one added is a deliberate act with
+    /// a name on it rather than a silent omission.
+    /// </remarks>
+    private static readonly string[] OutstandingMigrations = [];
 
     [Fact]
     public void Every_request_body_is_generated_from_a_schema()
@@ -43,7 +48,7 @@ public class RequestBodyContractTests(ITestOutputHelper output)
         // Otherwise the list outlives the work and stops meaning anything.
         var bodies = Bodies().Select(b => b.Type.Name).ToHashSet(StringComparer.Ordinal);
 
-        Assert.Empty(OutstandingMigrations.Where(name => !bodies.Contains(name)));
+        Assert.DoesNotContain(OutstandingMigrations, name => !bodies.Contains(name));
     }
 
     private sealed record Body(MethodInfo Action, Type Type)
