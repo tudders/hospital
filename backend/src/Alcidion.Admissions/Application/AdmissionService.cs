@@ -31,11 +31,22 @@ public sealed class AdmissionService(
             return Result<Admission>.Fail(Error.Validation(ex.Message));
         }
 
-        // The insert decides whether the patient already has an active admission, so two
-        // concurrent admits cannot both pass a separate check.
-        if (await admissions.TryAddActiveAsync(admission, ct) is { } active)
-            return Result<Admission>.Fail(Error.Conflict($"Patient is already admitted to ward '{active.Ward}'."));
+        // The write decides whether the patient already has an active admission and whether a bed
+        // was there to take, so two concurrent admits cannot both pass a separate check.
+        var stored = await admissions.TryAddActiveAsync(admission, ct) switch
+        {
+            AdmitResult.Admitted(var persisted) => Result<Admission>.Ok(persisted),
+            AdmitResult.AlreadyActive(var active) =>
+                Result<Admission>.Fail(Error.Conflict($"Patient is already admitted to ward '{active.Ward}'.")),
+            AdmitResult.UnknownWard(var ward) =>
+                Result<Admission>.Fail(Error.Validation($"No ward matches '{ward}'.")),
+            AdmitResult.NoBedAvailable(var ward, var reason) =>
+                Result<Admission>.Fail(Error.Conflict($"No bed available in ward '{ward}': {reason}")),
+            var unexpected => throw new InvalidOperationException($"Unhandled admit outcome {unexpected.GetType().Name}."),
+        };
+        if (!stored.IsSuccess) return stored;
 
+        admission = stored.Value!;
         logger.LogInformation("Admitted patient {PatientId} to {Ward} as admission {AdmissionId}",
             admission.PatientId, admission.Ward, admission.Id);
         await eventBus.PublishAsync(new PatientAdmitted(admission.Id, admission.PatientId, admission.Ward, clock.UtcNow), ct);
@@ -56,7 +67,11 @@ public sealed class AdmissionService(
             return Result<Admission>.Fail(Error.Conflict(ex.Message));
         }
 
-        await admissions.UpdateAsync(admission, ct);
+        // The aggregate's own lock only guards one instance; a second request holds its own copy of
+        // the same admission, so the store has the final say on who discharged it.
+        if (!await admissions.UpdateAsync(admission, ct))
+            return Result<Admission>.Fail(Error.Conflict("Admission is already discharged."));
+
         logger.LogInformation("Discharged admission {AdmissionId} for patient {PatientId}", admission.Id, admission.PatientId);
         await eventBus.PublishAsync(new PatientDischarged(admission.Id, admission.PatientId, clock.UtcNow), ct);
         return Result<Admission>.Ok(admission);

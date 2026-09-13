@@ -9,7 +9,6 @@ type Props = {
   patients: Patient[]
   canWrite: boolean
   onChanged: () => void
-  onViewHospital?: () => void
 }
 
 const EMPTY: RegisterPatientRequest = { mrn: '', givenName: '', familyName: '', dateOfBirth: '' }
@@ -17,7 +16,7 @@ const EMPTY: RegisterPatientRequest = { mrn: '', givenName: '', familyName: '', 
 /** The inputs below carry their own messages, so ErrorAlert must not repeat them. */
 const FORM_FIELDS = Object.keys(EMPTY)
 
-export function Patients({ patients, canWrite, onChanged, onViewHospital }: Props) {
+export function Patients({ patients, canWrite, onChanged }: Props) {
   const [form, setForm] = useState<RegisterPatientRequest>(EMPTY)
   const [error, setError] = useState<unknown>(null)
   const [busy, setBusy] = useState(false)
@@ -60,7 +59,6 @@ export function Patients({ patients, canWrite, onChanged, onViewHospital }: Prop
       <h2>
         Patients <span className="badge muted">{patients.length}</span>
       </h2>
-      {onViewHospital && <button className="btn ghost sm" data-track="patients-view-hospital" onClick={onViewHospital}>View hospital occupancy</button>}
 
       {canWrite && (
         <form className="row" onSubmit={register}>

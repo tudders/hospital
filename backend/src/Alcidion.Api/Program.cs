@@ -1,6 +1,7 @@
 using Alcidion.Admissions;
 using Alcidion.Api.Auth;
 using Alcidion.Api.Contracts;
+using Alcidion.Api.Hospital;
 using Alcidion.Api.Observability;
 using Alcidion.Patients;
 using Alcidion.Shared;
@@ -14,10 +15,14 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddScoped<Alcidion.Api.Hospital.HospitalOccupancyReader>();
 
 // --- Domains (each bounded context registers its own services) ---
+// One resolved connection string decides the store for every domain: with it they persist to the
+// hospital database through EF Core, without it they run on their in-memory repositories, which is
+// what keeps the API startable (and the integration tests hermetic) with no database attached.
+var hospitalConnection = HospitalConnection.Resolve(builder.Configuration, builder.Environment);
 builder.Services
     .AddSharedKernel()
-    .AddPatientsDomain()
-    .AddAdmissionsDomain();
+    .AddPatientsDomain(hospitalConnection)
+    .AddAdmissionsDomain(hospitalConnection);
 
 // --- Web ---
 // Schema-generated request types bind and validate through their own formatter; everything else

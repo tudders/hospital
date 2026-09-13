@@ -53,24 +53,7 @@ public sealed class HospitalOccupancyReader(IConfiguration configuration, IWebHo
     private static Result<HospitalSnapshot> Unavailable() => Result<HospitalSnapshot>.Fail(
         new Error("hospital_unavailable", "The hospital database could not be read. Check the server connection and retry."));
 
-    private string? GetConnectionString()
-    {
-        var value = configuration.GetConnectionString("Hospital") ?? configuration["SQL_SERVE_CONNECTION_STRING"];
-        if (value is null && environment.IsDevelopment())
-        {
-            // Development convenience only. Never expose this non-VITE value to browser code.
-            var path = Path.GetFullPath(Path.Combine(environment.ContentRootPath, "../../../frontend/.env"));
-            if (File.Exists(path))
-            {
-                const string key = "SQL_SERVE_CONNECTION_STRING=";
-                value = File.ReadLines(path).Select(line => line.Trim())
-                    .FirstOrDefault(line => line.StartsWith(key, StringComparison.Ordinal))?[key.Length..];
-            }
-        }
-        value = value?.Trim().Trim('"', '\'');
-        const string prefix = "ConnectionString=";
-        return value?.StartsWith(prefix, StringComparison.OrdinalIgnoreCase) == true ? value[prefix.Length..] : value;
-    }
+    private string? GetConnectionString() => HospitalConnection.Resolve(configuration, environment);
 
     // Stays and blocks use half-open intervals [start, end). A transfer at T is counted once.
     // These are physical availability states, not a promise of staffed/clinically suitable capacity.

@@ -4,11 +4,12 @@ import { ErrorAlert } from './components/ErrorAlert'
 import { Login } from './components/Login'
 import { Patients } from './components/Patients'
 import { Hospital } from './components/Hospital'
+import { Layout } from './components/Layout'
 import { API_BASE, api } from './lib/api'
 import { canWrite, getToken, setToken, type Me } from './lib/auth'
 import { startSessionRecording } from './lib/session-recorder'
-import { configureTelemetry, sessionId, track } from './lib/telemetry'
-import type { Admission, Patient } from './lib/types'
+import { configureTelemetry, track } from './lib/telemetry'
+import type { Admission, Patient, Ward } from './lib/types'
 
 configureTelemetry(API_BASE)
 
@@ -18,13 +19,21 @@ export default function App() {
   const [booting, setBooting] = useState(!!getToken())
   const [patients, setPatients] = useState<Patient[]>([])
   const [admissions, setAdmissions] = useState<Admission[]>([])
+  const [wards, setWards] = useState<Ward[]>([])
   const [error, setError] = useState<unknown>(null)
 
   const refresh = useCallback(async () => {
     try {
-      const [p, a] = await Promise.all([api<Patient[]>('/api/patients'), api<Admission[]>('/api/admissions')])
+      // One round trip for the whole page: the ward list carries live free-bed counts, so it is
+      // refreshed with the admissions it constrains rather than fetched once and left to go stale.
+      const [p, a, w] = await Promise.all([
+        api<Patient[]>('/api/patients'),
+        api<Admission[]>('/api/admissions'),
+        api<Ward[]>('/api/wards'),
+      ])
       setPatients(p)
       setAdmissions(a)
+      setWards(w)
       setError(null)
     } catch (err) {
       setError(err)
@@ -58,33 +67,25 @@ export default function App() {
     setMe(null)
     setPatients([])
     setAdmissions([])
+    setWards([])
     setPage('hospital')
   }
 
   if (booting) return null
-  if (!me) return <div className="app"><Login onLoggedIn={loggedIn} /></div>
+  if (!me) return <Login onLoggedIn={loggedIn} />
 
   const write = canWrite(me)
   return (
-    <div className={`app ${page === 'hospital' ? 'app-hospital' : ''}`}>
-      <header className="topbar">
-        <h1>Alcidion patient flow</h1>
-        <div className="who">
-          {me.name} · {me.roles.join(', ') || 'read-only'} · session <code>{sessionId.slice(0, 8)}</code>{' '}
-          <button className="btn ghost sm" type="button" data-track="sign-out" onClick={logout}>Sign out</button>
-        </div>
-      </header>
-      <nav className="app-navigation" data-region="navigation" aria-label="Application navigation">
-        <button data-track="navigate-hospital" aria-current={page === 'hospital' ? 'page' : undefined} onClick={() => setPage('hospital')}>▥ Hospital overview</button>
-        <button data-track="navigate-patients" aria-current={page === 'patients' ? 'page' : undefined} onClick={() => setPage('patients')}>Patients & admissions</button>
-      </nav>
-      {page === 'hospital' ? <Hospital key={me.name} /> : <>
-        <ErrorAlert error={error} />
-        <div className="grid">
-          <Patients patients={patients} canWrite={write} onChanged={refresh} onViewHospital={() => setPage('hospital')} />
-          <Admissions admissions={admissions} patients={patients} canWrite={write} onChanged={refresh} onViewHospital={() => setPage('hospital')} />
-        </div>
-      </>}
-    </div>
+    <Layout me={me} currentPage={page} onNavigate={setPage} onLogout={logout}>
+      <div className={page === 'hospital' ? 'app-hospital' : ''}>
+        {page === 'hospital' ? <Hospital key={me.name} /> : <>
+          <ErrorAlert error={error} />
+          <div className="grid">
+            <Patients patients={patients} canWrite={write} onChanged={refresh} />
+            <Admissions admissions={admissions} patients={patients} wards={wards} canWrite={write} onChanged={refresh} />
+          </div>
+        </>}
+      </div>
+    </Layout>
   )
 }

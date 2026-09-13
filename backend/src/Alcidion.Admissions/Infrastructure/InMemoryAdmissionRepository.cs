@@ -22,20 +22,25 @@ public sealed class InMemoryAdmissionRepository : IAdmissionRepository
     public Task<IReadOnlyList<Admission>> ListAsync(CancellationToken ct = default) =>
         Task.FromResult<IReadOnlyList<Admission>>(_store.Values.OrderBy(a => a.AdmittedAt).ThenBy(a => a.Id).ToList());
 
-    public Task<Admission?> TryAddActiveAsync(Admission admission, CancellationToken ct = default)
+    /// <summary>
+    /// There are no beds to allocate here, so the only outcome this store can refuse is a patient
+    /// who is already admitted. A ward is whatever text the caller asked for.
+    /// </summary>
+    public Task<AdmitResult> TryAddActiveAsync(Admission admission, CancellationToken ct = default)
     {
         var holder = _activeByPatient.GetOrAdd(admission.PatientId, admission);
-        if (!ReferenceEquals(holder, admission)) return Task.FromResult<Admission?>(holder);
+        if (!ReferenceEquals(holder, admission)) return Task.FromResult<AdmitResult>(new AdmitResult.AlreadyActive(holder));
 
         _store[admission.Id] = admission;
-        return Task.FromResult<Admission?>(null);
+        return Task.FromResult<AdmitResult>(new AdmitResult.Admitted(admission));
     }
 
-    public Task UpdateAsync(Admission admission, CancellationToken ct = default)
+    public Task<bool> UpdateAsync(Admission admission, CancellationToken ct = default)
     {
         _store[admission.Id] = admission;
         if (admission.Status == AdmissionStatus.Discharged)
             _activeByPatient.TryRemove(new KeyValuePair<Guid, Admission>(admission.PatientId, admission));
-        return Task.CompletedTask;
+        // The aggregate's lock already rejected the losing discharge before this was reached.
+        return Task.FromResult(true);
     }
 }

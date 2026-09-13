@@ -1,4 +1,4 @@
-namespace Alcidion.Patients.Domain;
+﻿namespace Alcidion.Patients.Domain;
 
 /// <summary>Aggregate root for the Patients bounded context.</summary>
 public sealed class Patient
@@ -31,6 +31,14 @@ public sealed class Patient
 
         return new Patient(Guid.NewGuid(), NormalizeMrn(mrn), givenName.Trim(), familyName.Trim(), dateOfBirth, now);
     }
+
+    /// <summary>
+    /// Rebuilds a patient from storage. Invariants are not re-run: a stored row was validated by
+    /// <see cref="Register"/> on the way in, and re-validating would make a clock change or a rule
+    /// change reject history that is already on file.
+    /// </summary>
+    public static Patient Rehydrate(Guid id, string mrn, string givenName, string familyName, DateOnly dateOfBirth, DateTimeOffset registeredAt) =>
+        new(id, mrn, givenName, familyName, dateOfBirth, registeredAt);
 
     public string FullName => $"{GivenName} {FamilyName}";
 }

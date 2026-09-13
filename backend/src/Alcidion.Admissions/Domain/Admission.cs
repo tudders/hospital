@@ -28,6 +28,13 @@ public sealed class Admission
     }
 
     /// <summary>
+    /// Rebuilds an admission from storage. Invariants are not re-run: a stored row was validated by
+    /// <see cref="Admit"/> on the way in, and the discharge time is history rather than a transition.
+    /// </summary>
+    public static Admission Rehydrate(Guid id, Guid patientId, string ward, DateTimeOffset admittedAt, DateTimeOffset? dischargedAt) =>
+        new(id, patientId, ward, admittedAt) { DischargedAt = dischargedAt };
+
+    /// <summary>
     /// Discharging twice is a conflict, not a no-op. The check and the write are taken under one
     /// lock so two concurrent discharges cannot both succeed and publish a duplicate event.
     /// </summary>

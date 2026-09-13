@@ -2,25 +2,25 @@ import { useState, type FormEvent } from 'react'
 import { api, fieldErrors } from '../lib/api'
 import type { AdmitPatientRequest } from '../lib/contracts'
 import { track } from '../lib/telemetry'
-import type { Admission, Patient } from '../lib/types'
+import type { Admission, Patient, Ward } from '../lib/types'
 import { ErrorAlert } from './ErrorAlert'
 
 type Props = {
   admissions: Admission[]
   patients: Patient[]
+  wards: Ward[]
   canWrite: boolean
   onChanged: () => void
-  onViewHospital?: () => void
 }
-
-const WARDS = ['ED', 'ICU', 'Ward 3B', 'Maternity', 'Paediatrics']
 
 /** The inputs below carry their own messages, so ErrorAlert must not repeat them. */
 const FORM_FIELDS = ['patientId', 'ward']
 
-export function Admissions({ admissions, patients, canWrite, onChanged, onViewHospital }: Props) {
+export function Admissions({ admissions, patients, wards, canWrite, onChanged }: Props) {
   const [patientId, setPatientId] = useState('')
-  const [ward, setWard] = useState(WARDS[0])
+  // The ward is sent as its code: a name is what a person reads, a code is what identifies the
+  // ward, and the two can differ between hospitals.
+  const [ward, setWard] = useState('')
   const [error, setError] = useState<unknown>(null)
   const [busy, setBusy] = useState(false)
 
@@ -63,7 +63,6 @@ export function Admissions({ admissions, patients, canWrite, onChanged, onViewHo
 
   return (
     <section className="card stack" data-region="admissions">
-      {onViewHospital && <button className="btn ghost sm" data-track="admissions-view-hospital" onClick={onViewHospital}>View hospital occupancy</button>}
       <h2>
         Admissions <span className="badge muted">{admissions.filter((a) => a.status === 'Admitted').length} active</span>
       </h2>
@@ -82,12 +81,19 @@ export function Admissions({ admissions, patients, canWrite, onChanged, onViewHo
           </label>
           <label>
             Ward
-            <select name="ward" aria-invalid={invalid.ward ? true : undefined} value={ward} onChange={(e) => setWard(e.target.value)}>
-              {WARDS.map((w) => <option key={w}>{w}</option>)}
+            <select required name="ward" aria-invalid={invalid.ward ? true : undefined} value={ward} onChange={(e) => setWard(e.target.value)}>
+              <option value="">Select…</option>
+              {wards.map((w) => (
+                // A full ward stays visible but unselectable, so the form shows where there is no
+                // room rather than hiding it and leaving the choice unexplained.
+                <option key={w.id} value={w.code} disabled={w.freeBeds === 0}>
+                  {w.name} {w.freeBeds === 0 ? '(full)' : `(${w.freeBeds} free)`}
+                </option>
+              ))}
             </select>
             {messageFor('ward')}
           </label>
-          <button className="btn" type="submit" data-track="admit" disabled={busy || !patientId}>Admit</button>
+          <button className="btn" type="submit" data-track="admit" disabled={busy || !patientId || !ward}>Admit</button>
         </form>
       )}
       <ErrorAlert error={error} handled={FORM_FIELDS} />

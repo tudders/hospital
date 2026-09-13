@@ -55,6 +55,20 @@ p { margin: 0 0 var(--space-3); }
 code { font-family: var(--mono); font-size: 0.85em; }
 
 .app { max-width: 1100px; margin: 0 auto; padding: var(--space-6) var(--space-4); }
+
+/* Layout structure */
+.app-layout { display: flex; flex-direction: column; height: 100vh; }
+.header { display: flex; align-items: center; justify-content: space-between; gap: var(--space-4); padding: var(--space-4) var(--space-6); border-bottom: 1px solid var(--border); background: var(--surface); }
+.header h1 { margin: 0; }
+.header .who { color: var(--muted); font-size: 0.9rem; }
+.app-container { display: flex; flex: 1; overflow: hidden; }
+.sidenav { display: flex; flex-direction: column; gap: var(--space-2); width: 240px; padding: var(--space-4); background: var(--surface); border-right: 1px solid var(--border); overflow-y: auto; }
+.sidenav button { border: 0; background: transparent; padding: var(--space-3) var(--space-4); font: inherit; color: var(--muted); cursor: pointer; border-radius: var(--radius); text-align: left; }
+.sidenav button:hover { background: var(--bg); }
+.sidenav button.active { background: var(--primary); color: #fff; font-weight: 500; }
+.main { flex: 1; overflow-y: auto; padding: var(--space-6) var(--space-4); }
+
+/* Legacy topbar for non-layout pages */
 .topbar { display: flex; align-items: center; justify-content: space-between; gap: var(--space-4); margin-bottom: var(--space-6); }
 .topbar .who { color: var(--muted); font-size: 0.9rem; }
 .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); gap: var(--space-4); }
@@ -192,3 +206,13 @@ button:focus-visible { outline: 3px solid var(--primary); outline-offset: 3px; }
 @media (max-width: 1000px) { .hospital-stat { padding: var(--space-4); }.hospital-stat strong { flex-direction: column; gap: 0; }.hospital-heading { align-items: start; flex-direction: column; }.hospital-workspace { grid-template-columns: minmax(0, 1fr) 290px; }.hospital-inspection, .hospital-explorer { padding: var(--space-4); } }
 @media (max-width: 760px) { .hospital-workspace { grid-template-columns: 1fr; }.hospital-sidebar { display: grid; grid-template-columns: 1fr 1fr; align-items: start; }.hospital-stats { grid-template-columns: repeat(2, 1fr); gap: var(--space-2); }.hospital-scene-header, .hospital-scene-footer { padding: var(--space-4); }.hospital-floor-tabs { padding: 0 var(--space-4); }.topbar { align-items: start; flex-direction: column; }.hospital-time-form { flex-wrap: wrap; }.hospital-toolbar { align-items: center; }.hospital-source { width: 100%; }.hospital-freshness { white-space: normal; } }
 @media (max-width: 480px) { .hospital-sidebar { grid-template-columns: 1fr; }.app-navigation { gap: var(--space-4); font-size: .85rem; }.hospital-legend { flex-wrap: wrap; }.hospital-model { min-height: 340px; }.hospital-scene-controls { margin: 0 var(--space-3) var(--space-4); }.hospital-view-tag { display: none; } }
+
+/* Responsive layout */
+@media (max-width: 768px) {
+  .app-layout { height: auto; }
+  .app-container { flex-direction: column; }
+  .sidenav { width: 100%; flex-direction: row; border-right: none; border-bottom: 1px solid var(--border); padding: var(--space-3); gap: 0; }
+  .sidenav button { flex: 1; padding: var(--space-2) var(--space-3); font-size: 0.9rem; }
+  .header { flex-direction: column; align-items: start; }
+  .header .who { width: 100%; }
+}
