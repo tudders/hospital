@@ -51,6 +51,8 @@ DECLARE @fullRun uniqueidentifier = '87000000-0000-0000-0000-000000000001';
 
 -- Physical hierarchy --------------------------------------------------------
 
+IF OBJECT_ID(N'dbo.hospitals', N'U') IS NULL
+BEGIN
 CREATE TABLE dbo.hospitals (
     id          uniqueidentifier NOT NULL,
     code        nvarchar(100) NOT NULL,
@@ -59,7 +61,10 @@ CREATE TABLE dbo.hospitals (
     CONSTRAINT uq_hospitals_code UNIQUE (code),
     CONSTRAINT ck_hospitals_text CHECK (LTRIM(RTRIM(code)) <> N'' AND LTRIM(RTRIM(name)) <> N'')
 );
+END;
 
+IF OBJECT_ID(N'dbo.floors', N'U') IS NULL
+BEGIN
 CREATE TABLE dbo.floors (
     id           uniqueidentifier NOT NULL,
     hospital_id  uniqueidentifier NOT NULL,
@@ -73,10 +78,15 @@ CREATE TABLE dbo.floors (
     CONSTRAINT ck_floors_number CHECK (floor_number > 0),
     CONSTRAINT ck_floors_text CHECK (LTRIM(RTRIM(code)) <> N'' AND LTRIM(RTRIM(name)) <> N'')
 );
+END;
 
-ALTER TABLE dbo.wards ADD floor_id uniqueidentifier NULL;
-ALTER TABLE dbo.wards ADD CONSTRAINT fk_wards_floor FOREIGN KEY (floor_id) REFERENCES dbo.floors (id);
+IF COL_LENGTH(N'dbo.wards', N'floor_id') IS NULL
+    ALTER TABLE dbo.wards ADD floor_id uniqueidentifier NULL;
+IF NOT EXISTS (SELECT 1 FROM sys.foreign_keys WHERE name = N'fk_wards_floor')
+    ALTER TABLE dbo.wards ADD CONSTRAINT fk_wards_floor FOREIGN KEY (floor_id) REFERENCES dbo.floors (id);
 
+IF OBJECT_ID(N'dbo.rooms', N'U') IS NULL
+BEGIN
 CREATE TABLE dbo.rooms (
     id           uniqueidentifier NOT NULL,
     floor_id     uniqueidentifier NOT NULL,
@@ -92,20 +102,29 @@ CREATE TABLE dbo.rooms (
     CONSTRAINT ck_rooms_number CHECK (room_number BETWEEN 1 AND 6),
     CONSTRAINT ck_rooms_text CHECK (LTRIM(RTRIM(code)) <> N'' AND LTRIM(RTRIM(name)) <> N'')
 );
+END;
 
-ALTER TABLE dbo.beds ADD room_id uniqueidentifier NULL;
-ALTER TABLE dbo.beds ADD bed_number int NULL;
+IF COL_LENGTH(N'dbo.beds', N'room_id') IS NULL
+    ALTER TABLE dbo.beds ADD room_id uniqueidentifier NULL;
+IF COL_LENGTH(N'dbo.beds', N'bed_number') IS NULL
+    ALTER TABLE dbo.beds ADD bed_number int NULL;
 
 GO
 
-ALTER TABLE dbo.beds ADD CONSTRAINT fk_beds_room FOREIGN KEY (room_id) REFERENCES dbo.rooms (id);
+IF NOT EXISTS (SELECT 1 FROM sys.foreign_keys WHERE name = N'fk_beds_room')
+    ALTER TABLE dbo.beds ADD CONSTRAINT fk_beds_room FOREIGN KEY (room_id) REFERENCES dbo.rooms (id);
 
-CREATE INDEX ix_wards_floor ON dbo.wards (floor_id);
-CREATE INDEX ix_rooms_ward ON dbo.rooms (ward_id, room_number);
-CREATE UNIQUE INDEX ux_beds_room_number ON dbo.beds (room_id, bed_number) WHERE room_id IS NOT NULL AND bed_number IS NOT NULL;
+IF NOT EXISTS (SELECT 1 FROM sys.indexes WHERE object_id = OBJECT_ID(N'dbo.wards') AND name = N'ix_wards_floor')
+    CREATE INDEX ix_wards_floor ON dbo.wards (floor_id);
+IF NOT EXISTS (SELECT 1 FROM sys.indexes WHERE object_id = OBJECT_ID(N'dbo.rooms') AND name = N'ix_rooms_ward')
+    CREATE INDEX ix_rooms_ward ON dbo.rooms (ward_id, room_number);
+IF NOT EXISTS (SELECT 1 FROM sys.indexes WHERE object_id = OBJECT_ID(N'dbo.beds') AND name = N'ux_beds_room_number')
+    CREATE UNIQUE INDEX ux_beds_room_number ON dbo.beds (room_id, bed_number) WHERE room_id IS NOT NULL AND bed_number IS NOT NULL;
 
 -- Staffing and patient-level care allocation -------------------------------
 
+IF OBJECT_ID(N'dbo.staff_members', N'U') IS NULL
+BEGIN
 CREATE TABLE dbo.staff_members (
     id                 uniqueidentifier NOT NULL,
     hospital_id        uniqueidentifier NOT NULL,
@@ -125,7 +144,10 @@ CREATE TABLE dbo.staff_members (
         AND LTRIM(RTRIM(role)) <> N''
     )
 );
+END;
 
+IF OBJECT_ID(N'dbo.staff_ward_assignments', N'U') IS NULL
+BEGIN
 CREATE TABLE dbo.staff_ward_assignments (
     id          uniqueidentifier NOT NULL,
     staff_id    uniqueidentifier NOT NULL,
@@ -139,7 +161,10 @@ CREATE TABLE dbo.staff_ward_assignments (
     CONSTRAINT ck_staff_ward_assignments_time CHECK (ends_at > starts_at),
     CONSTRAINT ck_staff_ward_assignments_shift CHECK (LTRIM(RTRIM(shift_code)) <> N'')
 );
+END;
 
+IF OBJECT_ID(N'dbo.patient_care_assignments', N'U') IS NULL
+BEGIN
 CREATE TABLE dbo.patient_care_assignments (
     id               uniqueidentifier NOT NULL,
     admission_id     uniqueidentifier NOT NULL,
@@ -153,9 +178,12 @@ CREATE TABLE dbo.patient_care_assignments (
     CONSTRAINT ck_patient_care_assignments_time CHECK (ends_at IS NULL OR ends_at > starts_at),
     CONSTRAINT ck_patient_care_assignments_role CHECK (LTRIM(RTRIM(assignment_role)) <> N'')
 );
+END;
 
-CREATE INDEX ix_staff_ward_assignments_ward_time ON dbo.staff_ward_assignments (ward_id, starts_at, ends_at);
-CREATE INDEX ix_patient_care_assignments_admission ON dbo.patient_care_assignments (admission_id, starts_at);
+IF NOT EXISTS (SELECT 1 FROM sys.indexes WHERE object_id = OBJECT_ID(N'dbo.staff_ward_assignments') AND name = N'ix_staff_ward_assignments_ward_time')
+    CREATE INDEX ix_staff_ward_assignments_ward_time ON dbo.staff_ward_assignments (ward_id, starts_at, ends_at);
+IF NOT EXISTS (SELECT 1 FROM sys.indexes WHERE object_id = OBJECT_ID(N'dbo.patient_care_assignments') AND name = N'ix_patient_care_assignments_admission')
+    CREATE INDEX ix_patient_care_assignments_admission ON dbo.patient_care_assignments (admission_id, starts_at);
 
 GO
 
@@ -464,7 +492,10 @@ WHERE NOT EXISTS (SELECT 1 FROM dbo.bed_stays WHERE id = '71100000-0000-0000-000
     SELECT patient_number, ROW_NUMBER() OVER (ORDER BY patient_number) AS row_number FROM ActivePatients
 ), BedRows AS (
     SELECT b.id AS bed_id, b.ward_id, b.bed_type, ROW_NUMBER() OVER (ORDER BY b.code) AS row_number
-    FROM dbo.beds b WHERE b.id <> @bedIcu01
+    FROM dbo.beds b
+    JOIN dbo.rooms r ON r.id = b.room_id
+    WHERE b.id <> @bedIcu01
+      AND ((r.room_number - 1) * 6) + b.bed_number <= 24
 )
 INSERT INTO dbo.bed_requests (id, admission_id, target_ward_id, required_bed_type, requested_at, priority, fulfilled_at)
 SELECT CONVERT(uniqueidentifier, CONCAT('70100000-0000-0000-0000-', RIGHT('000000000000' + CONVERT(varchar(12), p.patient_number), 12))),
@@ -485,7 +516,10 @@ OPTION (MAXRECURSION 1000);
     SELECT patient_number, ROW_NUMBER() OVER (ORDER BY patient_number) AS row_number FROM ActivePatients
 ), BedRows AS (
     SELECT b.id AS bed_id, ROW_NUMBER() OVER (ORDER BY b.code) AS row_number
-    FROM dbo.beds b WHERE b.id <> @bedIcu01
+    FROM dbo.beds b
+    JOIN dbo.rooms r ON r.id = b.room_id
+    WHERE b.id <> @bedIcu01
+      AND ((r.room_number - 1) * 6) + b.bed_number <= 24
 )
 INSERT INTO dbo.bed_stays (id, admission_id, bed_id, started_at, expected_end_at)
 SELECT CONVERT(uniqueidentifier, CONCAT('71100000-0000-0000-0000-', RIGHT('000000000000' + CONVERT(varchar(12), p.patient_number), 12))),

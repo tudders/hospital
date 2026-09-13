@@ -1,5 +1,6 @@
 using Alcidion.Admissions;
 using Alcidion.Api.Auth;
+using Alcidion.Api.Contracts;
 using Alcidion.Api.Observability;
 using Alcidion.Patients;
 using Alcidion.Shared;
@@ -10,6 +11,7 @@ using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
 
 var builder = WebApplication.CreateBuilder(args);
+builder.Services.AddScoped<Alcidion.Api.Hospital.HospitalOccupancyReader>();
 
 // --- Domains (each bounded context registers its own services) ---
 builder.Services
@@ -18,8 +20,10 @@ builder.Services
     .AddAdmissionsDomain();
 
 // --- Web ---
-builder.Services.AddControllers();
-builder.Services.AddOpenApi();
+// Schema-generated request types bind and validate through their own formatter; everything else
+// keeps falling through to System.Text.Json. See docs/adr/0001-schema-first-request-validation.md.
+builder.Services.AddControllers(o => o.InputFormatters.Insert(0, new JsonSchemaInputFormatter()));
+builder.Services.AddOpenApi(o => o.AddSchemaTransformer<JsonSchemaOpenApiTransformer>());
 builder.Services.AddProblemDetails();
 builder.Services.AddCors(o => o.AddDefaultPolicy(p => p
     .WithOrigins(builder.Configuration.GetSection("Cors:Origins").Get<string[]>() ?? ["http://localhost:5173"])

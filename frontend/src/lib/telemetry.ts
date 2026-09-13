@@ -12,15 +12,17 @@
  * Capture lives in session-recorder.ts. This module only buffers and ships.
  */
 
-export type ClientEvent = {
-  name: string
-  sessionId: string
-  seq: number
-  at: string
-  /** Milliseconds since the session started, for replaying the timeline at its original pace. */
-  t: number
-  props?: Record<string, unknown>
-}
+// The event shape is the backend's JSON Schema, generated into contracts.ts - not restated here.
+import type { ClientEvent } from './contracts.ts'
+
+export type { ClientEvent }
+
+/**
+ * What this client actually queues. The contract makes the timeline fields optional, because the
+ * API accepts a batch from an older tab that has none; `track` always sets them, and the recorder
+ * relies on that, so the queue is typed for what it holds rather than for what the wire allows.
+ */
+export type RecordedEvent = ClientEvent & Required<Pick<ClientEvent, 'seq' | 't'>>
 
 const SESSION_KEY = 'alcidion.sessionId'
 const SEQ_KEY = 'alcidion.seq'
@@ -58,7 +60,7 @@ export function newCorrelationId(): string {
   return crypto.randomUUID().replace(/-/g, '')
 }
 
-let queue: ClientEvent[] = []
+let queue: RecordedEvent[] = []
 let endpoint = ''
 let timer: number | undefined
 let dropped = 0
@@ -121,6 +123,6 @@ export function flush(useBeacon = false) {
 }
 
 /** Test seam: the queued events, without shipping them. */
-export function pendingEvents(): readonly ClientEvent[] {
+export function pendingEvents(): readonly RecordedEvent[] {
   return queue
 }

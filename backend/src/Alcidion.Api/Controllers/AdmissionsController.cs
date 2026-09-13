@@ -24,6 +24,7 @@ public sealed class AdmissionsController(AdmissionService admissions) : ApiContr
     [Authorize(Policy = Policies.Clinician)]
     [Audited("patient.admit")]
     [ProducesResponseType(StatusCodes.Status201Created)]
+    [ProducesResponseType<ValidationProblemDetails>(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status409Conflict)]
     public async Task<ActionResult<AdmissionDto>> Admit([FromBody] AdmitPatientCommand cmd, CancellationToken ct)

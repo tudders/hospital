@@ -9,6 +9,12 @@ export type ProblemDetails = {
   title: string
   detail?: string
   correlationId: string
+  /**
+   * Per-field validation messages, keyed by the field name as it was sent - `mrn`, `props.viewport`,
+   * `[1].name`. Present on a 400 the API validated at the edge; absent on every other failure, and
+   * on a 400 that came from a domain rule with no field to blame.
+   */
+  errors?: Record<string, string[]>
 }
 
 export class ApiError extends Error {
@@ -23,6 +29,8 @@ export async function api<T>(path: string, init: RequestInit = {}): Promise<T> {
   const correlationId = newCorrelationId()
   const started = performance.now()
   const headers = new Headers(init.headers)
+  // Keep snapshot times and future clinical query values out of session telemetry.
+  const telemetryPath = path.split('?')[0]
   headers.set('X-Correlation-Id', correlationId)
   headers.set('Accept', 'application/json')
   if (init.body) headers.set('Content-Type', 'application/json')
@@ -33,12 +41,13 @@ export async function api<T>(path: string, init: RequestInit = {}): Promise<T> {
   try {
     res = await fetch(`${API_BASE}${path}`, { ...init, headers })
   } catch (err) {
-    track('api.network_error', { path, correlationId, message: String(err) })
+    if (init.signal?.aborted) throw err
+    track('api.network_error', { path: telemetryPath, correlationId })
     throw new ApiError({ status: 0, title: 'Network error', detail: 'Could not reach the API.', correlationId })
   }
 
   track('api.request', {
-    path,
+    path: telemetryPath,
     method: init.method ?? 'GET',
     status: res.status,
     durationMs: Math.round(performance.now() - started),
@@ -60,5 +69,14 @@ export async function api<T>(path: string, init: RequestInit = {}): Promise<T> {
     title: problem.title ?? res.statusText,
     detail: problem.detail,
     correlationId,
+    errors: problem.errors,
   })
+}
+
+/**
+ * The per-field messages on a failure, or an empty object if it carried none. Lets a form ask
+ * `fieldErrors(err).mrn` without first proving the failure was a validation one.
+ */
+export function fieldErrors(error: unknown): Record<string, string[]> {
+  return error instanceof ApiError ? (error.problem.errors ?? {}) : {}
 }

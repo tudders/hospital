@@ -9,11 +9,12 @@ type Props = {
   patients: Patient[]
   canWrite: boolean
   onChanged: () => void
+  onViewHospital?: () => void
 }
 
 const WARDS = ['ED', 'ICU', 'Ward 3B', 'Maternity', 'Paediatrics']
 
-export function Admissions({ admissions, patients, canWrite, onChanged }: Props) {
+export function Admissions({ admissions, patients, canWrite, onChanged, onViewHospital }: Props) {
   const [patientId, setPatientId] = useState('')
   const [ward, setWard] = useState(WARDS[0])
   const [error, setError] = useState<unknown>(null)
@@ -51,6 +52,7 @@ export function Admissions({ admissions, patients, canWrite, onChanged }: Props)
 
   return (
     <section className="card stack" data-region="admissions">
+      {onViewHospital && <button className="btn ghost sm" data-track="admissions-view-hospital" onClick={onViewHospital}>View hospital occupancy</button>}
       <h2>
         Admissions <span className="badge muted">{admissions.filter((a) => a.status === 'Admitted').length} active</span>
       </h2>

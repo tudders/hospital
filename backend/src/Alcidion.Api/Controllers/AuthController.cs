@@ -14,6 +14,9 @@ public sealed class AuthController(DevTokenIssuer issuer) : ApiController
     /// <summary>Demo users: nurse/nurse, doctor/doctor (clinician), admin/admin (admin), viewer/viewer (no role).</summary>
     [HttpPost("login")]
     [AllowAnonymous]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType<ValidationProblemDetails>(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     public ActionResult<LoginResponse> Login([FromBody] LoginRequest request) =>
         issuer.Issue(request.Username, request.Password) is { } token
             ? Ok(new LoginResponse(token))

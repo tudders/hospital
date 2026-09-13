@@ -5,11 +5,13 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "tsc -b && vite build && npm run size",
+    "build": "npm run contracts:check && tsc -b && vite build && npm run size",
     "lint": "oxlint",
     "preview": "vite preview",
     "test": "node --test src/lib/*.test.ts",
-    "size": "node scripts/check-bundle-size.mjs"
+    "size": "node scripts/check-bundle-size.mjs",
+    "contracts": "node scripts/schemas-to-ts.mjs",
+    "contracts:check": "node scripts/schemas-to-ts.mjs --check"
   },
   "dependencies": {
     "react": "^19.2.8",

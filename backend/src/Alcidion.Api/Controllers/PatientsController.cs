@@ -1,4 +1,5 @@
 using Alcidion.Api.Auth;
+using Alcidion.Api.Contracts;
 using Alcidion.Api.Observability;
 using Alcidion.Patients.Application;
 using Alcidion.Patients.Domain;
@@ -29,11 +30,11 @@ public sealed class PatientsController(PatientService patients) : ApiController
     [Authorize(Policy = Policies.Clinician)]
     [Audited("patient.register")]
     [ProducesResponseType(StatusCodes.Status201Created)]
-    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType<ValidationProblemDetails>(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status409Conflict)]
-    public async Task<ActionResult<PatientDto>> Register([FromBody] RegisterPatientCommand cmd, CancellationToken ct)
+    public async Task<ActionResult<PatientDto>> Register([FromBody] RegisterPatientRequest body, CancellationToken ct)
     {
-        var result = await patients.RegisterAsync(cmd, ct);
+        var result = await patients.RegisterAsync(body.ToCommand(), ct);
         if (result.IsSuccess) Telemetry.PatientsRegistered.Add(1);
         return result.Match<ActionResult>(
             p => CreatedAtAction(nameof(Get), new { id = p.Id }, PatientDto.From(p)),

@@ -1,0 +1,52 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://alcidion.health/schemas/client-event-batch.json",
+  "title": "ClientEventBatch",
+  "description": "Body of POST /api/telemetry/events: one flush of the browser's event buffer, oldest first.",
+  "type": "array",
+  "minItems": 1,
+  "maxItems": 500,
+  "items": {
+    "title": "ClientEvent",
+    "description": "One recorded frontend event.",
+    "type": "object",
+    "required": ["name", "sessionId", "at"],
+    "properties": {
+      "name": {
+        "description": "Event name, e.g. 'session.start' or 'ui.click'. It becomes a metric dimension, so its shape is bounded.",
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 64,
+        "pattern": "^[a-z][a-z0-9]*([._-][a-z0-9]+)*$"
+      },
+      "sessionId": {
+        "description": "One id per browser tab. A crypto.randomUUID() today, but not required to be one - tabs carry ids issued before that was true.",
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 64,
+        "pattern": "\\S"
+      },
+      "at": {
+        "description": "Wall-clock time the event was recorded, from the browser's clock.",
+        "type": "string",
+        "format": "date-time"
+      },
+      "seq": {
+        "description": "Monotonic per session. Orders the session regardless of the order batches arrive in.",
+        "type": "integer",
+        "minimum": 0,
+        "default": 0
+      },
+      "t": {
+        "description": "Milliseconds since session start, so a session can be replayed at the pace the user experienced.",
+        "type": "integer",
+        "minimum": 0,
+        "default": 0
+      },
+      "props": {
+        "description": "Event payload. Deliberately open: capture in session-recorder.ts adds fields per event type, and telemetry must never 400 a client that knows about one this version does not.",
+        "type": "object"
+      }
+    }
+  }
+}

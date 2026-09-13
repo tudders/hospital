@@ -1,0 +1,46 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net9.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <!-- Corvus 5.x emits C# 14 ('simple lambda parameter modifiers'), which the .NET 9 SDK only
+         compiles under 'preview'. Checked against 5.1.19, 5.2.13, 5.3.2, 5.4.3 and 5.5.5 - every
+         one of them. Install the .NET 10 SDK and this becomes LangVersion 14, which is supported.
+
+         This project exists to keep that setting off Alcidion.Api: generated code needs preview,
+         hand-written API code must not silently acquire unsupported language features. -->
+    <LangVersion>preview</LangVersion>
+    <!-- "format" is an annotation by default in JSON Schema. The wire contract means it to be a
+         constraint, so the generator asserts it: without this, "dateOfBirth": "not-a-date" passes. -->
+    <CorvusTextJsonAlwaysAssertFormat>true</CorvusTextJsonAlwaysAssertFormat>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!-- The request contracts. The source generator reads these; the frontend's types are generated
+         from the same documents. Schema paths in [JsonSchemaTypeGenerator] resolve relative to the
+         .cs file carrying the attribute, not the project, so the documents sit alongside it. -->
+    <AdditionalFiles Include="Schemas\*.json" />
+    <!-- ...and embedded under their bare file name so the published OpenAPI document can
+         serve the same bytes the types were generated from. -->
+    <EmbeddedResource Include="Schemas\*.json" LogicalName="%(Filename)%(Extension)" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- The input formatter is MVC and the schema transformer is OpenAPI: this project sits at the
+         web edge by design, and is the single project the frontend's codegen points at. -->
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+    <PackageReference Include="Corvus.Text.Json" Version="5.5.5" />
+    <PackageReference Include="Corvus.Text.Json.SourceGenerator" Version="5.5.5">
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="9.0.7" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- ToCommand() hands each request to the domain as a plain record. -->
+    <ProjectReference Include="..\Alcidion.Patients\Alcidion.Patients.csproj" />
+  </ItemGroup>
+
+</Project>

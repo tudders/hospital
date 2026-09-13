@@ -1,0 +1,35 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://alcidion.health/schemas/register-patient-request.json",
+  "title": "RegisterPatientRequest",
+  "description": "Body of POST /api/patients. Shape, length and format only - meaning stays with the Patient aggregate.",
+  "type": "object",
+  "required": ["mrn", "givenName", "familyName", "dateOfBirth"],
+  "properties": {
+    "mrn": {
+      "description": "Medical Record Number, unique per facility. Surrounding whitespace is tolerated deliberately: the aggregate trims and upper-cases, so a padded MRN must reach it and come back 409 rather than 400. The pattern and maxLength agree at 64 characters on purpose - a frontend generated from this document sets maxlength=64 on the input, and a shorter pattern would 400 a value the input let the user type.",
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 64,
+      "pattern": "^\\s*[A-Za-z0-9][A-Za-z0-9._-]{0,63}\\s*$"
+    },
+    "givenName": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 100,
+      "pattern": "\\S"
+    },
+    "familyName": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 100,
+      "pattern": "\\S"
+    },
+    "dateOfBirth": {
+      "description": "The pattern carries the 1875 floor, which JSON Schema cannot express as a date comparison. There is deliberately no upper bound here: 'not in the future' is compared against the injected clock in Patient.Register, and a static schema would bake in a build-time date.",
+      "type": "string",
+      "format": "date",
+      "pattern": "^(18(7[5-9]|[89][0-9])|19[0-9]{2}|[2-9][0-9]{3})-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])$"
+    }
+  }
+}
