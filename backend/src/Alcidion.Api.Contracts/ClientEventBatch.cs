@@ -10,8 +10,8 @@ namespace Alcidion.Api.Contracts;
 /// arrive in.</param>
 /// <param name="T">Milliseconds from session start, so a session can be replayed at the pace the
 /// user experienced.</param>
-/// <param name="Props">The event payload, as the JSON the caller sent. It is open by contract, so
-/// there is nothing to deserialise it into - it is carried through to the log line verbatim.</param>
+/// <param name="Props">The bounded, flat event payload as JSON. Unknown field names are accepted;
+/// callers remain responsible for excluding patient data from the values they send.</param>
 public sealed record ClientEvent(string Name, string SessionId, DateTimeOffset At, long Seq, long T, string? Props);
 
 /// <summary>

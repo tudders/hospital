@@ -37,6 +37,27 @@ public class ContractDocumentTests(ApiFixture api) : IClassFixture<ApiFixture>
             .GetProperty("requestBody").GetProperty("content").GetProperty("application/json").GetProperty("schema");
 
     [Fact]
+    public async Task Telemetry_publishes_its_limits_and_accepted_response()
+    {
+        var document = await Document();
+        var properties = RequestBody(document, "/api/telemetry/events").GetProperty("items"u8).GetProperty("properties"u8);
+        Assert.Equal(long.MaxValue, properties.GetProperty("seq"u8).GetProperty("maximum"u8).GetInt64());
+        Assert.Equal(long.MaxValue, properties.GetProperty("t"u8).GetProperty("maximum"u8).GetInt64());
+        var props = properties.GetProperty("props"u8);
+        Assert.Equal(32, props.GetProperty("maxProperties"u8).GetInt32());
+        var value = props.GetProperty("additionalProperties"u8);
+        Assert.Equal(1024, value.GetProperty("maxLength"u8).GetInt32());
+        Assert.All(value.GetProperty("anyOf"u8).EnumerateArray(), s => Assert.True(s.GetProperty("nullable"u8).GetBoolean()));
+        Assert.Equal(["boolean", "number", "string"], value.GetProperty("anyOf"u8).EnumerateArray()
+            .Select(s => s.GetProperty("type"u8).GetString()).Order(StringComparer.Ordinal));
+        var response = document.GetProperty("paths"u8).GetProperty("/api/telemetry/events"u8).GetProperty("post"u8)
+            .GetProperty("responses"u8).GetProperty("202"u8).GetProperty("content"u8).GetProperty("application/json"u8).GetProperty("schema"u8);
+        var fields = Resolve(document, response).GetProperty("properties"u8);
+        Assert.Equal("integer", fields.GetProperty("received"u8).GetProperty("type"u8).GetString());
+        Assert.Equal("string", fields.GetProperty("correlationId"u8).GetProperty("type"u8).GetString());
+    }
+
+    [Fact]
     public async Task The_published_contract_carries_the_constraints_the_schema_states()
     {
         var schema = await RegisterPatientSchema();

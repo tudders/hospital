@@ -6,7 +6,6 @@ namespace Alcidion.Api.Controllers;
 
 [Authorize]
 [Route("api/hospital-occupancy")]
-[ResponseCache(NoStore = true, Location = ResponseCacheLocation.None)]
 public sealed class HospitalOccupancyController(IHospitalOccupancyReader reader) : ApiController
 {
     [HttpGet]

@@ -51,6 +51,15 @@ public sealed class JsonSchemaOpenApiTransformer : IOpenApiSchemaTransformer
         {
             switch (keyword.Name)
             {
+                case "type" when keyword.Value.ValueKind is JsonValueKind.Array:
+                    // OpenAPI 3.0 allows null only when nullable sits beside an explicit type.
+                    var nullable = keyword.Value.EnumerateArray().Any(t => t.GetString() == "null");
+                    foreach (var type in keyword.Value.EnumerateArray())
+                    {
+                        if (type.GetString() != "null")
+                            schema.AnyOf.Add(new OpenApiSchema { Type = type.GetString(), Nullable = nullable });
+                    }
+                    break;
                 case "type": schema.Type = keyword.Value.GetString(); break;
                 case "format": schema.Format = keyword.Value.GetString(); break;
                 case "pattern": schema.Pattern = keyword.Value.GetString(); break;
@@ -93,6 +102,10 @@ public sealed class JsonSchemaOpenApiTransformer : IOpenApiSchemaTransformer
 
                 case "additionalProperties" when keyword.Value.ValueKind is JsonValueKind.False:
                     schema.AdditionalPropertiesAllowed = false;
+                    break;
+                case "additionalProperties" when keyword.Value.ValueKind is JsonValueKind.Object:
+                    schema.AdditionalProperties = new OpenApiSchema();
+                    Apply(keyword.Value, schema.AdditionalProperties);
                     break;
             }
         }

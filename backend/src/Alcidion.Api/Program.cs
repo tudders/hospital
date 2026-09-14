@@ -32,6 +32,7 @@ builder.Services
 builder.Services.AddControllers(o => o.InputFormatters.Insert(0, new JsonSchemaInputFormatter()));
 builder.Services.AddOpenApi(o => o.AddSchemaTransformer<JsonSchemaOpenApiTransformer>());
 builder.Services.AddProblemDetails();
+builder.Services.AddSingleton<TelemetryIngestFilter>();
 builder.Services.AddCors(o => o.AddDefaultPolicy(p => p
     .WithOrigins(builder.Configuration.GetSection("Cors:Origins").Get<string[]>() ?? ["http://localhost:5173"])
     .AllowAnyHeader()

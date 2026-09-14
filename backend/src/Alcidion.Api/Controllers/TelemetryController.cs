@@ -10,8 +10,12 @@ namespace Alcidion.Api.Controllers;
 public sealed class TelemetryController(ILogger<TelemetryController> logger) : ApiController
 {
     [HttpPost("events")]
-    [ProducesResponseType(StatusCodes.Status202Accepted)]
+    [RequestSizeLimit(TelemetryIngestFilter.MaxRequestBytes)]
+    [ServiceFilter<TelemetryIngestFilter>]
+    [ProducesResponseType<TelemetryAcceptedResponse>(StatusCodes.Status202Accepted)]
     [ProducesResponseType<ValidationProblemDetails>(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status413PayloadTooLarge)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status429TooManyRequests)]
     public IActionResult Ingest([FromBody] ClientEventBatch body)
     {
         // No null-guard: a hole in the array fails the batch's item schema at the edge, which is
@@ -25,6 +29,6 @@ public sealed class TelemetryController(ILogger<TelemetryController> logger) : A
                 e.Name, e.SessionId, e.Seq, e.T, e.At, e.Props);
         }
 
-        return Accepted(new { received = events.Count, correlationId = HttpContext.CorrelationId() });
+        return Accepted(new TelemetryAcceptedResponse(events.Count, HttpContext.CorrelationId()));
     }
 }

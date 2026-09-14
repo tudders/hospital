@@ -5,6 +5,7 @@ namespace Alcidion.Api.Controllers;
 
 /// <summary>Base controller: one place to map domain <see cref="Error"/>s onto HTTP problem details.</summary>
 [ApiController]
+[ResponseCache(NoStore = true, Location = ResponseCacheLocation.None)]
 public abstract class ApiController : ControllerBase
 {
     protected ActionResult FromError(Error error) => error.Code switch

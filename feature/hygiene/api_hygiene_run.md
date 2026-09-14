@@ -82,7 +82,7 @@ If the action sub-resources are kept instead — defensible, Stripe and GitHub b
 **Test first.** `tests/Alcidion.Sql.Tests/AdmissionRepositoryTests.cs` has no transfer/discharge
 interleaving case. Write it before touching the repository.
 
-### 2. Cache directives are inverted
+### 2. Cache directives are inverted — **DONE**
 
 **Files:** `backend/src/Alcidion.Api/Controllers/HospitalOccupancyController.cs:9`,
 `backend/src/Alcidion.Api/Controllers/ApiController.cs`
@@ -327,6 +327,28 @@ symptom the whole item exists to prevent.
   subschema."]`. Vague, but it is a schema-level failure with no single field to blame, and the
   frontend's union type makes the body unwriteable there. Left as is.
 
+## Item 2 — shared cache directives — DONE
+
+Moved `[ResponseCache(NoStore = true, Location = ResponseCacheLocation.None)]` to
+`ApiController` and removed the occupancy controller's duplicate. Derived controllers now inherit
+`Cache-Control: no-store,no-cache`, including patient details and `/api/auth/me`.
+
+Added six HTTP regression cases in `tests/Alcidion.Api.Tests/CacheControlTests.cs`: patient and
+admission lists/details, wards, and identity. All six failed first because the cache header was
+absent, then passed after the move. The existing occupancy no-store assertion also remains green.
+
+Verification:
+
+- Baseline: **152 passed / 0 failed** (28 domain, 90 API, 34 SQL).
+- After: **158 passed / 0 failed** (28 domain, 96 API, 34 SQL), no skipped tests.
+- Used Release builds because the running Debug API held its DLLs open; Release built with zero
+  errors and the existing 73 CTJ001 warnings.
+- Ran the updated SQL-backed API separately on :5026. All seven authenticated GET routes returned
+  200 with `Cache-Control: no-store,no-cache`, including successful patient/admission detail and
+  hospital occupancy responses.
+- Browser smoke check against the updated API: sign-in, hospital overview, and patient flow loaded
+  without console errors. Browser requests were routed to :5026 for this check.
+
 ## Next
 
-Item 2 (cache directives) is unstarted.
+Item 3 (telemetry ingest) is unstarted.

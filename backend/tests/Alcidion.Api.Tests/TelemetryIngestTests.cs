@@ -7,6 +7,97 @@ namespace Alcidion.Api.Tests;
 
 public class TelemetryIngestTests(ApiFixture api) : IClassFixture<ApiFixture>
 {
+    [Theory]
+    [InlineData("seq")]
+    [InlineData("t")]
+    public async Task A_timeline_number_above_Int64_is_a_field_error(string field)
+    {
+        var res = await Post($$"""[{"name":"ui.click","sessionId":"overflow","at":"2026-01-01T00:00:00Z","{{field}}":9223372036854775808}]""");
+        Assert.Equal(HttpStatusCode.BadRequest, res.StatusCode);
+        Assert.Contains($"[0].{field}", (await FieldErrors(res)).Keys);
+    }
+
+    [Fact]
+    public async Task Int64_maximum_keeps_its_exact_timeline_value()
+    {
+        var session = Guid.NewGuid().ToString();
+        var res = await Post($$"""[{"name":"ui.click","sessionId":"{{session}}","at":"2026-01-01T00:00:00Z","seq":9223372036854775807,"t":9223372036854775807}]""");
+        Assert.Equal(HttpStatusCode.Accepted, res.StatusCode);
+        Assert.Contains(api.Logs.Snapshot(), l => l.Message.Contains(session) &&
+            l.Message.Contains("seq=9223372036854775807 t=9223372036854775807ms"));
+    }
+
+    [Theory]
+    [InlineData("long-string")]
+    [InlineData("many-properties")]
+    [InlineData("nested-object")]
+    [InlineData("array")]
+    public async Task Unbounded_payload_shapes_are_rejected_before_logging(string shape)
+    {
+        var session = Guid.NewGuid().ToString();
+        object props = shape switch
+        {
+            "long-string" => new { target = new string('x', 1025) },
+            "many-properties" => Enumerable.Range(0, 33).ToDictionary(i => $"p{i}", i => i),
+            "nested-object" => new { target = new { text = "nested" } },
+            _ => new { target = new[] { "nested" } },
+        };
+        var res = await api.CreateClient().PostAsJsonAsync("/api/telemetry/events", new[]
+        {
+            new { name = "ui.click", sessionId = session, at = DateTimeOffset.UtcNow, props },
+        });
+        Assert.Equal(HttpStatusCode.BadRequest, res.StatusCode);
+        Assert.Contains((await FieldErrors(res)).Keys, key => key.StartsWith("[0].props"));
+        Assert.DoesNotContain(api.Logs.Snapshot(), l => l.Message.Contains("CLIENT ") && l.Message.Contains(session));
+    }
+
+    [Fact]
+    public async Task Properties_at_the_limits_and_all_scalar_types_are_accepted()
+    {
+        var props = Enumerable.Range(0, 28).ToDictionary(i => $"p{i}", i => (object?)i);
+        props["text"] = new string('x', 1024);
+        props["fraction"] = 1.5;
+        props["flag"] = true;
+        props["empty"] = null;
+        var res = await api.CreateClient().PostAsJsonAsync("/api/telemetry/events", new[]
+        {
+            new { name = "ui.click", sessionId = Guid.NewGuid().ToString(), at = DateTimeOffset.UtcNow, props },
+        });
+        Assert.Equal(HttpStatusCode.Accepted, res.StatusCode);
+    }
+
+    [Fact]
+    public async Task An_oversized_request_is_413_before_any_event_is_logged()
+    {
+        var session = Guid.NewGuid().ToString();
+        var body = $$"""[{"name":"ui.click","sessionId":"{{session}}","at":"2026-01-01T00:00:00Z"}]""" + new string(' ', 65536);
+        var res = await Post(body);
+        Assert.Equal(HttpStatusCode.RequestEntityTooLarge, res.StatusCode);
+        Assert.DoesNotContain(api.Logs.Snapshot(), l => l.Message.Contains("CLIENT ") && l.Message.Contains(session));
+    }
+
+    [Fact]
+    public async Task Concurrent_batches_share_a_session_limit_but_other_sessions_can_continue()
+    {
+        var session = Guid.NewGuid().ToString();
+        var body = $$"""[{"name":"ui.click","sessionId":"{{session}}","at":"2026-01-01T00:00:00Z"}]""";
+        var responses = await Task.WhenAll(Enumerable.Range(0, 31).Select(_ => Post(body)));
+        Assert.Equal(30, responses.Count(r => r.StatusCode == HttpStatusCode.Accepted));
+        var rejected = Assert.Single(responses, r => r.StatusCode == HttpStatusCode.TooManyRequests);
+        Assert.True(rejected.Headers.RetryAfter?.Delta > TimeSpan.Zero);
+        Assert.Equal(30, api.Logs.Snapshot().Count(l => l.Message.Contains("CLIENT ") && l.Message.Contains(session)));
+        var other = await Post(body.Replace(session, Guid.NewGuid().ToString()));
+        Assert.Equal(HttpStatusCode.Accepted, other.StatusCode);
+    }
+
+    [Fact]
+    public async Task A_batch_cannot_charge_one_session_for_another_sessions_events()
+    {
+        var res = await Post("""[{"name":"ui.click","sessionId":"one","at":"2026-01-01T00:00:00Z"},{"name":"ui.click","sessionId":"two","at":"2026-01-01T00:00:00Z"}]""");
+        Assert.Equal(HttpStatusCode.BadRequest, res.StatusCode);
+        Assert.Contains("[1].sessionId", (await FieldErrors(res)).Keys);
+    }
+
     private async Task<HttpResponseMessage> Post(string body) =>
         await api.CreateClient().PostAsync("/api/telemetry/events",
             new StringContent(body, Encoding.UTF8, "application/json"));

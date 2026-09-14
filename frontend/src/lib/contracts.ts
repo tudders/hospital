@@ -71,18 +71,20 @@ export type ClientEvent = {
   at: string
   /**
    * Monotonic per session. Orders the session regardless of the order batches arrive in.
-   * minimum: 0
+   * minimum: 0, maximum: 9223372036854776000
    */
   seq?: number
   /**
    * Milliseconds since session start, so a session can be replayed at the pace the user
    * experienced.
-   * minimum: 0
+   * minimum: 0, maximum: 9223372036854776000
    */
   t?: number
   /**
-   * Event payload. Deliberately open: capture in session-recorder.ts adds fields per event type,
-   * and telemetry must never 400 a client that knows about one this version does not.
+   * Event payload with at most 32 fields. Unknown names are accepted, but values must be flat
+   * scalars and strings are limited to 1024 characters. Callers must not send patient data; size
+   * limits are not redaction.
+   * maxProperties: 32
    */
   props?: Record<string, unknown>
 }
