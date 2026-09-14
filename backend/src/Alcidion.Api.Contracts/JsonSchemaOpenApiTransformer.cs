@@ -60,9 +60,18 @@ public sealed class JsonSchemaOpenApiTransformer : IOpenApiSchemaTransformer
                 case "maxLength": schema.MaxLength = keyword.Value.GetInt32(); break;
                 case "minItems": schema.MinItems = keyword.Value.GetInt32(); break;
                 case "maxItems": schema.MaxItems = keyword.Value.GetInt32(); break;
+                case "minProperties": schema.MinProperties = keyword.Value.GetInt32(); break;
+                case "maxProperties": schema.MaxProperties = keyword.Value.GetInt32(); break;
                 case "minimum": schema.Minimum = keyword.Value.GetDecimal(); break;
                 case "maximum": schema.Maximum = keyword.Value.GetDecimal(); break;
                 case "default": schema.Default = Any(keyword.Value); break;
+
+                case "enum":
+                    foreach (var value in keyword.Value.EnumerateArray())
+                    {
+                        if (Any(value) is { } member) schema.Enum.Add(member);
+                    }
+                    break;
 
                 case "required":
                     foreach (var name in keyword.Value.EnumerateArray()) schema.Required.Add(name.GetString()!);

@@ -27,8 +27,26 @@ public sealed class AuditedAttribute(string action) : Attribute, IAsyncActionFil
         var executed = await next();
         sw.Stop();
 
+        // An action that serves more than one clinical operation says which one it turned out to
+        // be, so the audit trail still distinguishes a discharge from a transfer.
+        var action = context.HttpContext.Items[RefinedAction] as string ?? Action;
+        span?.SetTag("audit.action", action);
+
         var status = executed.Exception is null ? (executed.Result as Microsoft.AspNetCore.Mvc.Infrastructure.IStatusCodeActionResult)?.StatusCode ?? 200 : 500;
         logger.LogInformation("AUDIT {Action} by {User} -> {StatusCode} in {ElapsedMs}ms [corr {CorrelationId}]",
-            Action, user, status, sw.ElapsedMilliseconds, context.HttpContext.CorrelationId());
+            action, user, status, sw.ElapsedMilliseconds, context.HttpContext.CorrelationId());
     }
+
+    internal const string RefinedAction = "audit.action";
+}
+
+public static class AuditRefinement
+{
+    /// <summary>
+    /// Names the operation this request actually performed, for actions that cover more than one.
+    /// The audited name is what the trail is read by, so a single endpoint carrying two clinical
+    /// transitions has to be able to say which of them it was.
+    /// </summary>
+    public static void RefineAudit(this HttpContext context, string action) =>
+        context.Items[AuditedAttribute.RefinedAction] = action;
 }

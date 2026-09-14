@@ -8,6 +8,13 @@ public sealed record Error(string Code, string Message)
     public static Error NotFound(string what, object id) => new("not_found", $"{what} '{id}' was not found.");
     public static Error Validation(string message) => new("validation", message);
     public static Error Conflict(string message) => new("conflict", message);
+
+    /// <summary>
+    /// The caller named the version it expected and the stored one has moved past it. Distinct from
+    /// a conflict: nothing about the request is wrong, it was simply decided against a state that no
+    /// longer holds, and re-reading is the whole of the fix.
+    /// </summary>
+    public static Error PreconditionFailed(string message) => new("precondition_failed", message);
 }
 
 public readonly record struct Result<T>

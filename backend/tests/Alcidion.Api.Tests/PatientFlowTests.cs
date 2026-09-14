@@ -27,7 +27,7 @@ public class PatientFlowTests(ApiFixture api) : IClassFixture<ApiFixture>
         var dup = await client.PostAsJsonAsync("/api/admissions", new { patientId = patient.Id, ward = "ICU" });
         Assert.Equal(HttpStatusCode.Conflict, dup.StatusCode);
 
-        var dis = await client.PostAsync($"/api/admissions/{admission.Id}/discharge", null);
+        var dis = await client.ChangeAdmissionAsync(admission.Id, new { status = "discharged" }, adm.Version());
         Assert.Equal(HttpStatusCode.OK, dis.StatusCode);
         Assert.Equal("Discharged", (await dis.Content.ReadFromJsonAsync<Admission>())!.Status);
     }

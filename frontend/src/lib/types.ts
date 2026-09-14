@@ -14,6 +14,12 @@ export type Admission = {
   status: 'Admitted' | 'Discharged'
   admittedAt: string
   dischargedAt: string | null
+  /**
+   * The version this copy was read at, and what a change to it is taken against - see
+   * `changeAdmission`. It is on the list rows as well, so a board can act on one without fetching
+   * it again first.
+   */
+  version: number
 }
 
 /**

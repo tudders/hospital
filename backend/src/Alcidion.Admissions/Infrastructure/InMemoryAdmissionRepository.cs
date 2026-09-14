@@ -22,12 +22,18 @@ public sealed class InMemoryAdmissionRepository : IAdmissionRepository
     public Task<IReadOnlyList<Admission>> ListAsync(CancellationToken ct = default) =>
         Task.FromResult<IReadOnlyList<Admission>>(_store.Values.OrderBy(a => a.AdmittedAt).ThenBy(a => a.Id).ToList());
 
-    public Task<TransferResult> TransferAsync(Guid admissionId, string ward, DateTimeOffset now, CancellationToken ct = default)
+    public Task<TransferResult> TransferAsync(Guid admissionId, string ward, DateTimeOffset now, long? expectedVersion = null, CancellationToken ct = default)
     {
         if (!_store.TryGetValue(admissionId, out var admission) || admission.Status == AdmissionStatus.Discharged)
             return Task.FromResult<TransferResult>(new TransferResult.NotFound());
+        // The version stands in for the SQL implementation's conditional update: a caller holding a
+        // version this admission has already moved past is a replay, and replaying a transfer here
+        // would be as wrong as it is against the real store.
+        if (expectedVersion is { } expected && admission.Version != expected)
+            return Task.FromResult<TransferResult>(new TransferResult.VersionMismatch(admission.Version));
         try { admission.Transfer(ward); }
         catch (InvalidOperationException) { return Task.FromResult<TransferResult>(new TransferResult.NotFound()); }
+        admission.Committed();
         return Task.FromResult<TransferResult>(new TransferResult.Transferred(admission));
     }
 
@@ -46,10 +52,16 @@ public sealed class InMemoryAdmissionRepository : IAdmissionRepository
 
     public Task<bool> UpdateAsync(Admission admission, CancellationToken ct = default)
     {
+        // Same check as the SQL store's, on the only state there is: a write taken under a version
+        // the stored admission has moved past lost, whatever this instance was told to do.
+        if (_store.TryGetValue(admission.Id, out var stored) && stored.Version != admission.Version)
+            return Task.FromResult(false);
+
         _store[admission.Id] = admission;
         if (admission.Status == AdmissionStatus.Discharged)
             _activeByPatient.TryRemove(new KeyValuePair<Guid, Admission>(admission.PatientId, admission));
         // The aggregate's lock already rejected the losing discharge before this was reached.
+        admission.Committed();
         return Task.FromResult(true);
     }
 }

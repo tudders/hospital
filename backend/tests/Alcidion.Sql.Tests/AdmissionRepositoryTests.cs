@@ -231,6 +231,33 @@ public sealed class AdmissionRepositoryTests(SqlServerFixture sql)
             ("@id", admitted.Id)));
     }
 
+    /// <summary>
+    /// One transfer arriving twice - a retried request, a replaying proxy - is one move. Without the
+    /// version it was taken at, the replay closed the stay the first one had just opened, claimed a
+    /// second bed and wrote a second request, all behind a 200. The destination has two free beds
+    /// here on purpose: what stops the second claim has to be the check, not the ward being full.
+    /// </summary>
+    [SqlFact]
+    public async Task A_replayed_transfer_claims_one_bed_not_two()
+    {
+        var from = await _seed.WardAsync(beds: 1);
+        var to = await _seed.WardAsync(beds: 2);
+        var admitted = await AdmitAsync(await _seed.PatientAsync(), from.Code, Now);
+        var taken = admitted.Version;
+
+        var first = await Repository().TransferAsync(admitted.Id, to.Code, Now.AddHours(1), taken);
+        var replay = await Repository().TransferAsync(admitted.Id, to.Code, Now.AddHours(1), taken);
+
+        Assert.Equal(to.Name, Assert.IsType<TransferResult.Transferred>(first).Admission.Ward);
+        Assert.Equal(1L, Assert.IsType<TransferResult.VersionMismatch>(replay).CurrentVersion);
+
+        Assert.Equal(1, await sql.ScalarAsync<int>(
+            "SELECT COUNT(*) FROM dbo.bed_stays WHERE admission_id = @id AND ended_at IS NULL",
+            ("@id", admitted.Id)));
+        Assert.Equal(2, await sql.ScalarAsync<int>(   // the admit's request and this one
+            "SELECT COUNT(*) FROM dbo.bed_requests WHERE admission_id = @id", ("@id", admitted.Id)));
+    }
+
     // --- Discharging -------------------------------------------------------
 
     [SqlFact]
@@ -301,6 +328,35 @@ public sealed class AdmissionRepositoryTests(SqlServerFixture sql)
 
         Assert.Equal(0L, await sql.ScalarAsync<long>(
             "SELECT concurrency_version FROM dbo.admissions WHERE id = @id", ("@id", admitted.Id)));
+    }
+
+    /// <summary>
+    /// The race the discharge used to lose. A transfer commits between reading the admission and
+    /// writing the discharge, so the stay the discharge means to close is no longer the stay that
+    /// is open: closing the admission anyway strands an occupied bed nothing can allocate again.
+    /// The write has to fail on the version it was taken under instead.
+    /// </summary>
+    [SqlFact]
+    public async Task A_discharge_overtaken_by_a_transfer_loses_rather_than_stranding_the_bed()
+    {
+        var from = await _seed.WardAsync(beds: 1);
+        var to = await _seed.WardAsync(beds: 1);
+        var admitted = await AdmitAsync(await _seed.PatientAsync(), from.Code, Now);
+
+        // Read it as the discharge path does, decide the discharge time, then let a transfer
+        // commit underneath: the new stay starts after that time, so the old predicate misses it.
+        var asRead = (await Repository().GetByIdAsync(admitted.Id))!;
+        asRead.Discharge(Now.AddHours(1));
+        Assert.IsType<TransferResult.Transferred>(
+            await Repository().TransferAsync(admitted.Id, to.Code, Now.AddHours(2)));
+
+        Assert.False(await Repository().UpdateAsync(asRead));
+
+        Assert.Null(await sql.ScalarAsync<DateTimeOffset?>(
+            "SELECT discharged_at FROM dbo.admissions WHERE id = @id", ("@id", admitted.Id)));
+        Assert.Equal(1, await sql.ScalarAsync<int>(
+            "SELECT COUNT(*) FROM dbo.bed_stays WHERE admission_id = @id AND ended_at IS NULL",
+            ("@id", admitted.Id)));
     }
 
     // --- Reading -----------------------------------------------------------

@@ -24,6 +24,29 @@ export type AdmitPatientRequest = {
 }
 
 /**
+ * Body of PATCH /api/admissions/{id}. Names the one thing about the admission that should change:
+ * a destination ward moves the patient, a status of "discharged" ends the episode. Exactly one of
+ * the two, so a body can only ever describe a single transition. The version the change is taken
+ * against travels in If-Match, not here - it is a precondition on the request, not part of what is
+ * being asked for.
+ * minProperties: 1, maxProperties: 1
+ * Generated from change-admission-request.json.
+ */
+export type ChangeAdmissionRequest = {
+  /**
+   * Destination ward name, code or type, free text. Leading and trailing whitespace is accepted
+   * and trimmed. Whether the destination has a free bed stays with the Admissions aggregate.
+   * minLength: 1, maxLength: 200, pattern: \S
+   */
+  ward?: string
+  /**
+   * The status to move the admission to. Only "discharged" is a transition a caller can ask for:
+   * an admission becomes "Admitted" by being created, not by being patched.
+   */
+  status?: "discharged"
+}
+
+/**
  * One recorded frontend event.
  * Open: the API ignores properties not listed here rather than refusing them.
  * Element of ClientEventBatch.

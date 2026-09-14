@@ -37,21 +37,24 @@ public sealed class EfAdmissionRepository(AdmissionsDbContext db, ILogger<EfAdmi
     public async Task<IReadOnlyList<Admission>> ListAsync(CancellationToken ct = default) =>
         await ToDomainAsync(Open().Where(a => a.AdmittedAt != null).OrderByDescending(a => a.AdmittedAt), ct);
 
-    public async Task<TransferResult> TransferAsync(Guid admissionId, string wardText, DateTimeOffset now, CancellationToken ct = default)
+    public async Task<TransferResult> TransferAsync(Guid admissionId, string wardText, DateTimeOffset now, long? expectedVersion = null, CancellationToken ct = default)
     {
         var ward = await ResolveWardAsync(wardText, ct);
         if (ward is null) return new TransferResult.UnknownWard(wardText);
 
         await using var transaction = await db.Database.BeginTransactionAsync(ct);
         // Bumping the version is how this transaction takes the admission: a concurrent transfer or
-        // discharge blocks here rather than interleaving with the stay rewrite below.
+        // discharge loses its own version check rather than interleaving with the stay rewrite
+        // below. Matching the caller's version as well is what makes a replay safe - the second
+        // copy of one request carries a version the first has already moved past.
         var locked = await db.Admissions
-            .Where(a => a.Id == admissionId && a.AdmittedAt != null && a.DischargedAt == null && a.CancelledAt == null)
+            .Where(a => a.Id == admissionId && a.AdmittedAt != null && a.DischargedAt == null && a.CancelledAt == null
+                && (expectedVersion == null || a.ConcurrencyVersion == expectedVersion))
             .ExecuteUpdateAsync(u => u.SetProperty(a => a.ConcurrencyVersion, a => a.ConcurrencyVersion + 1), ct);
         if (locked == 0)
         {
             await transaction.RollbackAsync(ct);
-            return new TransferResult.NotFound();
+            return await WhyNotTakenAsync(admissionId, expectedVersion, ct);
         }
 
         // The old stay closes before the new one opens. trg_bed_stays_no_overlap rejects two stays
@@ -93,6 +96,24 @@ public sealed class EfAdmissionRepository(AdmissionsDbContext db, ILogger<EfAdmi
             ?? throw new InvalidOperationException($"Admission {admissionId} disappeared after transfer."));
     }
 
+    /// <summary>
+    /// Why the admission would not be taken: gone or already closed, or open at a version this
+    /// caller did not decide against. Read after the rollback, so it describes the row as it stands.
+    /// </summary>
+    private async Task<TransferResult> WhyNotTakenAsync(Guid admissionId, long? expectedVersion, CancellationToken ct)
+    {
+        if (expectedVersion is not { } expected) return new TransferResult.NotFound();
+
+        var current = await db.Admissions.AsNoTracking()
+            .Where(a => a.Id == admissionId && a.AdmittedAt != null && a.DischargedAt == null && a.CancelledAt == null)
+            .Select(a => (long?)a.ConcurrencyVersion)
+            .FirstOrDefaultAsync(ct);
+
+        return current is { } version && version != expected
+            ? new TransferResult.VersionMismatch(version)
+            : new TransferResult.NotFound();
+    }
+
     /// <summary>Cancelled episodes never became an admission, so nothing outside this class sees them.</summary>
     private IQueryable<AdmissionRow> Open() => db.Admissions.AsNoTracking().Where(a => a.CancelledAt == null);
 
@@ -105,6 +126,7 @@ public sealed class EfAdmissionRepository(AdmissionsDbContext db, ILogger<EfAdmi
             a.RequestedAt,
             a.AdmittedAt,
             a.DischargedAt,
+            a.ConcurrencyVersion,
             // The open stay if there is one, otherwise the most recent closed stay: a discharged
             // admission should still say which ward the patient left.
             StayWard = (from s in db.BedStays
@@ -124,7 +146,8 @@ public sealed class EfAdmissionRepository(AdmissionsDbContext db, ILogger<EfAdmi
             r.Id, r.PatientId,
             r.StayWard ?? r.RequestedWard ?? AwaitingBed,
             r.AdmittedAt ?? r.RequestedAt,
-            r.DischargedAt)).ToList();
+            r.DischargedAt,
+            r.ConcurrencyVersion)).ToList();
     }
 
     public async Task<AdmitResult> TryAddActiveAsync(Admission admission, CancellationToken ct = default)
@@ -192,11 +215,13 @@ public sealed class EfAdmissionRepository(AdmissionsDbContext db, ILogger<EfAdmi
 
         await using var transaction = await db.Database.BeginTransactionAsync(ct);
 
-        // The predicate is the concurrency check: a second discharge matches no rows, and
-        // ExecuteUpdate reports how many it changed, so losing the race is a 0 rather than a silent
-        // overwrite. No row is read first, so there is no window between deciding and writing.
+        // The predicate is the concurrency check, and the version is the half that matters: still
+        // being open is not enough, because a transfer commits leaving the admission open and moves
+        // the patient to a stay that starts after this discharge's timestamp. Matching the version
+        // this discharge was decided under makes that a 0 rather than a close over the wrong stay.
         var closed = await db.Admissions
-            .Where(a => a.Id == admission.Id && a.AdmittedAt != null && a.DischargedAt == null && a.CancelledAt == null)
+            .Where(a => a.Id == admission.Id && a.ConcurrencyVersion == admission.Version
+                && a.AdmittedAt != null && a.DischargedAt == null && a.CancelledAt == null)
             .ExecuteUpdateAsync(u => u
                 .SetProperty(a => a.DischargedAt, dischargedAt)
                 .SetProperty(a => a.ConcurrencyVersion, a => a.ConcurrencyVersion + 1), ct);
@@ -208,13 +233,24 @@ public sealed class EfAdmissionRepository(AdmissionsDbContext db, ILogger<EfAdmi
         }
 
         // Releasing the bed is part of discharging, not a follow-up someone might forget: the bed
-        // has to be allocatable again the moment the admission is closed.
-        await db.BedStays
+        // has to be allocatable again the moment the admission is closed. Releasing nothing means
+        // the open stay is not the one this discharge was decided against, and closing the
+        // admission over it would strand an occupied bed - so the whole discharge goes back.
+        var released = await db.BedStays
             .Where(s => s.AdmissionId == admission.Id && s.EndedAt == null && s.StartedAt <= dischargedAt)
             .ExecuteUpdateAsync(u => u
                 .SetProperty(s => s.EndedAt, dischargedAt)
                 .SetProperty(s => s.EndReason, "discharge")
                 .SetProperty(s => s.ConcurrencyVersion, s => s.ConcurrencyVersion + 1), ct);
+
+        if (released == 0)
+        {
+            await transaction.RollbackAsync(ct);
+            logger.LogWarning(
+                "Discharge of admission {AdmissionId} rolled back: no open bed stay starts at or before {DischargedAt}",
+                admission.Id, dischargedAt);
+            return false;
+        }
 
         await db.BedRequests
             .Where(r => r.AdmissionId == admission.Id && r.FulfilledAt == null && r.CancelledAt == null)
@@ -223,6 +259,7 @@ public sealed class EfAdmissionRepository(AdmissionsDbContext db, ILogger<EfAdmi
                 .SetProperty(r => r.ConcurrencyVersion, r => r.ConcurrencyVersion + 1), ct);
 
         await transaction.CommitAsync(ct);
+        admission.Committed();
         return true;
     }
 

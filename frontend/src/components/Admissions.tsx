@@ -1,4 +1,5 @@
 import { useState, type FormEvent } from 'react'
+import { dischargeAdmission } from '../lib/admissions'
 import { api, fieldErrors } from '../lib/api'
 import type { AdmitPatientRequest } from '../lib/contracts'
 import { track } from '../lib/telemetry'
@@ -57,8 +58,8 @@ export function Admissions({ admissions, patients, wards, canWrite, onChanged }:
     )
   }
 
-  function discharge(id: string) {
-    run('admission.discharged', () => api<Admission>(`/api/admissions/${id}/discharge`, { method: 'POST' }))
+  function discharge(admission: Admission) {
+    run('admission.discharged', () => dischargeAdmission(admission))
   }
 
   return (
@@ -114,7 +115,7 @@ export function Admissions({ admissions, patients, wards, canWrite, onChanged }:
                   <td><span className={`badge ${a.status === 'Admitted' ? 'ok' : 'muted'}`}>{a.status}</span></td>
                   <td>
                     {canWrite && a.status === 'Admitted' && (
-                      <button className="btn ghost sm" type="button" data-track="discharge" disabled={busy} onClick={() => discharge(a.id)}>
+                      <button className="btn ghost sm" type="button" data-track="discharge" disabled={busy} onClick={() => discharge(a)}>
                         Discharge
                       </button>
                     )}

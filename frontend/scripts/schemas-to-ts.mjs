@@ -21,7 +21,7 @@ const OUTPUT = resolve(here, '../src/lib/contracts.ts')
 
 /** Keywords that constrain a value without changing its TypeScript type. Emitted as a comment so
  *  the rule is visible where it is used, and so a stale comment shows up in the diff. */
-const CONSTRAINTS = ['minLength', 'maxLength', 'minItems', 'maxItems', 'minimum', 'maximum', 'pattern', 'format']
+const CONSTRAINTS = ['minLength', 'maxLength', 'minItems', 'maxItems', 'minProperties', 'maxProperties', 'minimum', 'maximum', 'pattern', 'format']
 
 function main() {
   const files = readdirSync(SCHEMA_DIR).filter((f) => f.endsWith('.json')).sort()
@@ -70,6 +70,11 @@ function declare(schema, name, out, provenance) {
  * than an inline shape, because a name is what the calling code wants to import.
  */
 function expression(schema, name, out, depth = 0) {
+  // An enum is the whole type. The union of the values it admits is tighter than the primitive
+  // type they happen to share, and it is what turns a wrong value into a compile error here
+  // rather than a 400 from the API.
+  if (Array.isArray(schema.enum)) return schema.enum.map((value) => JSON.stringify(value)).join(' | ')
+
   switch (schema.type) {
     case 'object':
       return schema.properties ? shape(schema, name, out, depth) : 'Record<string, unknown>'

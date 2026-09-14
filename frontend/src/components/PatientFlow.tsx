@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState, type FormEvent } from 'react'
+import { dischargeAdmission, isStale, transferAdmission } from '../lib/admissions'
 import { api } from '../lib/api'
 import type { RegisterPatientRequest } from '../lib/contracts'
 import { track } from '../lib/telemetry'
@@ -111,12 +112,15 @@ export function PatientFlow({ admissions, wards, canWrite, onChanged, onLocate }
     setBusy(true)
     setActionError(null)
     try {
-      await api<Admission>(`/api/admissions/${activeAdmission.id}/discharge`, { method: 'POST' })
+      await dischargeAdmission(activeAdmission)
       track('admission.discharged', { admissionId: activeAdmission.id })
       onChanged()
       setSelected(null)
     } catch (err) {
       setActionError(err)
+      // Refused because the admission moved on: pull the change in so the panel shows what it
+      // moved to, and a second press is decided against that rather than against what it was.
+      if (isStale(err)) onChanged()
     } finally {
       setBusy(false)
     }
@@ -128,15 +132,14 @@ export function PatientFlow({ admissions, wards, canWrite, onChanged, onLocate }
     setBusy(true)
     setActionError(null)
     try {
-      const moved = await api<Admission>(`/api/admissions/${activeAdmission.id}/transfer`, {
-        method: 'POST', body: JSON.stringify({ ward: destination }),
-      })
+      const moved = await transferAdmission(activeAdmission, destination)
       track('admission.transferred', { admissionId: moved.id, ward: moved.ward })
       onChanged()
       setTransferOpen(false)
       setSelected(null)
     } catch (err) {
       setActionError(err)
+      if (isStale(err)) onChanged()
     } finally {
       setBusy(false)
     }
