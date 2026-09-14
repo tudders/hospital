@@ -108,14 +108,16 @@ public class AdmitSchemaValidationTests(ApiFixture api) : IClassFixture<ApiFixtu
     }
 
     [Fact]
-    public async Task An_unknown_patient_is_still_the_services_404()
+    public async Task An_unknown_patient_is_a_422_naming_patient_id()
     {
-        // Whether the id names a real patient is a lookup, not a shape: the schema must not have
-        // quietly turned this into a 400.
+        // Whether the id names a real patient is a lookup, not a shape, so the schema must not have
+        // quietly turned this into a 400. Nor is it a 404: the collection this POST addresses is
+        // there, and 404 answering a POST reads as "no such endpoint".
         var res = await Post(new { patientId = Guid.NewGuid(), ward = "ICU" });
 
-        Assert.Equal(HttpStatusCode.NotFound, res.StatusCode);
+        Assert.Equal(HttpStatusCode.UnprocessableEntity, res.StatusCode);
         Assert.Equal("application/problem+json", res.Content.Headers.ContentType!.MediaType);
+        Assert.Contains("patientId", (await res.FieldErrors()).Keys);
     }
 
     [Fact]

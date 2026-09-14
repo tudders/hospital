@@ -19,6 +19,13 @@ internal sealed class PatientRow
     public string Gender { get; set; } = "unknown";
     public DateTimeOffset RegisteredAt { get; set; }
 
+    /// <summary>
+    /// <c>concurrency_version</c>, added by migration 004. What a correction is taken against, and
+    /// what the API publishes as the patient's ETag. A freshly inserted row is at 0, which is also
+    /// what a freshly registered aggregate reads as - so an insert never has to set it.
+    /// </summary>
+    public long ConcurrencyVersion { get; set; }
+
     public static PatientRow From(Patient p) => new()
     {
         Id = p.Id,
@@ -29,5 +36,5 @@ internal sealed class PatientRow
         RegisteredAt = p.RegisteredAt,
     };
 
-    public Patient ToDomain() => Patient.Rehydrate(Id, Mrn, GivenName, FamilyName, DateOfBirth, RegisteredAt);
+    public Patient ToDomain() => Patient.Rehydrate(Id, Mrn, GivenName, FamilyName, DateOfBirth, RegisteredAt, ConcurrencyVersion);
 }

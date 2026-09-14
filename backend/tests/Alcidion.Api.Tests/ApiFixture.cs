@@ -14,6 +14,11 @@ public sealed class ApiFixture : WebApplicationFactory<Program>
     protected override void ConfigureWebHost(Microsoft.AspNetCore.Hosting.IWebHostBuilder builder)
     {
         builder.UseEnvironment("Testing"); // no console trace exporter noise
+        // The signing key lives in appsettings.Development.json, which this environment does not
+        // load, so the tests bring their own rather than reaching for the development one.
+        // UseSetting, not ConfigureAppConfiguration: under minimal hosting the latter runs after
+        // Program has already read its configuration, so the value would arrive too late to sign with.
+        builder.UseSetting("Jwt:Secret", "tests-only-signing-key-0123456789-abcdefghij");
         builder.ConfigureLogging(l => l.AddProvider(Logs));
     }
 

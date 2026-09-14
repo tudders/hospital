@@ -1,6 +1,6 @@
 # AGENTS.md - Alcidion API
 
-ASP.NET Core 9 Web API, two bounded contexts talking through events. Deploy target is
+ASP.NET Core 10 Web API, two bounded contexts talking through events. Deploy target is
 SmarterASP.NET (Windows Server 2022 / IIS 10).
 
 Vendor-neutral instructions: any coding agent reads this file. Claude Code additionally loads
@@ -9,7 +9,7 @@ Vendor-neutral instructions: any coding agent reads this file. Claude Code addit
 ## Commands
 
 ```
-dotnet test                                                    # 39 tests, ~5s warm
+dotnet test                                                    # 231 tests, ~10s warm
 dotnet build
 dotnet run --project src/Alcidion.Api --launch-profile http     # http://localhost:5025
 dotnet format Alcidion.sln --include <file>                     # whitespace/style, ~9s
@@ -28,6 +28,7 @@ src/Alcidion.Admissions           Admission aggregate, IKnownPatients read model
 src/Alcidion.Api                  controllers, JWT auth, CorrelationIdMiddleware, OpenTelemetry, [Audited]
 tests/Alcidion.Domain.Tests       per-domain units, cross-domain event flow through real DI
 tests/Alcidion.Api.Tests          integration via WebApplicationFactory
+tests/Alcidion.Sql.Tests          repositories against a throwaway database built from database/*.sql
 ```
 
 ## Rules that are not negotiable
@@ -51,8 +52,21 @@ tests/Alcidion.Api.Tests          integration via WebApplicationFactory
    `[Audited("domain.action")]`, with both the allowed and forbidden role asserted in `AuthTests`.
 9. **Middleware order in `Program.cs` is load-bearing.** Adding middleware means justifying its
    position.
-10. **Never commit a real secret.** `Jwt:Secret` in `appsettings.json` is a dev key; production values
-    come from environment variables (`Jwt__Secret`, `Cors__Origins__0`).
+10. **Never commit a real secret.** `Jwt:Secret` lives in `appsettings.Development.json` and is a dev
+    key; production values come from environment variables (`Jwt__Secret`, `Cors__Origins__0`).
+11. **Development defaults stop at the environment boundary.** The dev signing key, the demo users
+    and the in-memory repositories are all reachable only from Development or Testing;
+    `Configuration/StartupGuards.cs` refuses to start anywhere else until each has been replaced.
+    Anything else that works by default in development belongs in that list.
+12. **A query string that can carry PHI is redacted where it is copied.** `GET /api/patients?search=`
+    puts a patient name in the URL, which lands on every span as `url.query`.
+    `Observability/QueryRedaction.cs` holds the parameter names whose values are replaced; any new
+    `[FromQuery]` parameter that can carry a name, an MRN or a date of birth goes in that list. See
+    `../docs/adr/0004-patient-search-stays-a-get.md`.
+13. **The database schema is the tracked SQL in `database/`.** A column the code needs is a new
+    numbered migration applied in order, never an EF migration and never a hand-run ALTER. The SQL
+    test fixture builds its throwaway database from exactly those files, so a migration that is not
+    tracked is a suite that passes against a schema nobody has.
 
 ## Verification before reporting done
 

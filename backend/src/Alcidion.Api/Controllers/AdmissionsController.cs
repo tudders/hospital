@@ -6,10 +6,10 @@ using Alcidion.Api.Observability;
 using Alcidion.Shared;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Net.Http.Headers;
 
 namespace Alcidion.Api.Controllers;
 
+/// <summary>An admission episode, its ward and the version required to change it.</summary>
 /// <param name="Version">
 /// What the admission's ETag is built from, and what a change to it has to be taken against. It is
 /// on the list representation as well as the single one so the client that drives this API - a
@@ -25,6 +25,9 @@ public sealed record AdmissionDto(Guid Id, Guid PatientId, string Ward, string S
 public sealed class AdmissionsController(AdmissionService admissions) : ApiController
 {
     [HttpGet]
+    [EndpointName("ListAdmissions")]
+    [EndpointSummary("List admissions")]
+    [EndpointDescription("Returns admission episodes with their current ward, status and concurrency version.")]
     public async Task<ActionResult<IReadOnlyList<AdmissionDto>>> List(CancellationToken ct) =>
         Ok((await admissions.ListAsync(ct)).Select(AdmissionDto.From).ToList());
 
@@ -33,6 +36,9 @@ public sealed class AdmissionsController(AdmissionService admissions) : ApiContr
     /// ETag a change has to quote comes from.
     /// </summary>
     [HttpGet("{id:guid}")]
+    [EndpointName("GetAdmission")]
+    [EndpointSummary("Get an admission")]
+    [EndpointDescription("Returns an admission and its ETag. Use that ETag in If-Match when changing the admission.")]
     [ProducesResponseType<AdmissionDto>(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<AdmissionDto>> Get(Guid id, CancellationToken ct)
@@ -44,12 +50,15 @@ public sealed class AdmissionsController(AdmissionService admissions) : ApiContr
     }
 
     [HttpPost]
+    [EndpointName("AdmitPatient")]
+    [EndpointSummary("Admit a patient")]
+    [EndpointDescription("Starts an admission for a registered patient. Requires a clinician or administrator; returns Location and ETag on success.")]
     [Authorize(Policy = Policies.Clinician)]
     [Audited("patient.admit")]
     [ProducesResponseType<AdmissionDto>(StatusCodes.Status201Created)]
     [ProducesResponseType<ValidationProblemDetails>(StatusCodes.Status400BadRequest)]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status409Conflict)]
+    [ProducesResponseType<ValidationProblemDetails>(StatusCodes.Status422UnprocessableEntity)]
     public async Task<ActionResult<AdmissionDto>> Admit([FromBody] AdmitPatientRequest body, CancellationToken ct)
     {
         var result = await admissions.AdmitAsync(body.ToCommand(), ct);
@@ -78,6 +87,9 @@ public sealed class AdmissionsController(AdmissionService admissions) : ApiContr
     /// </para>
     /// </remarks>
     [HttpPatch("{id:guid}")]
+    [EndpointName("ChangeAdmission")]
+    [EndpointSummary("Transfer or discharge a patient")]
+    [EndpointDescription("Transfers to a destination ward or discharges an admission. Requires a clinician or administrator and a strong If-Match ETag; stale versions return 412 and missing preconditions return 428.")]
     [Authorize(Policy = Policies.Clinician)]
     [Audited("patient.admission_change")]
     [ProducesResponseType<AdmissionDto>(StatusCodes.Status200OK)]
@@ -88,12 +100,7 @@ public sealed class AdmissionsController(AdmissionService admissions) : ApiContr
     [ProducesResponseType(StatusCodes.Status428PreconditionRequired)]
     public async Task<ActionResult<AdmissionDto>> Change(Guid id, [FromBody] ChangeAdmissionRequest body, CancellationToken ct)
     {
-        if (ExpectedVersion() is not { } expected)
-            return Problem(
-                statusCode: StatusCodes.Status428PreconditionRequired,
-                title: "Precondition required",
-                detail: "Send If-Match with the ETag of the admission you read. Without it a change "
-                      + "someone else made in between would be overwritten rather than refused.");
+        if (ExpectedVersion() is not { } expected) return PreconditionRequired("admission");
 
         var ward = body.ToWard();
         HttpContext.RefineAudit(ward is null ? "patient.discharge" : "patient.transfer");
@@ -105,26 +112,10 @@ public sealed class AdmissionsController(AdmissionService admissions) : ApiContr
         return result.Match<ActionResult>(a => Ok(Tagged(a)), FromError);
     }
 
-    /// <summary>
-    /// The version this request is conditional on, or <see langword="null"/> when the caller sent no
-    /// usable one. <c>If-Match: *</c> counts as none on purpose: it asserts only that the admission
-    /// exists, which is not the question a transfer or a discharge has to be right about.
-    /// </summary>
-    private long? ExpectedVersion() =>
-        EntityTagHeaderValue.TryParseList(Request.Headers.IfMatch, out var tags)
-        && tags is [{ IsWeak: false, Tag.Length: > 2 } only]
-        && long.TryParse(only.Tag.Value.AsSpan()[1..^1], out var version)
-            ? version
-            : null;
-
-    /// <summary>
-    /// Publishes the admission's version as its ETag, so the next change to it can be taken against
-    /// the state the caller actually saw. Weak would be wrong here: the tag has to compare equal
-    /// only to the exact version, which is what a strong comparison in <c>If-Match</c> means.
-    /// </summary>
+    /// <summary>The admission, with its version published as the response's ETag.</summary>
     private AdmissionDto Tagged(Admission admission)
     {
-        Response.Headers.ETag = $"\"{admission.Version}\"";
+        PublishVersion(admission.Version);
         return AdmissionDto.From(admission);
     }
 }

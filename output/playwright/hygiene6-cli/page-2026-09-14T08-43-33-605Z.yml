@@ -1,0 +1,128 @@
+- generic [ref=e11]:
+  - banner [ref=e12]:
+    - heading "Alcidion patient flow" [level=1] [ref=e13]
+    - generic [ref=e14]:
+      - text: nurse · clinician · session
+      - code [ref=e15]: 5c805cef
+      - button "Sign out" [ref=e16] [cursor=pointer]
+  - generic [ref=e17]:
+    - navigation "Application navigation" [ref=e18]:
+      - button "▥ Hospital overview" [ref=e19] [cursor=pointer]
+      - button "Patient flow" [ref=e20] [cursor=pointer]
+    - main [ref=e21]:
+      - generic [ref=e4415]:
+        - generic [ref=e4416]:
+          - generic [ref=e4417]:
+            - paragraph [ref=e4418]: PATIENT FLOW / OPERATIONS
+            - heading "Patient flow." [level=2] [ref=e4419]
+            - paragraph [ref=e4420]: Find a patient, manage their stay, and keep a clear view of admissions.
+          - generic [ref=e4421]: 481 active admissions
+        - navigation "Patient flow sections" [ref=e4423]:
+          - button "Admin" [ref=e4424] [cursor=pointer]
+          - button "Reports" [ref=e4425] [cursor=pointer]
+        - generic [ref=e4426]:
+          - generic [ref=e4427]:
+            - generic [ref=e4428]:
+              - generic [ref=e4429]:
+                - paragraph [ref=e4430]: PATIENT DIRECTORY
+                - heading "Search patients" [level=3] [ref=e4431]
+              - generic [aria-hidden] [ref=e4432]: ⌕
+            - generic [ref=e4433]:
+              - text: Search by MRN or patient name
+              - generic [ref=e4434]:
+                - generic [aria-hidden] [ref=e4435]: ⌕
+                - searchbox "Search by MRN or patient name" [ref=e4436]: ALC-0001
+            - button "AL Ada Lovelace ALC-0001 · DOB 10 Dec 1815" [active] [ref=e4466] [cursor=pointer]:
+              - generic [ref=e4467]: AL
+              - generic [ref=e4468]:
+                - strong [ref=e4469]: Ada Lovelace
+                - generic [ref=e4470]:
+                  - code [ref=e4471]: ALC-0001
+                  - text: · DOB 10 Dec 1815
+              - generic [aria-hidden] [ref=e4472]: →
+          - generic [ref=e4442]:
+            - generic [ref=e4443]:
+              - generic [ref=e4444]:
+                - paragraph [ref=e4445]: NEW EPISODE
+                - heading "Admit patient" [level=3] [ref=e4446]
+              - generic [aria-hidden] [ref=e4447]: ＋
+            - paragraph [ref=e4448]: Register a new patient and assign their first destination ward.
+            - generic [ref=e4449]:
+              - generic [ref=e4450]:
+                - text: MRN
+                - textbox "MRN" [ref=e4451]
+              - generic [ref=e4452]:
+                - generic [ref=e4453]:
+                  - text: Given name
+                  - textbox "Given name" [ref=e4454]
+                - generic [ref=e4455]:
+                  - text: Family name
+                  - textbox "Family name" [ref=e4456]
+              - generic [ref=e4457]:
+                - text: Date of birth
+                - textbox "Date of birth" [ref=e4458]
+              - generic [ref=e4459]:
+                - text: Destination ward
+                - combobox "Destination ward" [ref=e4460]:
+                  - option "Select ward…" [selected]
+                  - option "Emergency Department · 4 beds free"
+                  - option "General Medicine · 6 beds free"
+                  - option "Intensive Care Unit · 6 beds free"
+                  - option "Ward 4 - Rehabilitation · 6 beds free"
+                  - option "Ward 5 - General Medicine · 6 beds free"
+                  - option "Ward 6 - Surgical Services · 6 beds free"
+                  - option "Ward 7 - Women's Health · 6 beds free"
+                  - option "Ward 8 - Rehabilitation · 6 beds free"
+                  - option "Ward 9 - General Medicine · 6 beds free"
+                  - option "Ward 10 - Surgical Services · 6 beds free"
+                  - option "Ward 11 - Women's Health · 6 beds free"
+                  - option "Ward 12 - Rehabilitation · 7 beds free"
+                  - option "Ward 13 - General Medicine · 6 beds free"
+                  - option "Ward 14 - Surgical Services · 6 beds free"
+                  - option "Ward 15 - Women's Health · 6 beds free"
+                  - option "Ward 16 - Rehabilitation · 6 beds free"
+                  - option "Ward 17 - General Medicine · 6 beds free"
+                  - option "Ward 18 - Surgical Services · 6 beds free"
+                  - option "Ward 19 - Women's Health · 6 beds free"
+                  - option "Ward 20 - Rehabilitation · 6 beds free"
+              - button "Register & admit patient" [disabled] [ref=e4461]:
+                - generic [aria-hidden] [ref=e4462]: ＋
+                - text: Register & admit patient
+            - generic [ref=e4463]:
+              - generic [aria-hidden] [ref=e4464]: i
+              - generic [ref=e4465]: Admissions are assigned to the first available bed in the selected ward.
+        - dialog [ref=e4473]:
+          - generic [ref=e4474]:
+            - generic [ref=e4475]: PATIENT RECORD
+            - button "Close patient details" [ref=e4476] [cursor=pointer]: ×
+          - generic [ref=e4477]:
+            - generic [ref=e4478]: AL
+            - generic [ref=e4479]:
+              - heading "Ada Lovelace" [level=3] [ref=e4480]
+              - paragraph [ref=e4481]:
+                - code [ref=e4482]: ALC-0001
+                - text: ·
+                - generic [ref=e4483]: Currently admitted
+          - generic [ref=e4484]:
+            - generic [ref=e4485]:
+              - generic [ref=e4486]: Medical record number
+              - strong [ref=e4487]: ALC-0001
+            - generic [ref=e4488]:
+              - generic [ref=e4489]: Date of birth
+              - strong [ref=e4490]: 10 Dec 1815
+            - generic [ref=e4491]:
+              - generic [ref=e4492]: Registered
+              - strong [ref=e4493]: 10 Sept 2026
+            - generic [ref=e4494]:
+              - generic [ref=e4495]: Current ward
+              - strong [ref=e4496]: Intensive Care Unit
+          - generic [ref=e4497]:
+            - generic [ref=e4498]:
+              - generic [ref=e4499]: CURRENT STAY
+              - strong [ref=e4500]: Intensive Care Unit
+              - generic [ref=e4501]: Admitted 10 Sept 2026
+            - button "⌖ Locate in hospital" [ref=e4502] [cursor=pointer]
+          - generic [ref=e4503]:
+            - button "✎ Correct details" [ref=e4504] [cursor=pointer]
+            - button "⇄ Transfer" [ref=e4505] [cursor=pointer]
+            - button "Discharge" [ref=e4506] [cursor=pointer]

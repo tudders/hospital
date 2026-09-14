@@ -179,6 +179,17 @@ internal static class ConditionalRequests
         return client.SendAsync(request);
     }
 
+    internal static Task<HttpResponseMessage> CorrectPatientAsync(
+        this HttpClient client, Guid id, object correction, EntityTagHeaderValue? ifMatch)
+    {
+        var request = new HttpRequestMessage(HttpMethod.Patch, $"/api/patients/{id}")
+        {
+            Content = JsonContent.Create(correction),
+        };
+        if (ifMatch is not null) request.Headers.IfMatch.Add(ifMatch);
+        return client.SendAsync(request);
+    }
+
     /// <summary>The version a response published, as the next change to it has to quote it back.</summary>
     internal static EntityTagHeaderValue Version(this HttpResponseMessage response) =>
         response.Headers.ETag ?? throw new InvalidOperationException(

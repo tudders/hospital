@@ -32,11 +32,14 @@ public class AdmissionServiceTests
     }
 
     [Fact]
-    public async Task Admit_unknown_patient_is_not_found()
+    public async Task Admit_unknown_patient_names_the_field_that_is_wrong()
     {
         var result = await _sut.AdmitAsync(new AdmitPatientCommand(Guid.NewGuid(), "Ward"));
 
-        Assert.Equal("not_found", result.Error!.Code);
+        // Not "not_found": what is missing is the patient the command points at, not the admissions
+        // collection it is addressed to, and the difference is a 422 rather than a 404 at the edge.
+        Assert.Equal("unprocessable_reference", result.Error!.Code);
+        Assert.Equal("patientId", result.Error.Field);
         Assert.Empty(_bus.Published);
     }
 

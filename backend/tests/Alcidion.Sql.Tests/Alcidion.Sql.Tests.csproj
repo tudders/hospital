@@ -22,6 +22,7 @@
   <ItemGroup>
     <ProjectReference Include="..\..\src\Alcidion.Admissions\Alcidion.Admissions.csproj" />
     <ProjectReference Include="..\..\src\Alcidion.Hospital\Alcidion.Hospital.csproj" />
+    <ProjectReference Include="..\..\src\Alcidion.Patients\Alcidion.Patients.csproj" />
   </ItemGroup>
 
 </Project>

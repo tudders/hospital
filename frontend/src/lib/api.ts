@@ -74,6 +74,13 @@ export async function api<T>(path: string, init: RequestInit = {}): Promise<T> {
 }
 
 /**
+ * True when a conditional write was refused because the record had already moved on. Worth
+ * separating from other failures: nothing about the request was wrong, so the screen owes the user
+ * fresh data rather than an apology, and refreshing is what makes a retry meaningful.
+ */
+export const isStale = (error: unknown) => error instanceof ApiError && error.problem.status === 412
+
+/**
  * The per-field messages on a failure, or an empty object if it carried none. Lets a form ask
  * `fieldErrors(err).mrn` without first proving the failure was a validation one.
  */

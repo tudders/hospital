@@ -15,7 +15,7 @@
  */
 
 import { describeField, describeTarget, type ElementLike } from './redaction'
-import { track } from './telemetry'
+import { track, type EventProps } from './telemetry'
 
 const KEYS_WORTH_RECORDING = new Set(['Enter', 'Escape', 'Tab', 'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'])
 const SCROLL_THROTTLE_MS = 250
@@ -40,7 +40,7 @@ let started = false
  * in-tab reloads both re-run this module, and the session id outlives them, so the marker is kept
  * beside it rather than in a module variable.
  */
-function markSessionStartOnce(props: Record<string, unknown>) {
+function markSessionStartOnce(props: EventProps) {
   try {
     if (sessionStorage.getItem(STARTED_KEY)) return
     sessionStorage.setItem(STARTED_KEY, '1')

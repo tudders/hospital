@@ -1,7 +1,9 @@
 import { useEffect, useMemo, useState, type FormEvent } from 'react'
-import { dischargeAdmission, isStale, transferAdmission } from '../lib/admissions'
-import { api } from '../lib/api'
-import type { RegisterPatientRequest } from '../lib/contracts'
+import { dischargeAdmission, transferAdmission } from '../lib/admissions'
+import { api, isStale } from '../lib/api'
+import type { CorrectPatientRequest, RegisterPatientRequest } from '../lib/contracts'
+import { changedFields } from '../lib/corrections'
+import { correctPatient } from '../lib/patients'
 import { track } from '../lib/telemetry'
 import type { Admission, Patient, Ward } from '../lib/types'
 import { ErrorAlert } from './ErrorAlert'
@@ -17,8 +19,18 @@ type Props = {
 
 type NewAdmissionForm = RegisterPatientRequest & { ward: string }
 
+/** The correction form shows the same four fields, so it fills from the patient it is correcting. */
+type Correction = Required<CorrectPatientRequest>
+
 const EMPTY_ADMIT: NewAdmissionForm = { mrn: '', givenName: '', familyName: '', dateOfBirth: '', ward: '' }
 const ADMIT_FIELDS = ['mrn', 'givenName', 'familyName', 'dateOfBirth', 'ward']
+
+const asCorrection = (patient: Patient): Correction => ({
+  mrn: patient.mrn,
+  givenName: patient.givenName,
+  familyName: patient.familyName,
+  dateOfBirth: patient.dateOfBirth,
+})
 
 const initials = (patient: Patient) => `${patient.givenName[0] ?? ''}${patient.familyName[0] ?? ''}`.toUpperCase()
 const fullName = (patient: Patient) => `${patient.givenName} ${patient.familyName}`
@@ -38,6 +50,8 @@ export function PatientFlow({ admissions, wards, canWrite, onChanged, onLocate }
   const [busy, setBusy] = useState(false)
   const [transferOpen, setTransferOpen] = useState(false)
   const [destination, setDestination] = useState('')
+  const [correctOpen, setCorrectOpen] = useState(false)
+  const [correction, setCorrection] = useState<Correction>({ mrn: '', givenName: '', familyName: '', dateOfBirth: '' })
 
   useEffect(() => {
     const wanted = query.trim()
@@ -102,6 +116,54 @@ export function PatientFlow({ admissions, wards, canWrite, onChanged, onLocate }
       showToast('Patient details added successfully')
     } catch (err) {
       setAdmitError(err)
+    } finally {
+      setBusy(false)
+    }
+  }
+
+  /**
+   * Replaces the panel's copy of a patient with what the API says it is now - including the version
+   * a correction has to be taken against. The search results carry their own copies, so they are
+   * revised too: a row left holding the old version would 412 the next correction made from it.
+   */
+  async function reselect(patientId: string) {
+    try {
+      const fresh = await api<Patient>(`/api/patients/${patientId}`)
+      setSelected(fresh)
+      setResults(rows => rows.map(row => (row.id === fresh.id ? fresh : row)))
+      setCorrection(asCorrection(fresh))
+    } catch {
+      // The panel keeps what it has. Whatever sent us here is already on screen.
+    }
+  }
+
+  async function correct(event: FormEvent) {
+    event.preventDefault()
+    if (!selected) return
+
+    // Only what the form actually changed. Sending back an untouched field would claim to correct
+    // something nobody looked at, and would collide with whoever is correcting it for real.
+    const changed = changedFields(selected, correction)
+    if (Object.keys(changed).length === 0) {
+      setCorrectOpen(false)
+      return
+    }
+
+    setBusy(true)
+    setActionError(null)
+    try {
+      const corrected = await correctPatient(selected, changed)
+      track('patient.corrected', { patientId: corrected.id, fields: Object.keys(changed).join(' ') })
+      setSelected(corrected)
+      setResults(rows => rows.map(row => (row.id === corrected.id ? corrected : row)))
+      setCorrectOpen(false)
+      onChanged()
+      showToast('Patient details corrected')
+    } catch (err) {
+      setActionError(err)
+      // Refused because the record moved on: pull in what it became, so the form is decided against
+      // that rather than against what it was, and the second attempt can succeed.
+      if (isStale(err)) await reselect(selected.id)
     } finally {
       setBusy(false)
     }
@@ -182,7 +244,7 @@ export function PatientFlow({ admissions, wards, canWrite, onChanged, onLocate }
           {searching && <div className="search-loading" role="status"><span className="spinner" />Searching patient records…</div>}
           {!searching && !query.trim() && <div className="search-guidance"><span className="guidance-mark" aria-hidden="true">⌕</span><strong>Search the patient directory</strong><span>Use an MRN or start typing a patient’s name.</span></div>}
           {!searching && query.trim() && results.length === 0 && <div className="empty search-empty">No patients match “{query.trim()}”.</div>}
-          {!searching && results.map(patient => <button type="button" className="patient-result" key={patient.id} onClick={() => { setSelected(patient); setActionError(null); setTransferOpen(false) }}>
+          {!searching && results.map(patient => <button type="button" className="patient-result" key={patient.id} onClick={() => { setSelected(patient); setActionError(null); setTransferOpen(false); setCorrectOpen(false); setCorrection(asCorrection(patient)) }}>
             <span className="avatar small-avatar">{initials(patient)}</span><span className="patient-result-copy"><strong>{fullName(patient)}</strong><span><code>{patient.mrn}</code> · DOB {date(patient.dateOfBirth)}</span></span><span className="result-arrow" aria-hidden="true">→</span>
           </button>)}
         </div>
@@ -214,7 +276,21 @@ export function PatientFlow({ admissions, wards, canWrite, onChanged, onLocate }
         <div className="patient-details"><div><span>Medical record number</span><strong>{selected.mrn}</strong></div><div><span>Date of birth</span><strong>{date(selected.dateOfBirth)}</strong></div><div><span>Registered</span><strong>{date(selected.registeredAt)}</strong></div>{activeAdmission && <div><span>Current ward</span><strong>{activeAdmission.ward}</strong></div>}</div>
         {activeAdmission && <div className="current-stay"><div><span className="panel-kicker">CURRENT STAY</span><strong>{activeAdmission.ward}</strong><span>Admitted {date(activeAdmission.admittedAt)}</span></div><button className="btn ghost sm" type="button" onClick={() => { onLocate(selected.id); setSelected(null) }}>⌖ Locate in hospital</button></div>}
         {actionError ? <ErrorAlert error={actionError} /> : null}
-        {transferOpen && activeAdmission ? <form className="transfer-form" onSubmit={transfer}><label>Transfer to<select required value={destination} onChange={event => setDestination(event.target.value)}><option value="">Select destination ward…</option>{wards.filter(ward => ward.code !== activeAdmission.ward).map(ward => <option key={ward.id} value={ward.code} disabled={ward.freeBeds === 0}>{ward.name} · {ward.freeBeds} beds free</option>)}</select></label><div className="modal-actions"><button className="btn ghost" type="button" disabled={busy} onClick={() => setTransferOpen(false)}>Cancel</button><button className="btn" type="submit" disabled={busy || !destination}>{busy ? 'Transferring…' : 'Confirm transfer'}</button></div></form> : <div className="modal-actions">{!activeAdmission && <button className="btn ghost" type="button" onClick={() => { onLocate(selected.id); setSelected(null) }}>⌖ Locate in hospital</button>}{canWrite && activeAdmission && <><button className="btn ghost" type="button" disabled={busy} onClick={() => { setDestination(''); setTransferOpen(true) }}>⇄ Transfer</button><button className="btn danger-button" type="button" disabled={busy} onClick={discharge}>{busy ? 'Discharging…' : 'Discharge'}</button></>}</div>}
+        {correctOpen ? <form className="transfer-form correction-form" onSubmit={correct}>
+          {/* An MRN typed wrong, a legal name change, a date of birth off by a digit. The patient id
+              and the registration date are not here and cannot be: they are what every admission,
+              bed stay and audit line hangs off. */}
+          <label>Medical record number<input required maxLength={64} value={correction.mrn} onChange={event => setCorrection({ ...correction, mrn: event.target.value })} /></label>
+          <div className="admit-form-row">
+            <label>Given name<input required maxLength={100} value={correction.givenName} onChange={event => setCorrection({ ...correction, givenName: event.target.value })} /></label>
+            <label>Family name<input required maxLength={100} value={correction.familyName} onChange={event => setCorrection({ ...correction, familyName: event.target.value })} /></label>
+          </div>
+          <label>Date of birth<input required type="date" value={correction.dateOfBirth} onChange={event => setCorrection({ ...correction, dateOfBirth: event.target.value })} /></label>
+          <div className="modal-actions">
+            <button className="btn ghost" type="button" disabled={busy} onClick={() => { setCorrectOpen(false); setCorrection(asCorrection(selected)) }}>Cancel</button>
+            <button className="btn" type="submit" disabled={busy}>{busy ? 'Saving…' : 'Save correction'}</button>
+          </div>
+        </form> : transferOpen && activeAdmission ? <form className="transfer-form" onSubmit={transfer}><label>Transfer to<select required value={destination} onChange={event => setDestination(event.target.value)}><option value="">Select destination ward…</option>{wards.filter(ward => ward.code !== activeAdmission.ward).map(ward => <option key={ward.id} value={ward.code} disabled={ward.freeBeds === 0}>{ward.name} · {ward.freeBeds} beds free</option>)}</select></label><div className="modal-actions"><button className="btn ghost" type="button" disabled={busy} onClick={() => setTransferOpen(false)}>Cancel</button><button className="btn" type="submit" disabled={busy || !destination}>{busy ? 'Transferring…' : 'Confirm transfer'}</button></div></form> : <div className="modal-actions">{!activeAdmission && <button className="btn ghost" type="button" onClick={() => { onLocate(selected.id); setSelected(null) }}>⌖ Locate in hospital</button>}{canWrite && <button className="btn ghost" type="button" disabled={busy} data-track="correct-patient" onClick={() => { setCorrection(asCorrection(selected)); setActionError(null); setTransferOpen(false); setCorrectOpen(true) }}>✎ Correct details</button>}{canWrite && activeAdmission && <><button className="btn ghost" type="button" disabled={busy} onClick={() => { setDestination(''); setTransferOpen(true) }}>⇄ Transfer</button><button className="btn danger-button" type="button" disabled={busy} onClick={discharge}>{busy ? 'Discharging…' : 'Discharge'}</button></>}</div>}
       </section>
     </div>}
   </section>

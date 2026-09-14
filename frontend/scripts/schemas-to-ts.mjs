@@ -75,9 +75,23 @@ function expression(schema, name, out, depth = 0) {
   // rather than a 400 from the API.
   if (Array.isArray(schema.enum)) return schema.enum.map((value) => JSON.stringify(value)).join(' | ')
 
+  // `type` may list several. "Any flat scalar" is a union here rather than the `unknown` an
+  // unrecognised type would otherwise produce.
+  if (Array.isArray(schema.type)) {
+    const members = schema.type.map((type) => expression({ ...schema, type }, name, out, depth))
+    return [...new Set(members)].join(' | ')
+  }
+
   switch (schema.type) {
     case 'object':
-      return schema.properties ? shape(schema, name, out, depth) : 'Record<string, unknown>'
+      if (schema.properties) return shape(schema, name, out, depth)
+      // No named properties but a schema for the values: a dictionary whose value type is still
+      // worth keeping. Dropping it is what let an array reach a scalars-only `props` and cost a
+      // whole telemetry batch a 400 that the client never reports.
+      if (schema.additionalProperties && typeof schema.additionalProperties === 'object') {
+        return `Record<string, ${expression(schema.additionalProperties, `${name}Value`, out, depth)}>`
+      }
+      return 'Record<string, unknown>'
     case 'array':
       return `${itemType(schema, name, out, depth)}[]`
     case 'string':
@@ -87,6 +101,8 @@ function expression(schema, name, out, depth = 0) {
       return 'number'
     case 'boolean':
       return 'boolean'
+    case 'null':
+      return 'null'
     default:
       return 'unknown'
   }

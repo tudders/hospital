@@ -18,5 +18,5 @@
     "erasableSyntaxOnly": true,
     "noFallthroughCasesInSwitch": true
   },
-  "include": ["src/**/*.test.ts", "src/lib/redaction.ts", "src/lib/telemetry.ts"]
+  "include": ["src/**/*.test.ts", "src/lib/corrections.ts", "src/lib/redaction.ts", "src/lib/telemetry.ts"]
 }

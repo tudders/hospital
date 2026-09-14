@@ -33,13 +33,13 @@ public class PatientFlowTests(ApiFixture api) : IClassFixture<ApiFixture>
     }
 
     [Fact]
-    public async Task Admit_unknown_patient_is_404_problem_details()
+    public async Task Admit_unknown_patient_is_422_problem_details()
     {
         var client = await api.ClientAs("doctor");
 
         var res = await client.PostAsJsonAsync("/api/admissions", new { patientId = Guid.NewGuid(), ward = "ICU" });
 
-        Assert.Equal(HttpStatusCode.NotFound, res.StatusCode);
+        Assert.Equal(HttpStatusCode.UnprocessableEntity, res.StatusCode);
         Assert.Equal("application/problem+json", res.Content.Headers.ContentType!.MediaType);
     }
 

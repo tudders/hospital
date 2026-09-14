@@ -10,6 +10,9 @@ namespace Alcidion.Api.Controllers;
 public sealed class TelemetryController(ILogger<TelemetryController> logger) : ApiController
 {
     [HttpPost("events")]
+    [EndpointName("IngestClientEvents")]
+    [EndpointSummary("Ingest frontend telemetry")]
+    [EndpointDescription("Accepts a bounded batch of frontend events without authentication. Request size and per-session rate limits apply; returns the accepted count and correlation ID.")]
     [RequestSizeLimit(TelemetryIngestFilter.MaxRequestBytes)]
     [ServiceFilter<TelemetryIngestFilter>]
     [ProducesResponseType<TelemetryAcceptedResponse>(StatusCodes.Status202Accepted)]

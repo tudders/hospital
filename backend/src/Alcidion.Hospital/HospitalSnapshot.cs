@@ -2,8 +2,7 @@ using Alcidion.Shared;
 
 namespace Alcidion.Hospital;
 
-// Patient placement is included for authorised operational views. Demographics stay in the
-// Patients context; this read model carries only the identity needed to locate a bed.
+/// <summary>A bed's location and occupancy, including the occupying patient's ID and name when present.</summary>
 public sealed record HospitalBed(
     Guid Id, string Code, int Number,
     Guid HospitalId, string HospitalName,
@@ -12,6 +11,11 @@ public sealed record HospitalBed(
     Guid RoomId, string RoomName, int RoomNumber,
     string Status, Guid? PatientId, string? PatientName);
 
+/// <summary>Hospital beds and patient placements at a point in time.</summary>
+/// <param name="AsOf">The requested instant for which occupancy was calculated.</param>
+/// <param name="CapturedAt">When this snapshot was read from storage.</param>
+/// <param name="Source">The source of the occupancy data.</param>
+/// <param name="Beds">Beds in the hospital hierarchy, with their occupancy and patient placement.</param>
 public sealed record HospitalSnapshot(
     DateTimeOffset AsOf, DateTimeOffset CapturedAt, string Source, IReadOnlyList<HospitalBed> Beds);
 

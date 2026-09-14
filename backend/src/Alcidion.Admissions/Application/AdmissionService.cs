@@ -18,8 +18,10 @@ public sealed class AdmissionService(
 {
     public async Task<Result<Admission>> AdmitAsync(AdmitPatientCommand cmd, CancellationToken ct = default)
     {
+        // 422, not 404: the admission resource this POST addresses is the collection, and it is
+        // there. What is missing is the patient the body points at, so the failure names patientId.
         if (await knownPatients.FindAsync(cmd.PatientId, ct) is null)
-            return Result<Admission>.Fail(Error.NotFound("Patient", cmd.PatientId));
+            return Result<Admission>.Fail(Error.UnprocessableReference("patientId", "Patient", cmd.PatientId));
 
         Admission admission;
         try

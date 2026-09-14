@@ -27,9 +27,15 @@ dotnet run --project src/Alcidion.Api --launch-profile http    # http://localhos
 
 OpenAPI: `GET /openapi/v1.json` (Development only). Health: `GET /health`.
 
+The OpenAPI document includes stable operation IDs, endpoint descriptions, XML documentation
+for response schemas and a `Bearer` HTTP security scheme. Protected operations declare bearer
+requirements and 401/403 responses; login, telemetry and health remain anonymous. Responses
+use JSON, with authentication failures documented as `application/problem+json`. OpenAPI 3.0
+and the schema-generated request constraints are retained.
+
 ## Auth
 
-JWT bearer, symmetric dev key in `appsettings.json` (`Jwt:Secret`; override in production). `POST /api/auth/login` issues tokens for demo users:
+JWT bearer, symmetric dev key in `appsettings.Development.json` (`Jwt:Secret`). `POST /api/auth/login` issues tokens for demo users:
 
 | user   | password | roles     |
 |--------|----------|-----------|
@@ -39,6 +45,13 @@ JWT bearer, symmetric dev key in `appsettings.json` (`Jwt:Secret`; override in p
 | viewer | viewer   | none      |
 
 Reads need any authenticated user. Writes need the `Clinician` policy (clinician or admin role).
+Token validation accepts HS256 only, matching the demo issuer.
+
+Outside Development and Testing the app refuses to start until the demo scaffolding has been
+replaced: `Jwt__Secret` (32 bytes or more), `Auth__AllowDemoUsers=false` and
+`ConnectionStrings__Hospital` are all required, and `Configuration/StartupGuards.cs` names whichever
+are missing. With the demo users off, `POST /api/auth/login` answers 501 - there is no other issuer
+in this codebase.
 
 ## Invariants
 
@@ -79,7 +92,23 @@ blocking on a barrier starves the thread pool and the release is drip-fed.
 dotnet publish src/Alcidion.Api -c Release -o publish
 ```
 
-`dotnet publish` emits `web.config` for the ASP.NET Core IIS module. Upload `publish/` via Web Deploy or FTP. Set `Jwt__Secret` and `Cors__Origins__0` as environment variables or in `appsettings.Production.json`.
+`dotnet publish` emits `web.config` for the ASP.NET Core IIS module. Upload `publish/` via Web Deploy or FTP. Set `Jwt__Secret`, `Auth__AllowDemoUsers=false`, `ConnectionStrings__Hospital` and `Cors__Origins__0` as environment variables or in `appsettings.Production.json`; the startup guards reject anything less.
+
+**Enforce HTTPS at IIS.** Use a valid HTTPS binding, refuse public HTTP API requests and enable
+HSTS on HTTPS responses (`max-age=31536000`; no subdomain or preload policy by default). Configure
+clients with an HTTPS API URL. The application deliberately leaves redirection and HSTS to the
+host; local development keeps HTTP. Verify the public bindings and headers when deploying, as
+described in [ADR 0005](../docs/adr/0005-https-is-enforced-at-the-host.md).
+
+**Turn off query logging in IIS.** `GET /api/patients?search=` carries a patient name, and IIS W3C
+logging writes `cs-uri-query` by default. Clear `UriQuery` from the site's `logExtFileFlags`, or
+scrub the field downstream. The API already keeps the same value off its own OpenTelemetry spans
+(`Observability/QueryRedaction.cs`); the proxy's log is the half only the deployment can close. See
+[ADR 0004](../docs/adr/0004-patient-search-stays-a-get.md).
+
+**Apply the database migrations in order.** `database/*.sql` are the schema's source of truth
+(ADR 0002); `004_patient_demographic_corrections.sql` adds the `concurrency_version` column that
+`PATCH /api/patients/{id}` is conditional on, and the endpoint answers 500 without it.
 
 ## Agent tooling
 

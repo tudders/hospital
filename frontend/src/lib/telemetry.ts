@@ -24,6 +24,14 @@ export type { ClientEvent }
  */
 export type RecordedEvent = ClientEvent & Required<Pick<ClientEvent, 'seq' | 't'>>
 
+/**
+ * What an event may carry. The API bounds `props` to flat scalars and 1024-character strings, and
+ * rejects the *whole batch* when one value breaks that - a 400 this client deliberately swallows,
+ * so a violation costs a session's telemetry silently. Naming the type here is what turns that into
+ * a compile error at the `track` call instead.
+ */
+export type EventProps = NonNullable<ClientEvent['props']>
+
 const SESSION_KEY = 'alcidion.sessionId'
 const SEQ_KEY = 'alcidion.seq'
 const FLUSH_INTERVAL_MS = 5000
@@ -73,7 +81,10 @@ export function configureTelemetry(apiBaseUrl: string) {
   }
 }
 
-export function track(name: string, props?: Record<string, unknown>) {
+/** The API's own ceiling on a string value; a longer one fails the batch rather than itself. */
+const MAX_PROP_CHARS = 1024
+
+export function track(name: string, props?: EventProps) {
   if (queue.length >= MAX_QUEUE) {
     dropped++
     return
@@ -90,9 +101,26 @@ export function track(name: string, props?: Record<string, unknown>) {
     seq,
     at: new Date().toISOString(),
     t: Math.round(performance.now() - startedAt),
-    props: dropped > 0 ? { ...props, droppedSinceLastEvent: takeDropped() } : props,
+    props: bounded(dropped > 0 ? { ...props, droppedSinceLastEvent: takeDropped() } : props),
   })
   if (queue.length >= MAX_BATCH) flush()
+}
+
+/**
+ * Clips string values to the length the API accepts. Lengths are what types cannot police, and the
+ * unbounded ones are the interesting ones - an `app.error` message, a `String(reason)` from a
+ * rejected promise. A clipped value still describes the event; an unclipped one takes the batch
+ * around it down with it.
+ */
+function bounded(props: EventProps | undefined): EventProps | undefined {
+  if (!props) return props
+  let clipped: EventProps | undefined
+  for (const [key, value] of Object.entries(props)) {
+    if (typeof value !== 'string' || value.length <= MAX_PROP_CHARS) continue
+    clipped ??= { ...props }
+    clipped[key] = `${value.slice(0, MAX_PROP_CHARS - 1)}…`
+  }
+  return clipped ?? props
 }
 
 function takeDropped() {

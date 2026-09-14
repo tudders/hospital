@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Alcidion.Api.Controllers;
 
+/// <summary>A ward's physical capacity, occupancy and available beds.</summary>
 /// <param name="FreeBeds">Allocatable right now, so the admit form can say where a patient will fit.</param>
 public sealed record WardDto(Guid Id, string Code, string Name, string WardType, int Beds, int OccupiedBeds, int EffectiveCapacity, int FreeBeds)
 {
@@ -20,6 +21,9 @@ public sealed record WardDto(Guid Id, string Code, string Name, string WardType,
 public sealed class WardsController(IWardDirectory wards) : ApiController
 {
     [HttpGet]
+    [EndpointName("ListWards")]
+    [EndpointSummary("List wards and available beds")]
+    [EndpointDescription("Returns ward capacity and occupancy counts for selecting an admission destination. Contains no patient identifiers or demographics.")]
     public async Task<ActionResult<IReadOnlyList<WardDto>>> List(CancellationToken ct) =>
         Ok((await wards.ListAsync(ct)).Select(WardDto.From).ToList());
 }

@@ -30,7 +30,9 @@ export function Login({ onLoggedIn }: { onLoggedIn: (me: Me) => void }) {
       })
       setToken(accessToken)
       const me = await api<Me>('/api/auth/me')
-      track('auth.login', { user: me.name, roles: me.roles })
+      // Joined, not the array: props carries flat scalars only, and an array here cost the whole
+      // login batch - nine events, every session - a 400 the transport swallows.
+      track('auth.login', { user: me.name, roles: me.roles.join(' ') })
       onLoggedIn(me)
     } catch (err) {
       setToken(null)

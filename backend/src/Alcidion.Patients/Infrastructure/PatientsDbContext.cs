@@ -23,6 +23,7 @@ public sealed class PatientsDbContext(DbContextOptions<PatientsDbContext> option
         patients.Property(p => p.DateOfBirth).HasColumnName("date_of_birth").HasColumnType("date");
         patients.Property(p => p.Gender).HasColumnName("gender").HasMaxLength(100);
         patients.Property(p => p.RegisteredAt).HasColumnName("registered_at");
+        patients.Property(p => p.ConcurrencyVersion).HasColumnName("concurrency_version");
 
         // Mirrors ux_patients_mrn. Declaring it here is what lets the insert itself decide
         // uniqueness, rather than a read-then-write that two requests can interleave.

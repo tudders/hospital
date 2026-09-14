@@ -41,6 +41,7 @@ public static class AdmissionsModule
 
         services.AddScoped<AdmissionService>();
         services.AddScoped<IEventHandler<PatientRegistered>, PatientRegisteredHandler>();
+        services.AddScoped<IEventHandler<PatientCorrected>, PatientCorrectedHandler>();
         return services;
     }
 }

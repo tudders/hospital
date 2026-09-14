@@ -5,6 +5,12 @@ export type Patient = {
   familyName: string
   dateOfBirth: string
   registeredAt: string
+  /**
+   * The version this copy was read at, and what a correction to it is taken against - see
+   * `correctPatient`. It is on the list rows as well, so a table can correct one without fetching
+   * it again first.
+   */
+  version: number
 }
 
 export type Admission = {

@@ -1,4 +1,4 @@
-import { api, ApiError } from './api'
+import { api } from './api'
 import type { ChangeAdmissionRequest } from './contracts'
 import type { Admission } from './types'
 
@@ -29,10 +29,3 @@ export function changeAdmission(admission: Admission, change: AdmissionChange): 
 export const dischargeAdmission = (admission: Admission) => changeAdmission(admission, { status: 'discharged' })
 
 export const transferAdmission = (admission: Admission, ward: string) => changeAdmission(admission, { ward })
-
-/**
- * True when the change was refused because the admission had already moved on. Worth separating
- * from other failures: nothing about the request was wrong, so the screen owes the user fresh data
- * rather than an apology, and refreshing is what makes a retry meaningful.
- */
-export const isStale = (error: unknown) => error instanceof ApiError && error.problem.status === 412

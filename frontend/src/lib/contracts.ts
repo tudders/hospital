@@ -86,7 +86,7 @@ export type ClientEvent = {
    * limits are not redaction.
    * maxProperties: 32
    */
-  props?: Record<string, unknown>
+  props?: Record<string, string | number | boolean | null>
 }
 
 /**
@@ -95,6 +95,42 @@ export type ClientEvent = {
  * Generated from client-event-batch.json.
  */
 export type ClientEventBatch = ClientEvent[]
+
+/**
+ * Body of PATCH /api/patients/{id}. Names only the demographics that are being corrected - an MRN
+ * typed wrong, a legal name change, a date of birth off by a digit. An absent property is left
+ * alone, which is what lets two people correct two different fields without either reinstating the
+ * other's old value. Nothing here can change who the patient is: the id and the registration time
+ * are what every admission, bed stay and audit line hangs off. The version the correction is taken
+ * against travels in If-Match, not here - it is a precondition on the request, not part of what is
+ * being asked for.
+ * minProperties: 1
+ * Generated from correct-patient-request.json.
+ */
+export type CorrectPatientRequest = {
+  /**
+   * Corrected Medical Record Number. Same shape as registration's, for the same reason:
+   * surrounding whitespace reaches the aggregate, which trims and upper-cases, so a padded MRN
+   * comes back 409 rather than 400. Correcting onto an MRN another patient holds is that same 409.
+   * minLength: 1, maxLength: 64, pattern: ^\s*[A-Za-z0-9][A-Za-z0-9._-]{0,63}\s*$
+   */
+  mrn?: string
+  /**
+   * minLength: 1, maxLength: 100, pattern: \S
+   */
+  givenName?: string
+  /**
+   * minLength: 1, maxLength: 100, pattern: \S
+   */
+  familyName?: string
+  /**
+   * The pattern carries the 1875 floor, which JSON Schema cannot express as a date comparison.
+   * There is deliberately no upper bound here: 'not in the future' is compared against the
+   * injected clock in Patient.Correct, and a static schema would bake in a build-time date.
+   * pattern: ^(18(7[5-9]|[89][0-9])|19[0-9]{2}|[2-9][0-9]{3})-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])$, format: date
+   */
+  dateOfBirth?: string
+}
 
 /**
  * Body of POST /api/auth/login. Shape only: whether the credentials are right is a 401 from the
@@ -149,18 +185,4 @@ export type RegisterPatientRequest = {
    * pattern: ^(18(7[5-9]|[89][0-9])|19[0-9]{2}|[2-9][0-9]{3})-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])$, format: date
    */
   dateOfBirth: string
-}
-
-/**
- * Body of POST /api/admissions/{id}/transfer. Shape and length only - whether the destination has
- * a free bed stays with the Admissions aggregate.
- * Open: the API ignores properties not listed here rather than refusing them.
- * Generated from transfer-patient-request.json.
- */
-export type TransferPatientRequest = {
-  /**
-   * Destination ward name, free text. Leading and trailing whitespace is accepted and trimmed.
-   * minLength: 1, maxLength: 200, pattern: \S
-   */
-  ward: string
 }

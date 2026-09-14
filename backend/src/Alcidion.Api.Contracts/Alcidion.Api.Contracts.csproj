@@ -4,6 +4,8 @@
     <TargetFramework>net10.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <NoWarn>$(NoWarn);CS1591</NoWarn>
     <!-- Corvus 5.x emits C# 14 ('simple lambda parameter modifiers'), which the .NET 10 SDK
          supports as the default language version. The explicit preview setting is retained because
          the generated source has previously required it across Corvus 5.x versions.

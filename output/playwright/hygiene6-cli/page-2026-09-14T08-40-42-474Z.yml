@@ -1,0 +1,89 @@
+- generic [ref=e11]:
+  - banner [ref=e12]:
+    - heading "Alcidion patient flow" [level=1] [ref=e13]
+    - generic [ref=e14]:
+      - text: nurse · clinician · session
+      - code [ref=e15]: 5c805cef
+      - button "Sign out" [ref=e16] [cursor=pointer]
+  - generic [ref=e17]:
+    - navigation "Application navigation" [ref=e18]:
+      - button "▥ Hospital overview" [ref=e19] [cursor=pointer]
+      - button "Patient flow" [active] [ref=e20] [cursor=pointer]
+    - main [ref=e21]:
+      - generic [ref=e4415]:
+        - generic [ref=e4416]:
+          - generic [ref=e4417]:
+            - paragraph [ref=e4418]: PATIENT FLOW / OPERATIONS
+            - heading "Patient flow." [level=2] [ref=e4419]
+            - paragraph [ref=e4420]: Find a patient, manage their stay, and keep a clear view of admissions.
+          - generic [ref=e4421]: 481 active admissions
+        - navigation "Patient flow sections" [ref=e4423]:
+          - button "Admin" [ref=e4424] [cursor=pointer]
+          - button "Reports" [ref=e4425] [cursor=pointer]
+        - generic [ref=e4426]:
+          - generic [ref=e4427]:
+            - generic [ref=e4428]:
+              - generic [ref=e4429]:
+                - paragraph [ref=e4430]: PATIENT DIRECTORY
+                - heading "Search patients" [level=3] [ref=e4431]
+              - generic [aria-hidden] [ref=e4432]: ⌕
+            - generic [ref=e4433]:
+              - text: Search by MRN or patient name
+              - generic [ref=e4434]:
+                - generic [aria-hidden] [ref=e4435]: ⌕
+                - searchbox "Search by MRN or patient name" [ref=e4436]
+            - generic [ref=e4438]:
+              - generic [aria-hidden] [ref=e4439]: ⌕
+              - strong [ref=e4440]: Search the patient directory
+              - generic [ref=e4441]: Use an MRN or start typing a patient’s name.
+          - generic [ref=e4442]:
+            - generic [ref=e4443]:
+              - generic [ref=e4444]:
+                - paragraph [ref=e4445]: NEW EPISODE
+                - heading "Admit patient" [level=3] [ref=e4446]
+              - generic [aria-hidden] [ref=e4447]: ＋
+            - paragraph [ref=e4448]: Register a new patient and assign their first destination ward.
+            - generic [ref=e4449]:
+              - generic [ref=e4450]:
+                - text: MRN
+                - textbox "MRN" [ref=e4451]
+              - generic [ref=e4452]:
+                - generic [ref=e4453]:
+                  - text: Given name
+                  - textbox "Given name" [ref=e4454]
+                - generic [ref=e4455]:
+                  - text: Family name
+                  - textbox "Family name" [ref=e4456]
+              - generic [ref=e4457]:
+                - text: Date of birth
+                - textbox "Date of birth" [ref=e4458]
+              - generic [ref=e4459]:
+                - text: Destination ward
+                - combobox "Destination ward" [ref=e4460]:
+                  - option "Select ward…" [selected]
+                  - option "Emergency Department · 4 beds free"
+                  - option "General Medicine · 6 beds free"
+                  - option "Intensive Care Unit · 6 beds free"
+                  - option "Ward 4 - Rehabilitation · 6 beds free"
+                  - option "Ward 5 - General Medicine · 6 beds free"
+                  - option "Ward 6 - Surgical Services · 6 beds free"
+                  - option "Ward 7 - Women's Health · 6 beds free"
+                  - option "Ward 8 - Rehabilitation · 6 beds free"
+                  - option "Ward 9 - General Medicine · 6 beds free"
+                  - option "Ward 10 - Surgical Services · 6 beds free"
+                  - option "Ward 11 - Women's Health · 6 beds free"
+                  - option "Ward 12 - Rehabilitation · 7 beds free"
+                  - option "Ward 13 - General Medicine · 6 beds free"
+                  - option "Ward 14 - Surgical Services · 6 beds free"
+                  - option "Ward 15 - Women's Health · 6 beds free"
+                  - option "Ward 16 - Rehabilitation · 6 beds free"
+                  - option "Ward 17 - General Medicine · 6 beds free"
+                  - option "Ward 18 - Surgical Services · 6 beds free"
+                  - option "Ward 19 - Women's Health · 6 beds free"
+                  - option "Ward 20 - Rehabilitation · 6 beds free"
+              - button "Register & admit patient" [disabled] [ref=e4461]:
+                - generic [aria-hidden] [ref=e4462]: ＋
+                - text: Register & admit patient
+            - generic [ref=e4463]:
+              - generic [aria-hidden] [ref=e4464]: i
+              - generic [ref=e4465]: Admissions are assigned to the first available bed in the selected ward.

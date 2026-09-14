@@ -320,6 +320,9 @@ button:focus-visible { outline: 3px solid var(--primary); outline-offset: 3px; }
 .danger-button:hover { border-color: #9e1f1f; background: #9e1f1f; }
 .transfer-form { margin-top: var(--space-6); padding-top: var(--space-4); border-top: 1px solid var(--border); }
 .transfer-form label { gap: var(--space-2); color: var(--text); font-size: .8rem; font-weight: 550; }
+/* The transfer form is one select; a correction is four fields, so it needs the admit form's rhythm. */
+.correction-form { display: flex; flex-direction: column; gap: var(--space-4); }
+.correction-form input { min-height: 42px; }
 
 @media (max-width: 800px) {
   .patient-admin-grid, .report-columns { grid-template-columns: 1fr; }
