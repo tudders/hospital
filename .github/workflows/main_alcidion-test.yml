@@ -30,7 +30,7 @@ jobs:
         run: dotnet build Alcidion.sln --configuration Release
 
       - name: dotnet publish
-        working-directory: backed
+        working-directory: backend
         run: dotnet publish src/Alcidion.Api/Alcidion.Api.csproj --configuration Release --output ../publish
         
       - name: Upload artifact for deployment job
