@@ -1,30 +1,37 @@
+using Alcidion.Api.Contracts;
 using Alcidion.Api.Observability;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Alcidion.Api.Controllers;
 
-/// <summary>
-/// A single frontend event. The browser batches these and posts them with a correlation id.
-/// <paramref name="Seq"/> orders the session's events regardless of the order batches arrive in,
-/// and <paramref name="T"/> is the millisecond offset from session start, so a session can be
-/// replayed at the pace the user experienced.
-/// </summary>
-public sealed record ClientEvent(string Name, string SessionId, DateTimeOffset At, long Seq = 0, long T = 0, Dictionary<string, object?>? Props = null);
-
 [Route("api/telemetry")]
 [AllowAnonymous]
 public sealed class TelemetryController(ILogger<TelemetryController> logger) : ApiController
 {
     [HttpPost("events")]
-    public IActionResult Ingest([FromBody] ClientEvent[] events)
+    [EndpointName("IngestClientEvents")]
+    [EndpointSummary("Ingest frontend telemetry")]
+    [EndpointDescription("Accepts a bounded batch of frontend events without authentication. Request size and per-session rate limits apply; returns the accepted count and correlation ID.")]
+    [RequestSizeLimit(TelemetryIngestFilter.MaxRequestBytes)]
+    [ServiceFilter<TelemetryIngestFilter>]
+    [ProducesResponseType<TelemetryAcceptedResponse>(StatusCodes.Status202Accepted)]
+    [ProducesResponseType<ValidationProblemDetails>(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status413PayloadTooLarge)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status429TooManyRequests)]
+    public IActionResult Ingest([FromBody] ClientEventBatch body)
     {
+        // No null-guard: a hole in the array fails the batch's item schema at the edge, which is
+        // where "[null]" from a hand-built sendBeacon payload now becomes a 400 naming [0].
+        var events = body.ToEvents();
+
         foreach (var e in events)
         {
             Telemetry.ClientEvents.Add(1, new KeyValuePair<string, object?>("event", e.Name));
-            logger.LogInformation("CLIENT {Event} session={SessionId} seq={Seq} t={OffsetMs}ms at={At} props={@Props}",
+            logger.LogInformation("CLIENT {Event} session={SessionId} seq={Seq} t={OffsetMs}ms at={At} props={Props}",
                 e.Name, e.SessionId, e.Seq, e.T, e.At, e.Props);
         }
-        return Accepted(new { received = events.Length, correlationId = HttpContext.CorrelationId() });
+
+        return Accepted(new TelemetryAcceptedResponse(events.Count, HttpContext.CorrelationId()));
     }
 }

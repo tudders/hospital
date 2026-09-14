@@ -1,53 +1,112 @@
-# .claude (backend)
+﻿# Backend Claude Configuration
 
-Claude Code configuration for this repo. Everything here is tracked except the generated skills
-mirror and local overrides.
+Backend-scoped configuration and skills.
+
+## Structure
 
 ```
-settings.json              permissions and hooks
-hooks/sync-skills.mjs      SessionStart: mirror skills/ + skills/vendor/ into .claude/skills and .agents/skills, print orientation
-hooks/guard-sensitive.mjs  PreToolUse: refuse edits to credential files and history-rewriting git commands
-hooks/check-touched.mjs    PostToolUse: grep the written .cs file for this repo's known defect classes
-hooks/verify.mjs           Stop: run dotnet test if C# changed this session
-agents/invariant-auditor.md     subagent: races, lock scope, normalization, DI lifetimes, context boundaries
-agents/api-surface-reviewer.md  subagent: status codes, auth coverage, audit, correlation, response shape
-commands/verify.md         /verify - build, test, format, and an honest report of what is unverified
-commands/slice.md          /slice - add a use case test-first, through every layer
-commands/trace.md          /trace - follow a correlation id from the browser to the audit line
-skills/                    generated mirror of ../skills and ../skills/vendor, flattened (gitignored)
+backend/.claude/
+├── README.md                  # This file
+├── skills/                    # Backend-specific skills
+│   ├── dotnet-webapi/        # API endpoints & HTTP semantics
+│   ├── optimizing-ef-core-queries/
+│   ├── bounded-contexts-and-events/
+│   ├── domain-modeling/
+│   ├── test-gap-analysis/
+│   └── 20+ other skills
+└── (settings.json inherited from root)
 ```
 
-Hooks are Node scripts (`node .claude/hooks/*.mjs`): Node is already required by the frontend repo,
-it parses the hook payload from stdin without a JSON tool, and it behaves the same on Windows and
-Linux, which `bash` on this machine does not - `C:\Windows\System32\bash.exe` is WSL. If Node is
-missing, the hooks fail quietly and nothing else breaks.
+## Available Skills
 
-## The hooks in one line each
+### API & Web
+- `dotnet-webapi` — ASP.NET Core endpoints, HTTP semantics, OpenAPI
+- `configuring-opentelemetry-dotnet` — Tracing & metrics setup
+- `correlation-and-audit` — Request correlation, audit logs
 
-- **sync-skills** keeps one tracked copy of every skill. Edit `skills/`, never a mirror.
-  Third-party skills live in `skills/vendor/`, pinned to an upstream commit and refreshed with
-  `node skills/vendor/update.mjs`; they are mirrored alongside the first-party ones, which win a
-  name collision.
-- **guard-sensitive** is the backstop for bypass-permissions mode: no writes to `.env`,
-  `appsettings.Production.json`, `*.pfx`, `*.pubxml`; no push to main, force push, `reset --hard`,
-  `clean -f` or `branch -D`. It denies and asks you to decide.
-- **check-touched** is advisory: `DateTime.Now` instead of `IClock`, `async void`, blocking on a Task,
-  `Task.Run`/`Thread.Sleep` in a concurrency test, a non-`TryAdd` insert, a bare `StatusCode()` in a
-  controller, Admissions referencing Patients. It never blocks an edit.
-- **verify** runs `dotnet test` on Stop when `.cs` or `.csproj` changed, and blocks the turn ending on
-  a red suite. A red suite is legitimate mid-TDD, so it can be skipped with
-  `touch .claude/verify-skip` or `ALCIDION_SKIP_VERIFY=1` - the marker file is gitignored and should
-  be deleted once the suite is green again.
+### Data Access
+- `optimizing-ef-core-queries` — EF Core performance, N+1 prevention
+- `detect-static-dependencies` — Find hard-to-test static calls
 
-## Trust the workspace once
+### Domain Design
+- `domain-modeling` — Build domain vocabulary, aggregates, values
+- `bounded-contexts-and-events` — Domain events, read models, context boundaries
+- `invariants-at-the-write` — Unique constraints, state transitions
 
-`permissions.allow` is ignored until the workspace is trusted: start Claude Code interactively here
-once and accept the trust dialog, or set
-`projects["C:/Users/sam/Desktop/DEV/alcidion/backend"].hasTrustDialogAccepted: true` in
-`~/.claude.json`. Until then every allowlisted command still prompts (and `claude -p` prints the
-warning). Hooks and skills load either way.
+### Testing
+- `test-gap-analysis` — Coverage gaps, survival tests
+- `test-anti-patterns` — Common test failures
+- `assertion-quality` — Strengthen assertions
+- `tdd-and-verification` — Test-driven development
 
-## Local overrides
+### Debugging & Optimization
+- `diagnosing-bugs` — Hard-bug diagnosis loop
+- `analyzing-dotnet-performance` — 50+ performance anti-patterns
+- `coverage-analysis` — Coverage metrics and interpretation
 
-`settings.local.json` is gitignored; put machine-specific permissions there rather than widening
-`settings.json`.
+### Workflow
+- `resolving-merge-conflicts` — Git conflict resolution
+- `writing-for-agents` — Writing code that agents can understand
+- `grilling` — Stress-test your decisions
+
+## Using Skills
+
+Skills are auto-discovered. Invoke one at the right moment:
+
+When adding an API endpoint → use /dotnet-webapi skill
+When optimizing a slow query → use /optimizing-ef-core-queries skill
+When writing tests → use /test-gap-analysis or /assertion-quality skill
+
+## Key Documentation
+
+Start here:
+1. CONTEXT.md — Backend architecture and structure
+2. docs/adr/0003-occupancy-is-its-own-read-model.md — Why occupancy is a read model
+
+Then for specific tasks:
+- New API endpoint? → Read skills/dotnet-webapi/SKILL.md
+- Slow database query? → Read skills/optimizing-ef-core-queries/SKILL.md
+- New bounded context? → Read skills/bounded-contexts-and-events/SKILL.md
+- Test coverage gap? → Read skills/test-gap-analysis/SKILL.md
+
+## Important Files
+
+**Entry & Configuration:**
+- src/Alcidion.Api/Program.cs — DI container, middleware
+- src/Alcidion.Api/appsettings.json — Connection strings, logging
+- Alcidion.sln — Solution file
+
+**By Context:**
+- **Patients:** src/Alcidion.Patients/
+- **Admissions:** src/Alcidion.Admissions/
+- **Hospital (Read Model):** src/Alcidion.Hospital/
+
+**Tests:**
+- tests/Alcidion.Api.Tests/ — Integration tests
+- tests/Alcidion.Domain.Tests/ — Domain unit tests
+- tests/Alcidion.Sql.Tests/ — SQL-specific tests
+
+## Working from Root vs. Backend Dir
+
+From root (alcidion/):
+- Both frontend and backend context available
+- Skills include both ./skills and backend/.claude/skills
+
+From backend (alcidion/backend/):
+- Backend-focused context
+- Skills default to backend/.claude/skills
+- Faster, more focused
+
+## Troubleshooting
+
+**Skill not showing?**
+- Verify it's in backend/.claude/skills/<skill>/SKILL.md
+- Check that SKILL.md has valid frontmatter
+
+**Missing domain context?**
+- Read CONTEXT.md (this directory)
+- Ask Claude to review docs/adr/ for past decisions
+
+**Test questions?**
+- See tests/ subdirectories for examples
+- Use /test-gap-analysis skill for coverage guidance

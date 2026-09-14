@@ -5,17 +5,23 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "tsc -b && vite build && npm run size",
+    "build": "npm run contracts:check && tsc -b && vite build && npm run size",
     "lint": "oxlint",
     "preview": "vite preview",
     "test": "node --test src/lib/*.test.ts",
-    "size": "node scripts/check-bundle-size.mjs"
+    "e2e": "playwright test",
+    "e2e:ui": "playwright test --ui",
+    "e2e:debug": "playwright test --debug",
+    "size": "node scripts/check-bundle-size.mjs",
+    "contracts": "node scripts/schemas-to-ts.mjs",
+    "contracts:check": "node scripts/schemas-to-ts.mjs --check"
   },
   "dependencies": {
     "react": "^19.2.8",
     "react-dom": "^19.2.8"
   },
   "devDependencies": {
+    "@playwright/test": "^1.63.0",
     "@types/node": "^24.13.3",
     "@types/react": "^19.2.18",
     "@types/react-dom": "^19.2.7",

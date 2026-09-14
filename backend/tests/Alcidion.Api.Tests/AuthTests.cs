@@ -1,5 +1,10 @@
 using System.Net;
 using System.Net.Http.Json;
+using System.IdentityModel.Tokens.Jwt;
+using System.Net.Http.Headers;
+using Alcidion.Api.Auth;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.IdentityModel.Tokens;
 
 namespace Alcidion.Api.Tests;
 
@@ -40,4 +45,26 @@ public class AuthTests(ApiFixture api) : IClassFixture<ApiFixture>
     }
 
     private sealed record MeBody(string Name, string[] Roles);
+
+    [Theory]
+    [InlineData(SecurityAlgorithms.HmacSha256, HttpStatusCode.OK)]
+    [InlineData(SecurityAlgorithms.HmacSha384, HttpStatusCode.Unauthorized)]
+    [InlineData(SecurityAlgorithms.HmacSha512, HttpStatusCode.Unauthorized)]
+    public async Task Only_HS256_tokens_are_accepted_even_when_other_signatures_are_valid(string algorithm, HttpStatusCode expected)
+    {
+        // A long key makes every tested HMAC valid; rejection must be about the algorithm,
+        // not an undersized key or a signature that was invalid to begin with.
+        using var host = api.WithWebHostBuilder(b => b.UseSetting("Jwt:Secret", new string('s', 64)));
+        using var client = host.CreateClient();
+        var jwt = host.Services.GetRequiredService<JwtOptions>();
+        var now = host.Services.GetRequiredService<TimeProvider>().GetUtcNow();
+        var token = new JwtSecurityToken(jwt.Issuer, jwt.Audience,
+            notBefore: now.AddMinutes(-1).UtcDateTime, expires: now.AddMinutes(5).UtcDateTime,
+            signingCredentials: new SigningCredentials(jwt.SigningKey, algorithm));
+        client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", new JwtSecurityTokenHandler().WriteToken(token));
+
+        var response = await client.GetAsync("/api/auth/me");
+
+        Assert.Equal(expected, response.StatusCode);
+    }
 }

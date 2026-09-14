@@ -1,0 +1,10 @@
+- generic [ref=e3]:
+  - heading "Sign in" [level=1] [ref=e4]
+  - generic [ref=e5]:
+    - text: Username
+    - textbox "Username" [ref=e6]: nurse
+  - generic [ref=e7]:
+    - text: Password
+    - textbox "Password" [ref=e8]: nurse
+  - button "Sign in" [ref=e9] [cursor=pointer]
+  - paragraph [ref=e10]: "Demo users: nurse/nurse, doctor/doctor (clinician), admin/admin, viewer/viewer (read-only)."

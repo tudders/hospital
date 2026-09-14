@@ -1,0 +1,23 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://alcidion.health/schemas/login-request.json",
+  "title": "LoginRequest",
+  "description": "Body of POST /api/auth/login. Shape only: whether the credentials are right is a 401 from the issuer, and this document deliberately describes nothing that would narrow the guess space for one.",
+  "type": "object",
+  "required": ["username", "password"],
+  "properties": {
+    "username": {
+      "description": "Identifies the user; matched case-insensitively.",
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 64,
+      "pattern": "\\S"
+    },
+    "password": {
+      "description": "Any characters the user chose, leading and trailing spaces included: there is deliberately no format rule here. The 256-character ceiling bounds the request body and is not a password policy.",
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 256
+    }
+  }
+}

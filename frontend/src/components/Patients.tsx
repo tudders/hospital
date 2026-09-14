@@ -1,8 +1,10 @@
 import { useState, type FormEvent } from 'react'
-import { api } from '../lib/api'
+import { api, fieldErrors } from '../lib/api'
+import type { RegisterPatientRequest } from '../lib/contracts'
 import { track } from '../lib/telemetry'
 import type { Patient } from '../lib/types'
 import { ErrorAlert } from './ErrorAlert'
+import { useToast } from './toast-context'
 
 type Props = {
   patients: Patient[]
@@ -10,10 +12,19 @@ type Props = {
   onChanged: () => void
 }
 
+const EMPTY: RegisterPatientRequest = { mrn: '', givenName: '', familyName: '', dateOfBirth: '' }
+
+/** The inputs below carry their own messages, so ErrorAlert must not repeat them. */
+const FORM_FIELDS = Object.keys(EMPTY)
+
 export function Patients({ patients, canWrite, onChanged }: Props) {
-  const [form, setForm] = useState({ mrn: '', givenName: '', familyName: '', dateOfBirth: '' })
+  const { showToast } = useToast()
+  const [form, setForm] = useState<RegisterPatientRequest>(EMPTY)
   const [error, setError] = useState<unknown>(null)
   const [busy, setBusy] = useState(false)
+
+  // Keyed by the field name the API was sent, which is the name each input binds to.
+  const invalid = fieldErrors(error)
 
   async function register(e: FormEvent) {
     e.preventDefault()
@@ -22,13 +33,28 @@ export function Patients({ patients, canWrite, onChanged }: Props) {
     try {
       const p = await api<Patient>('/api/patients', { method: 'POST', body: JSON.stringify(form) })
       track('patient.registered', { patientId: p.id })
-      setForm({ mrn: '', givenName: '', familyName: '', dateOfBirth: '' })
+      setForm(EMPTY)
       onChanged()
+      showToast('Patient details added successfully')
     } catch (err) {
       setError(err)
     } finally {
       setBusy(false)
     }
+  }
+
+  function field(name: keyof RegisterPatientRequest) {
+    return {
+      name,
+      value: form[name],
+      'aria-invalid': invalid[name] ? true : undefined,
+      onChange: (e: React.ChangeEvent<HTMLInputElement>) => setForm({ ...form, [name]: e.target.value }),
+    }
+  }
+
+  function message(name: keyof RegisterPatientRequest) {
+    const messages = invalid[name]
+    return messages ? <span className="field-error">{messages.join(' ')}</span> : null
   }
 
   return (
@@ -41,24 +67,29 @@ export function Patients({ patients, canWrite, onChanged }: Props) {
         <form className="row" onSubmit={register}>
           <label>
             MRN
-            <input required name="mrn" value={form.mrn} onChange={(e) => setForm({ ...form, mrn: e.target.value })} />
+            {/* maxLength matches the schema's, so the input cannot produce a value that 400s. */}
+            <input required maxLength={64} {...field('mrn')} />
+            {message('mrn')}
           </label>
           <label>
             Given name
-            <input required name="givenName" value={form.givenName} onChange={(e) => setForm({ ...form, givenName: e.target.value })} />
+            <input required maxLength={100} {...field('givenName')} />
+            {message('givenName')}
           </label>
           <label>
             Family name
-            <input required name="familyName" value={form.familyName} onChange={(e) => setForm({ ...form, familyName: e.target.value })} />
+            <input required maxLength={100} {...field('familyName')} />
+            {message('familyName')}
           </label>
           <label>
             Date of birth
-            <input required type="date" name="dateOfBirth" value={form.dateOfBirth} onChange={(e) => setForm({ ...form, dateOfBirth: e.target.value })} />
+            <input required type="date" {...field('dateOfBirth')} />
+            {message('dateOfBirth')}
           </label>
           <button className="btn" type="submit" data-track="register" disabled={busy}>Register</button>
         </form>
       )}
-      <ErrorAlert error={error} />
+      <ErrorAlert error={error} handled={FORM_FIELDS} />
 
       {patients.length === 0 ? (
         <div className="empty">No patients yet.</div>

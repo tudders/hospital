@@ -1,0 +1,42 @@
+async (page) => {
+  let checks = 0;
+  const assert = (condition, message) => { if (!condition) throw new Error(message); checks++; };
+  await page.waitForFunction(() => document.querySelectorAll('.model-bed').length === 720);
+  assert(await page.getByLabel('Occupancy data source').inputValue() === 'sql', 'Expected real database source');
+  assert((await page.locator('.hospital-stat.occupied strong').innerText()).startsWith('480'), 'Expected 480 occupied beds');
+  assert((await page.locator('.hospital-stat.available strong').innerText()).startsWith('240'), 'Expected 240 available beds');
+  const historicalResponse = page.waitForResponse(r => r.url().includes('/api/hospital-occupancy?at=') && r.status() === 200);
+  const localSeedTime = await page.evaluate(() => {
+    const seed = new Date('2026-09-12T06:00:00Z');
+    return new Date(seed.getTime() - seed.getTimezoneOffset() * 60000).toISOString().slice(0, 16);
+  });
+  await page.getByLabel('Snapshot local date and time').fill(localSeedTime);
+  await page.getByRole('button', { name: 'View time', exact: true }).click();
+  const history = await (await historicalResponse).json();
+  assert(history.source === 'sql' && history.beds.length === 720 && Date.parse(history.asOf) === Date.parse('2026-09-12T06:00:00Z'), 'Historical SQL response mismatch');
+  await page.waitForFunction(() => document.querySelector('.hospital-freshness').textContent.includes('Historical snapshot'));
+  await page.getByRole('button', { name: 'Level 5', exact: true }).click();
+  assert(await page.locator('.model-bed').count() === 144, 'Expected 144 bed meshes on floor 5');
+  await page.locator('.model-bed.occupied').last().hover();
+  assert((await page.locator('.hospital-inspection').innerText()).includes('HOVER INSPECTION'), 'Hover inspector failed');
+  await page.locator('.model-bed.occupied').last().click();
+  assert(await page.locator('.hospital-bed.selected').count() === 1, '3D bed selection failed');
+  await page.locator('.hospital-rooms button').last().focus();
+  await page.keyboard.press('Enter');
+  await page.locator('.hospital-beds button').last().focus();
+  await page.keyboard.press('Enter');
+  assert((await page.locator('.hospital-inspection h3').innerText()).startsWith('Bed 6'), 'Keyboard bed inspection failed');
+  await page.getByRole('button', { name: 'Reset view', exact: true }).click();
+  await page.screenshot({ path: 'output/playwright/hospital-external-desktop.png', fullPage: true });
+  await page.setViewportSize({ width: 390, height: 844 });
+  assert(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth), 'Mobile horizontal overflow');
+  await page.screenshot({ path: 'output/playwright/hospital-external-mobile.png', fullPage: true });
+  await page.setViewportSize({ width: 1440, height: 1100 });
+  const nowResponse = page.waitForResponse(r => r.url().endsWith('/api/hospital-occupancy') && r.status() === 200);
+  await page.getByRole('button', { name: 'Now', exact: true }).click();
+  const initial = await (await nowResponse).json();
+  const polled = await (await page.waitForResponse(r => r.url().endsWith('/api/hospital-occupancy') && r.status() === 200, { timeout: 25000 })).json();
+  assert(polled.source === 'sql' && Date.parse(polled.capturedAt) > Date.parse(initial.capturedAt), 'Automatic polling did not return a newer SQL snapshot');
+  assert(await page.locator('[role="alert"]').count() === 0, 'Unexpected error alert');
+  return { checks, source: polled.source, beds: polled.beds.length, automaticRefreshVerified: true };
+}

@@ -27,19 +27,19 @@ public class PatientFlowTests(ApiFixture api) : IClassFixture<ApiFixture>
         var dup = await client.PostAsJsonAsync("/api/admissions", new { patientId = patient.Id, ward = "ICU" });
         Assert.Equal(HttpStatusCode.Conflict, dup.StatusCode);
 
-        var dis = await client.PostAsync($"/api/admissions/{admission.Id}/discharge", null);
+        var dis = await client.ChangeAdmissionAsync(admission.Id, new { status = "discharged" }, adm.Version());
         Assert.Equal(HttpStatusCode.OK, dis.StatusCode);
         Assert.Equal("Discharged", (await dis.Content.ReadFromJsonAsync<Admission>())!.Status);
     }
 
     [Fact]
-    public async Task Admit_unknown_patient_is_404_problem_details()
+    public async Task Admit_unknown_patient_is_422_problem_details()
     {
         var client = await api.ClientAs("doctor");
 
         var res = await client.PostAsJsonAsync("/api/admissions", new { patientId = Guid.NewGuid(), ward = "ICU" });
 
-        Assert.Equal(HttpStatusCode.NotFound, res.StatusCode);
+        Assert.Equal(HttpStatusCode.UnprocessableEntity, res.StatusCode);
         Assert.Equal("application/problem+json", res.Content.Headers.ContentType!.MediaType);
     }
 
@@ -70,6 +70,17 @@ public class PatientFlowTests(ApiFixture api) : IClassFixture<ApiFixture>
 
         Assert.Equal(HttpStatusCode.Conflict, second.StatusCode);
         Assert.Single((await client.GetFromJsonAsync<List<Patient>>("/api/patients"))!, p => p.Mrn == "REVIEW-1");
+    }
+
+    [Fact]
+    public async Task Patient_search_with_no_match_returns_no_records()
+    {
+        var client = await api.ClientAs("doctor");
+
+        var results = await client.GetFromJsonAsync<List<Patient>>("/api/patients?search=does-not-exist");
+
+        Assert.NotNull(results);
+        Assert.Empty(results);
     }
 
     [Fact]

@@ -1,0 +1,30 @@
+{
+  "workspaces": [
+    {
+      "name": "backend",
+      "path": "./backend",
+      "description": "ASP.NET Core 9.0 Web API with EF Core, domain events, and occupancy read model"
+    },
+    {
+      "name": "frontend",
+      "path": "./frontend",
+      "description": "React-based hospital occupancy and patient management UI"
+    }
+  ],
+  "mcp": {
+    "servers": {
+      "codebase-memory": {
+        "command": "python",
+        "args": ["-m", "codebase_memory"],
+        "env": {}
+      }
+    }
+  },
+  "skills": {
+    "paths": [
+      "./skills",
+      "./backend/.claude/skills"
+    ]
+  },
+  "model": "claude-opus-5"
+}

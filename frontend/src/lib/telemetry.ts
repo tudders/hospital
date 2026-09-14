@@ -12,15 +12,25 @@
  * Capture lives in session-recorder.ts. This module only buffers and ships.
  */
 
-export type ClientEvent = {
-  name: string
-  sessionId: string
-  seq: number
-  at: string
-  /** Milliseconds since the session started, for replaying the timeline at its original pace. */
-  t: number
-  props?: Record<string, unknown>
-}
+// The event shape is the backend's JSON Schema, generated into contracts.ts - not restated here.
+import type { ClientEvent } from './contracts.ts'
+
+export type { ClientEvent }
+
+/**
+ * What this client actually queues. The contract makes the timeline fields optional, because the
+ * API accepts a batch from an older tab that has none; `track` always sets them, and the recorder
+ * relies on that, so the queue is typed for what it holds rather than for what the wire allows.
+ */
+export type RecordedEvent = ClientEvent & Required<Pick<ClientEvent, 'seq' | 't'>>
+
+/**
+ * What an event may carry. The API bounds `props` to flat scalars and 1024-character strings, and
+ * rejects the *whole batch* when one value breaks that - a 400 this client deliberately swallows,
+ * so a violation costs a session's telemetry silently. Naming the type here is what turns that into
+ * a compile error at the `track` call instead.
+ */
+export type EventProps = NonNullable<ClientEvent['props']>
 
 const SESSION_KEY = 'alcidion.sessionId'
 const SEQ_KEY = 'alcidion.seq'
@@ -58,7 +68,7 @@ export function newCorrelationId(): string {
   return crypto.randomUUID().replace(/-/g, '')
 }
 
-let queue: ClientEvent[] = []
+let queue: RecordedEvent[] = []
 let endpoint = ''
 let timer: number | undefined
 let dropped = 0
@@ -71,7 +81,10 @@ export function configureTelemetry(apiBaseUrl: string) {
   }
 }
 
-export function track(name: string, props?: Record<string, unknown>) {
+/** The API's own ceiling on a string value; a longer one fails the batch rather than itself. */
+const MAX_PROP_CHARS = 1024
+
+export function track(name: string, props?: EventProps) {
   if (queue.length >= MAX_QUEUE) {
     dropped++
     return
@@ -88,9 +101,26 @@ export function track(name: string, props?: Record<string, unknown>) {
     seq,
     at: new Date().toISOString(),
     t: Math.round(performance.now() - startedAt),
-    props: dropped > 0 ? { ...props, droppedSinceLastEvent: takeDropped() } : props,
+    props: bounded(dropped > 0 ? { ...props, droppedSinceLastEvent: takeDropped() } : props),
   })
   if (queue.length >= MAX_BATCH) flush()
+}
+
+/**
+ * Clips string values to the length the API accepts. Lengths are what types cannot police, and the
+ * unbounded ones are the interesting ones - an `app.error` message, a `String(reason)` from a
+ * rejected promise. A clipped value still describes the event; an unclipped one takes the batch
+ * around it down with it.
+ */
+function bounded(props: EventProps | undefined): EventProps | undefined {
+  if (!props) return props
+  let clipped: EventProps | undefined
+  for (const [key, value] of Object.entries(props)) {
+    if (typeof value !== 'string' || value.length <= MAX_PROP_CHARS) continue
+    clipped ??= { ...props }
+    clipped[key] = `${value.slice(0, MAX_PROP_CHARS - 1)}…`
+  }
+  return clipped ?? props
 }
 
 function takeDropped() {
@@ -121,6 +151,6 @@ export function flush(useBeacon = false) {
 }
 
 /** Test seam: the queued events, without shipping them. */
-export function pendingEvents(): readonly ClientEvent[] {
+export function pendingEvents(): readonly RecordedEvent[] {
   return queue
 }

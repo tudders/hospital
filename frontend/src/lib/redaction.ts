@@ -39,7 +39,10 @@ export function describeTarget(el: ElementLike | null | undefined): string {
 }
 
 /** Field identity only. The value itself never leaves the browser; its length is enough for replay. */
-export function describeField(el: ElementLike, rawValue: unknown): Record<string, unknown> {
+export function describeField(
+  el: ElementLike,
+  rawValue: unknown,
+): { field: string; inputType: string; valueLength: number; filled: boolean } {
   const value = typeof rawValue === 'string' ? rawValue : ''
   return {
     field: describeTarget(el),
