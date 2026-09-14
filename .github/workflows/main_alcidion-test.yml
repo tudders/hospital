@@ -7,7 +7,9 @@ on:
   push:
     branches:
       - main
-  workflow_dispatch:
+    paths:
+      - "backend/**"
+  workflow_dispatch:  
 
 jobs:
   build:
@@ -21,19 +23,21 @@ jobs:
       - name: Set up .NET Core
         uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: '10.x'
+          dotnet-version: '10.0.x'
 
-      - name: Build with dotnet
-        run: dotnet build --configuration Release
+      - name: Build
+        working-directory: backend
+        run: dotnet build Alcidion.sln --configuration Release
 
       - name: dotnet publish
-        run: dotnet publish -c Release -o "${{env.DOTNET_ROOT}}/myapp"
-
+        working-directory: backed
+        run: dotnet publish src/Alcidion.Api/Alcidion.Api.csproj --configuration Release --output ../publish
+        
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v4
         with:
           name: .net-app
-          path: ${{env.DOTNET_ROOT}}/myapp
+          path: ./publish
 
   deploy:
     runs-on: windows-latest
