@@ -1,6 +1,6 @@
 # Backend Architecture - Alcidion
 
-ASP.NET Core 9.0 Web API with domain-driven design, EF Core, and SQL Server.
+ASP.NET Core 10.0 Web API with domain-driven design, EF Core, and SQL Server.
 
 ## Solution Structure
 
@@ -155,9 +155,9 @@ See `Alcidion.Api.Contracts/` for response DTOs.
 ## Dependencies
 
 Key NuGet packages:
-- `Microsoft.EntityFrameworkCore` 9.0
+- `Microsoft.EntityFrameworkCore` 10.0.12
 - `Microsoft.Data.SqlClient` 6.1.7
-- `Microsoft.AspNetCore.Authentication.JwtBearer` 9.0.7
+- `Microsoft.AspNetCore.Authentication.JwtBearer` 10.0.12
 - `OpenTelemetry.*` 1.18.0 — Distributed tracing & metrics
 
 ## Next Steps

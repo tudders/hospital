@@ -30,7 +30,13 @@ builder.Services
 // Schema-generated request types bind and validate through their own formatter; everything else
 // keeps falling through to System.Text.Json. See docs/adr/0001-schema-first-request-validation.md.
 builder.Services.AddControllers(o => o.InputFormatters.Insert(0, new JsonSchemaInputFormatter()));
-builder.Services.AddOpenApi(o => o.AddSchemaTransformer<JsonSchemaOpenApiTransformer>());
+builder.Services.AddOpenApi(o =>
+{
+    // Keep the public document on OpenAPI 3.0 while the project migrates to the .NET 10
+    // OpenAPI.NET 2.x model. This preserves the existing nullable/anyOf wire contract.
+    o.OpenApiVersion = Microsoft.OpenApi.OpenApiSpecVersion.OpenApi3_0;
+    o.AddSchemaTransformer<JsonSchemaOpenApiTransformer>();
+});
 builder.Services.AddProblemDetails();
 builder.Services.AddSingleton<TelemetryIngestFilter>();
 builder.Services.AddCors(o => o.AddDefaultPolicy(p => p

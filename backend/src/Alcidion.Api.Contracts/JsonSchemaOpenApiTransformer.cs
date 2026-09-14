@@ -1,9 +1,9 @@
 using System.Collections.Concurrent;
 using System.Reflection;
 using System.Text.Json;
+using System.Text.Json.Nodes;
 using Microsoft.AspNetCore.OpenApi;
-using Microsoft.OpenApi.Any;
-using Microsoft.OpenApi.Models;
+using Microsoft.OpenApi;
 
 namespace Alcidion.Api.Contracts;
 
@@ -43,6 +43,10 @@ public sealed class JsonSchemaOpenApiTransformer : IOpenApiSchemaTransformer
     /// </summary>
     private static void Apply(JsonElement json, OpenApiSchema schema)
     {
+        schema.Properties ??= new Dictionary<string, IOpenApiSchema>();
+        schema.Required ??= new HashSet<string>();
+        schema.Enum ??= new List<JsonNode>();
+        schema.AnyOf ??= new List<IOpenApiSchema>();
         schema.Properties.Clear();
         schema.Required.Clear();
         schema.AdditionalPropertiesAllowed = true;
@@ -52,15 +56,19 @@ public sealed class JsonSchemaOpenApiTransformer : IOpenApiSchemaTransformer
             switch (keyword.Name)
             {
                 case "type" when keyword.Value.ValueKind is JsonValueKind.Array:
-                    // OpenAPI 3.0 allows null only when nullable sits beside an explicit type.
-                    var nullable = keyword.Value.EnumerateArray().Any(t => t.GetString() == "null");
+                    var nullable = keyword.Value.EnumerateArray()
+                        .Any(t => t.GetString() == "null");
                     foreach (var type in keyword.Value.EnumerateArray())
                     {
-                        if (type.GetString() != "null")
-                            schema.AnyOf.Add(new OpenApiSchema { Type = type.GetString(), Nullable = nullable });
+                        if (type.GetString() is { } typeName && typeName != "null")
+                        {
+                            var parsed = ParseSchemaType(typeName);
+                            if (nullable) parsed |= JsonSchemaType.Null;
+                            schema.AnyOf.Add(new OpenApiSchema { Type = parsed });
+                        }
                     }
                     break;
-                case "type": schema.Type = keyword.Value.GetString(); break;
+                case "type": schema.Type = ParseSchemaType(keyword.Value.GetString()!); break;
                 case "format": schema.Format = keyword.Value.GetString(); break;
                 case "pattern": schema.Pattern = keyword.Value.GetString(); break;
                 case "title": schema.Title = keyword.Value.GetString(); break;
@@ -71,8 +79,8 @@ public sealed class JsonSchemaOpenApiTransformer : IOpenApiSchemaTransformer
                 case "maxItems": schema.MaxItems = keyword.Value.GetInt32(); break;
                 case "minProperties": schema.MinProperties = keyword.Value.GetInt32(); break;
                 case "maxProperties": schema.MaxProperties = keyword.Value.GetInt32(); break;
-                case "minimum": schema.Minimum = keyword.Value.GetDecimal(); break;
-                case "maximum": schema.Maximum = keyword.Value.GetDecimal(); break;
+                case "minimum": schema.Minimum = keyword.Value.GetRawText(); break;
+                case "maximum": schema.Maximum = keyword.Value.GetRawText(); break;
                 case "default": schema.Default = Any(keyword.Value); break;
 
                 case "enum":
@@ -97,7 +105,7 @@ public sealed class JsonSchemaOpenApiTransformer : IOpenApiSchemaTransformer
 
                 case "items":
                     schema.Items = new OpenApiSchema();
-                    Apply(keyword.Value, schema.Items);
+                    Apply(keyword.Value, (OpenApiSchema)schema.Items);
                     break;
 
                 case "additionalProperties" when keyword.Value.ValueKind is JsonValueKind.False:
@@ -105,18 +113,32 @@ public sealed class JsonSchemaOpenApiTransformer : IOpenApiSchemaTransformer
                     break;
                 case "additionalProperties" when keyword.Value.ValueKind is JsonValueKind.Object:
                     schema.AdditionalProperties = new OpenApiSchema();
-                    Apply(keyword.Value, schema.AdditionalProperties);
+                    Apply(keyword.Value, (OpenApiSchema)schema.AdditionalProperties);
                     break;
             }
         }
     }
 
-    private static IOpenApiAny? Any(JsonElement value) => value.ValueKind switch
+    private static JsonSchemaType ParseSchemaType(string type) => type switch
     {
-        JsonValueKind.String => new OpenApiString(value.GetString()),
-        JsonValueKind.Number => new OpenApiDouble(value.GetDouble()),
-        JsonValueKind.True or JsonValueKind.False => new OpenApiBoolean(value.GetBoolean()),
-        _ => null,
+        "null" => JsonSchemaType.Null,
+        "boolean" => JsonSchemaType.Boolean,
+        "integer" => JsonSchemaType.Integer,
+        "number" => JsonSchemaType.Number,
+        "string" => JsonSchemaType.String,
+        "object" => JsonSchemaType.Object,
+        "array" => JsonSchemaType.Array,
+        _ => throw new InvalidOperationException($"Unsupported JSON Schema type '{type}'."),
+    };
+
+    private static JsonNode? Any(JsonElement value) => value.ValueKind switch
+    {
+        JsonValueKind.String => JsonValue.Create(value.GetString()),
+        JsonValueKind.Number => JsonNode.Parse(value.GetRawText()),
+        JsonValueKind.True or JsonValueKind.False => JsonValue.Create(value.GetBoolean()),
+        JsonValueKind.Null => null,
+        JsonValueKind.Array or JsonValueKind.Object => JsonNode.Parse(value.GetRawText()),
+        _ => throw new InvalidOperationException($"Unsupported JSON value kind '{value.ValueKind}'."),
     };
 }
 

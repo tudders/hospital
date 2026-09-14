@@ -1,6 +1,6 @@
 # Alcidion API (backend)
 
-ASP.NET Core 9 Web API. Deployed to SmarterASP.NET (Windows Server 2022 / IIS 10, Web Deploy or GitHub workflow deploy; .NET 9 supported).
+ASP.NET Core 10 Web API. Deployed to SmarterASP.NET (Windows Server 2022 / IIS 10, Web Deploy or GitHub workflow deploy; .NET 10 supported).
 
 ## Layout
 

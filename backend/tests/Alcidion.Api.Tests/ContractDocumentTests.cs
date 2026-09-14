@@ -36,6 +36,17 @@ public class ContractDocumentTests(ApiFixture api) : IClassFixture<ApiFixture>
         document.GetProperty("paths").GetProperty(path).GetProperty("post")
             .GetProperty("requestBody").GetProperty("content").GetProperty("application/json").GetProperty("schema");
 
+    /// <summary>
+    /// OpenAPI.NET 2.x may publish primitive numeric schemas as an anyOf containing the primitive
+    /// branch and its JSON string-compatible branch. Select the branch whose type is under test so
+    /// this assertion remains about the contract rather than the serializer representation.
+    /// </summary>
+    private static JsonElement PrimitiveBranch(JsonElement schema, string type) =>
+        schema.TryGetProperty("type", out var direct) && direct.ValueKind is JsonValueKind.String
+            ? schema
+            : schema.GetProperty("anyOf").EnumerateArray()
+                .Single(branch => branch.GetProperty("type").GetString() == type);
+
     [Fact]
     public async Task Telemetry_publishes_its_limits_and_accepted_response()
     {
@@ -53,7 +64,7 @@ public class ContractDocumentTests(ApiFixture api) : IClassFixture<ApiFixture>
         var response = document.GetProperty("paths"u8).GetProperty("/api/telemetry/events"u8).GetProperty("post"u8)
             .GetProperty("responses"u8).GetProperty("202"u8).GetProperty("content"u8).GetProperty("application/json"u8).GetProperty("schema"u8);
         var fields = Resolve(document, response).GetProperty("properties"u8);
-        Assert.Equal("integer", fields.GetProperty("received"u8).GetProperty("type"u8).GetString());
+        Assert.Equal("integer", PrimitiveBranch(fields.GetProperty("received"u8), "integer").GetProperty("type"u8).GetString());
         Assert.Equal("string", fields.GetProperty("correlationId"u8).GetProperty("type"u8).GetString());
     }
 

@@ -1,12 +1,12 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net9.0</TargetFramework>
+    <TargetFramework>net10.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
-    <!-- Corvus 5.x emits C# 14 ('simple lambda parameter modifiers'), which the .NET 9 SDK only
-         compiles under 'preview'. Checked against 5.1.19, 5.2.13, 5.3.2, 5.4.3 and 5.5.5 - every
-         one of them. Install the .NET 10 SDK and this becomes LangVersion 14, which is supported.
+    <!-- Corvus 5.x emits C# 14 ('simple lambda parameter modifiers'), which the .NET 10 SDK
+         supports as the default language version. The explicit preview setting is retained because
+         the generated source has previously required it across Corvus 5.x versions.
 
          This project exists to keep that setting off Alcidion.Api: generated code needs preview,
          hand-written API code must not silently acquire unsupported language features. -->
@@ -35,7 +35,7 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
-    <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="9.0.7" />
+    <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="10.0.12" />
   </ItemGroup>
 
   <ItemGroup>
