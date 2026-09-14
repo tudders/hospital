@@ -20,6 +20,7 @@ export default function App() {
   const [wards, setWards] = useState<Ward[]>([])
   const [locatePatientId, setLocatePatientId] = useState<string | null>(null)
   const [error, setError] = useState<unknown>(null)
+  const clearLocate = useCallback(() => setLocatePatientId(null), [])
 
   const refresh = useCallback(async () => {
     try {
@@ -64,6 +65,7 @@ export default function App() {
     setMe(null)
     setAdmissions([])
     setWards([])
+    clearLocate()
     setPage('hospital')
   }
 
@@ -72,9 +74,9 @@ export default function App() {
 
   const write = canWrite(me)
   return (
-    <Layout me={me} currentPage={page} onNavigate={setPage} onLogout={logout}>
+    <Layout me={me} currentPage={page} onNavigate={next => { clearLocate(); setPage(next) }} onLogout={logout}>
       <div className={page === 'hospital' ? 'app-hospital' : ''}>
-        {page === 'hospital' ? <Hospital key={me.name} locatePatientId={locatePatientId} /> : <>
+        {page === 'hospital' ? <Hospital key={me.name} locatePatientId={locatePatientId} onLocated={clearLocate} /> : <>
           <ErrorAlert error={error} />
           <PatientFlow admissions={admissions} wards={wards} canWrite={write} onChanged={refresh} onLocate={(patientId) => { setLocatePatientId(patientId); setPage('hospital') }} />
         </>}

@@ -22,7 +22,12 @@ export function HospitalModel({ hospital, floorId, angle, exploded, focusedBedId
     for (const [fi, floor] of floors.entries()) for (const [wi, ward] of floor.wards.entries()) {
       const wx = 12 + wi % 2 * 204, wy = 12 + Math.floor(wi / 2) * 132
       for (const [ri, room] of ward.rooms.entries()) for (const [bi, bed] of room.beds.entries()) {
-        if (bed.id === focusedBedId) return { x: wx + ri % 3 * 62 + 4 + bi % 3 * 18, y: wy + Math.floor(bi / 3) * 24 + 4, z: (single ? 0 : fi * spacing) + 7 }
+        // Match the rendered room row and target the centre of the bed's top face.
+        if (bed.id === focusedBedId) return {
+          x: wx + ri % 3 * 62 + 4 + bi % 3 * 18 + 13 / 2,
+          y: wy + Math.floor(ri / 3) * 55 + 4 + Math.floor(bi / 3) * 24 + 18 / 2,
+          z: (single ? 0 : fi * spacing) + 7,
+        }
       }
     }
     return null

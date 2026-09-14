@@ -6,9 +6,9 @@ import { HospitalModel, type Inspection } from './HospitalModel'
 
 const formatTime = (iso: string) => new Date(iso).toLocaleString(undefined, { dateStyle: 'medium', timeStyle: 'short' })
 
-type Props = { locatePatientId?: string | null }
+type Props = { locatePatientId?: string | null; onLocated: () => void }
 
-export function Hospital({ locatePatientId = null }: Props) {
+export function Hospital({ locatePatientId = null, onLocated }: Props) {
   const [source, setSource] = useState<'sql' | 'sample'>('sql')
   const [snapshot, setSnapshot] = useState<HospitalSnapshot | null>(null)
   const [error, setError] = useState<unknown>(null)
@@ -16,7 +16,6 @@ export function Hospital({ locatePatientId = null }: Props) {
   const [at, setAt] = useState<string | null>(null)
   const [draftAt, setDraftAt] = useState(localDateTime(new Date()))
   const [refresh, setRefresh] = useState(0)
-  const [autoRefresh, setAutoRefresh] = useState(true)
   const [hospitalId, setHospitalId] = useState('')
   const [floorId, setFloorId] = useState('all')
   const [wardId, setWardId] = useState('')
@@ -29,7 +28,6 @@ export function Hospital({ locatePatientId = null }: Props) {
 
   useEffect(() => {
     const controller = new AbortController()
-    let timer: ReturnType<typeof setTimeout> | undefined
     async function load() {
       setBusy(true)
       try {
@@ -41,13 +39,12 @@ export function Hospital({ locatePatientId = null }: Props) {
       } finally {
         if (!controller.signal.aborted) {
           setBusy(false)
-          if (source === 'sql' && !at && autoRefresh) timer = setTimeout(() => { void load() }, 15_000)
         }
       }
     }
     void load()
-    return () => { controller.abort(); clearTimeout(timer) }
-  }, [source, at, refresh, autoRefresh])
+    return () => controller.abort()
+  }, [source, at, refresh])
 
   const hospitals = useMemo(() => hospitalHierarchy(snapshot?.beds ?? []), [snapshot])
   const hospital = hospitals.find(h => h.id === hospitalId) ?? hospitals[0]
@@ -71,22 +68,23 @@ export function Hospital({ locatePatientId = null }: Props) {
     const found = snapshot.beds.find(next => next.patientId === locatePatientId)
     if (!found) return
     const timer = setTimeout(() => {
-    // Location is an external navigation request: synchronise the hospital controls to it.
-    setHospitalId(found.hospitalId)
-    setFloorId(found.floorId)
-    setWardId(found.wardId)
-    setRoomId(found.roomId)
-    setBedId(found.id)
-    setFocusedBedId(found.id)
-    setExploded(false)
-    setHovered({
-      label: `${found.patientName ?? 'Patient'} · Bed ${found.number}`,
-      path: `${found.floorName} / ${found.wardName} / ${found.roomName}`,
-      beds: [found],
-    })
+      // Consume this navigation request so later snapshots cannot repeat it.
+      setHospitalId(found.hospitalId)
+      setFloorId(found.floorId)
+      setWardId(found.wardId)
+      setRoomId(found.roomId)
+      setBedId(found.id)
+      setFocusedBedId(found.id)
+      setExploded(false)
+      setHovered({
+        label: `${found.patientName ?? 'Patient'} · Bed ${found.number}`,
+        path: `${found.floorName} / ${found.wardName} / ${found.roomName}`,
+        beds: [found],
+      })
+      onLocated()
     }, 0)
     return () => clearTimeout(timer)
-  }, [locatePatientId, snapshot])
+  }, [locatePatientId, snapshot, onLocated])
 
   function chooseFloor(id: string) { setFloorId(id); setWardId(''); setRoomId(''); setBedId(''); setFocusedBedId(''); setHovered(null) }
   function selectBed(next: HospitalBed) {
@@ -102,7 +100,7 @@ export function Hospital({ locatePatientId = null }: Props) {
       <div><p className="hospital-eyebrow">OPERATIONS / SPATIAL OVERVIEW</p><h2>Hospital at a glance<span className="hospital-title-dot">.</span></h2>
         <p className="hint">Every floor. Every room. A clearer picture of capacity.</p></div>
       <div className={`hospital-freshness ${error ? 'is-stale' : ''}`} role="status"><span className="freshness-dot" />
-        {source === 'sample' ? 'Sample data · not live' : error ? 'Unavailable · snapshot may be stale' : busy ? 'Reading snapshot…' : at ? 'Historical snapshot' : autoRefresh ? 'Auto-refresh · every 15s' : 'Snapshot · refresh paused'}
+        {source === 'sample' ? 'Sample data · not live' : error ? 'Unavailable · snapshot may be stale' : busy ? 'Reading snapshot…' : at ? 'Historical snapshot' : 'Snapshot · refresh manually'}
       </div>
     </div>
 
@@ -122,7 +120,6 @@ export function Hospital({ locatePatientId = null }: Props) {
         setDraftAt(localDateTime(new Date(source === 'sample' ? SAMPLE_TIME : Date.now())))
         setAt(null); setRefresh(n => n + 1)
       }} disabled={busy}>{source === 'sample' ? 'Reset sample' : 'Now'}</button>
-      {source === 'sql' && <label className="hospital-auto"><input type="checkbox" data-track="hospital-auto-refresh" checked={autoRefresh} disabled={!!at} onChange={e => setAutoRefresh(e.target.checked)} /> Auto-refresh</label>}
       <button className="btn sm" data-track="refresh-hospital" onClick={() => setRefresh(n => n + 1)} disabled={busy}>{busy ? 'Loading…' : '↻ Refresh'}</button>
     </div>
     <ErrorAlert error={error} />
