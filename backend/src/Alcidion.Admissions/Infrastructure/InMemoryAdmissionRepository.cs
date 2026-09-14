@@ -22,6 +22,15 @@ public sealed class InMemoryAdmissionRepository : IAdmissionRepository
     public Task<IReadOnlyList<Admission>> ListAsync(CancellationToken ct = default) =>
         Task.FromResult<IReadOnlyList<Admission>>(_store.Values.OrderBy(a => a.AdmittedAt).ThenBy(a => a.Id).ToList());
 
+    public Task<TransferResult> TransferAsync(Guid admissionId, string ward, DateTimeOffset now, CancellationToken ct = default)
+    {
+        if (!_store.TryGetValue(admissionId, out var admission) || admission.Status == AdmissionStatus.Discharged)
+            return Task.FromResult<TransferResult>(new TransferResult.NotFound());
+        try { admission.Transfer(ward); }
+        catch (InvalidOperationException) { return Task.FromResult<TransferResult>(new TransferResult.NotFound()); }
+        return Task.FromResult<TransferResult>(new TransferResult.Transferred(admission));
+    }
+
     /// <summary>
     /// There are no beds to allocate here, so the only outcome this store can refuse is a patient
     /// who is already admitted. A ward is whatever text the caller asked for.

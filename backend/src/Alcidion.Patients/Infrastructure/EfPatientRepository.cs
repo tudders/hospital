@@ -35,6 +35,17 @@ public sealed class EfPatientRepository(PatientsDbContext db) : IPatientReposito
         return rows.Select(r => r.ToDomain()).ToList();
     }
 
+    public async Task<IReadOnlyList<Patient>> SearchAsync(string query, CancellationToken ct = default)
+    {
+        var wanted = query.Trim();
+        var rows = await db.Patients.AsNoTracking()
+            .Where(p => p.Mrn.Contains(wanted) || p.GivenName.Contains(wanted) || p.FamilyName.Contains(wanted))
+            .OrderBy(p => p.FamilyName).ThenBy(p => p.GivenName).ThenBy(p => p.Mrn)
+            .Take(50)
+            .ToListAsync(ct);
+        return rows.Select(r => r.ToDomain()).ToList();
+    }
+
     public async Task<bool> TryAddAsync(Patient patient, CancellationToken ct = default)
     {
         db.Patients.Add(PatientRow.From(patient));

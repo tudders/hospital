@@ -1,4 +1,4 @@
-import { ReactNode } from 'react';
+import { type ReactNode } from 'react';
 import { Header } from './Header';
 import { Sidenav } from './Sidenav';
 import type { Me } from '../lib/auth';

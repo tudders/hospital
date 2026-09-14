@@ -32,7 +32,8 @@ public sealed class HospitalOccupancyReader(IConfiguration configuration, IWebHo
                     beds.Add(new HospitalBed(reader.GetGuid(0), reader.GetString(1), reader.GetInt32(2),
                         reader.GetGuid(3), reader.GetString(4), reader.GetGuid(5), reader.GetString(6), reader.GetInt32(7),
                         reader.GetGuid(8), reader.GetString(9), reader.GetGuid(10), reader.GetString(11), reader.GetInt32(12),
-                        reader.GetString(13)));
+                        reader.GetString(13), reader.IsDBNull(14) ? null : reader.GetGuid(14),
+                        reader.IsDBNull(15) ? null : reader.GetString(15)));
             }
             await transaction.CommitAsync(ct);
             return Result<HospitalSnapshot>.Ok(new(asOf, time.GetUtcNow(), "sql", beds));
@@ -68,12 +69,24 @@ public sealed class HospitalOccupancyReader(IConfiguration configuration, IWebHo
                  WHEN EXISTS (SELECT 1 FROM dbo.bed_blocks x WHERE x.bed_id = b.id
                      AND x.starts_at <= @at AND (x.ends_at IS NULL OR x.ends_at > @at)) THEN 'blocked'
                  ELSE 'available'
-               END AS status
+               END AS status,
+               placement.patient_id, placement.patient_name
         FROM dbo.hospitals h
         JOIN dbo.floors f ON f.hospital_id = h.id
         JOIN dbo.wards w ON w.floor_id = f.id
         JOIN dbo.rooms r ON r.ward_id = w.id AND r.floor_id = f.id
         JOIN dbo.beds b ON b.room_id = r.id AND b.ward_id = w.id
+        OUTER APPLY (
+            SELECT TOP (1) a.patient_id,
+                   CONCAT(p.given_name, ' ', p.family_name) AS patient_name
+            FROM dbo.bed_stays s
+            JOIN dbo.admissions a ON a.id = s.admission_id
+            JOIN dbo.patients p ON p.id = a.patient_id
+            WHERE s.bed_id = b.id
+              AND s.started_at <= @at AND (s.ended_at IS NULL OR s.ended_at > @at)
+              AND a.cancelled_at IS NULL
+            ORDER BY s.started_at DESC
+        ) placement
         ORDER BY h.code, f.floor_number, w.code, r.room_number, b.bed_number
         """;
 }

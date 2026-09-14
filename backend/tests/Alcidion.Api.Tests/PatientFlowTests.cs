@@ -73,6 +73,17 @@ public class PatientFlowTests(ApiFixture api) : IClassFixture<ApiFixture>
     }
 
     [Fact]
+    public async Task Patient_search_with_no_match_returns_no_records()
+    {
+        var client = await api.ClientAs("doctor");
+
+        var results = await client.GetFromJsonAsync<List<Patient>>("/api/patients?search=does-not-exist");
+
+        Assert.NotNull(results);
+        Assert.Empty(results);
+    }
+
+    [Fact]
     public async Task Telemetry_ingest_is_anonymous_and_returns_correlation_id()
     {
         var client = api.CreateClient();

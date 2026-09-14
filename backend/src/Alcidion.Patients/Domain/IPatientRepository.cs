@@ -6,6 +6,7 @@ public interface IPatientRepository
     Task<Patient?> GetByIdAsync(Guid id, CancellationToken ct = default);
     Task<Patient?> GetByMrnAsync(string mrn, CancellationToken ct = default);
     Task<IReadOnlyList<Patient>> ListAsync(CancellationToken ct = default);
+    Task<IReadOnlyList<Patient>> SearchAsync(string query, CancellationToken ct = default);
 
     /// <summary>
     /// Inserts the patient only if its MRN is unused, atomically. Returns false when the MRN is

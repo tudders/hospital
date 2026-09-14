@@ -7,7 +7,7 @@ public sealed class Admission
 {
     public Guid Id { get; }
     public Guid PatientId { get; }
-    public string Ward { get; }
+    public string Ward { get; private set; }
     public DateTimeOffset AdmittedAt { get; }
     public DateTimeOffset? DischargedAt { get; private set; }
     public AdmissionStatus Status => DischargedAt is null ? AdmissionStatus.Admitted : AdmissionStatus.Discharged;
@@ -45,6 +45,16 @@ public sealed class Admission
             if (DischargedAt is not null) throw new InvalidOperationException("Admission is already discharged.");
             if (now < AdmittedAt) throw new ArgumentException("Discharge cannot precede admission.", nameof(now));
             DischargedAt = now;
+        }
+    }
+
+    public void Transfer(string ward)
+    {
+        if (string.IsNullOrWhiteSpace(ward)) throw new ArgumentException("Ward is required.", nameof(ward));
+        lock (_gate)
+        {
+            if (DischargedAt is not null) throw new InvalidOperationException("Admission is already discharged.");
+            Ward = ward.Trim();
         }
     }
 }

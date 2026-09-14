@@ -5,7 +5,7 @@ export type HospitalBed = {
   floorId: string; floorName: string; floorNumber: number
   wardId: string; wardName: string
   roomId: string; roomName: string; roomNumber: number
-  status: BedStatus
+  status: BedStatus; patientId?: string | null; patientName?: string | null
 }
 export type HospitalSnapshot = {
   asOf: string; capturedAt: string; source: 'sql' | 'sample'; beds: HospitalBed[]

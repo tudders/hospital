@@ -22,6 +22,18 @@ public sealed class InMemoryPatientRepository : IPatientRepository
     public Task<IReadOnlyList<Patient>> ListAsync(CancellationToken ct = default) =>
         Task.FromResult<IReadOnlyList<Patient>>(_store.Values.OrderBy(p => p.RegisteredAt).ThenBy(p => p.Mrn, StringComparer.Ordinal).ToList());
 
+    public Task<IReadOnlyList<Patient>> SearchAsync(string query, CancellationToken ct = default)
+    {
+        var wanted = query.Trim();
+        return Task.FromResult<IReadOnlyList<Patient>>(_store.Values
+            .Where(p => p.Mrn.Contains(wanted, StringComparison.OrdinalIgnoreCase)
+                || p.GivenName.Contains(wanted, StringComparison.OrdinalIgnoreCase)
+                || p.FamilyName.Contains(wanted, StringComparison.OrdinalIgnoreCase))
+            .OrderBy(p => p.FamilyName, StringComparer.OrdinalIgnoreCase)
+            .ThenBy(p => p.GivenName, StringComparer.OrdinalIgnoreCase)
+            .ToList());
+    }
+
     public Task<bool> TryAddAsync(Patient patient, CancellationToken ct = default)
     {
         if (!_byMrn.TryAdd(patient.Mrn, patient.Id)) return Task.FromResult(false);

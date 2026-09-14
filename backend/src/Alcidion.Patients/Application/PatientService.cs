@@ -42,4 +42,7 @@ public sealed class PatientService(
             : Result<Patient>.Fail(Error.NotFound("Patient", id));
 
     public Task<IReadOnlyList<Patient>> ListAsync(CancellationToken ct = default) => repository.ListAsync(ct);
+
+    public Task<IReadOnlyList<Patient>> SearchAsync(string query, CancellationToken ct = default) =>
+        repository.SearchAsync(query, ct);
 }

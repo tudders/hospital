@@ -78,4 +78,17 @@ public sealed class AdmissionService(
     }
 
     public Task<IReadOnlyList<Admission>> ListAsync(CancellationToken ct = default) => admissions.ListAsync(ct);
+
+    public async Task<Result<Admission>> TransferAsync(Guid admissionId, string ward, CancellationToken ct = default)
+    {
+        var result = await admissions.TransferAsync(admissionId, ward, clock.UtcNow, ct);
+        return result switch
+        {
+            TransferResult.Transferred(var admission) => Result<Admission>.Ok(admission),
+            TransferResult.NotFound => Result<Admission>.Fail(Error.NotFound("Admission", admissionId)),
+            TransferResult.UnknownWard(var requestedWard) => Result<Admission>.Fail(Error.Validation($"No ward matches '{requestedWard}'.")),
+            TransferResult.NoBedAvailable(var destination, var reason) => Result<Admission>.Fail(Error.Conflict($"No bed available in ward '{destination}': {reason}")),
+            var unexpected => throw new InvalidOperationException($"Unhandled transfer outcome {unexpected.GetType().Name}."),
+        };
+    }
 }

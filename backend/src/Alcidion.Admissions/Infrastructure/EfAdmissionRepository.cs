@@ -37,6 +37,57 @@ public sealed class EfAdmissionRepository(AdmissionsDbContext db, ILogger<EfAdmi
     public async Task<IReadOnlyList<Admission>> ListAsync(CancellationToken ct = default) =>
         await ToDomainAsync(Open().Where(a => a.AdmittedAt != null).OrderByDescending(a => a.AdmittedAt), ct);
 
+    public async Task<TransferResult> TransferAsync(Guid admissionId, string wardText, DateTimeOffset now, CancellationToken ct = default)
+    {
+        var ward = await ResolveWardAsync(wardText, ct);
+        if (ward is null) return new TransferResult.UnknownWard(wardText);
+
+        await using var transaction = await db.Database.BeginTransactionAsync(ct);
+        var locked = await db.Database.ExecuteSqlInterpolatedAsync($"""
+            UPDATE dbo.admissions
+            SET concurrency_version = concurrency_version + 1
+            WHERE id = {admissionId} AND admitted_at IS NOT NULL AND discharged_at IS NULL AND cancelled_at IS NULL
+            """, ct);
+        if (locked == 0)
+        {
+            await transaction.RollbackAsync(ct);
+            return new TransferResult.NotFound();
+        }
+
+        var requestId = Guid.NewGuid();
+        var stayId = Guid.NewGuid();
+        db.BedRequests.Add(new BedRequestRow
+        {
+            Id = requestId, AdmissionId = admissionId, TargetWardId = ward.Id,
+            RequestedAt = now, FulfilledAt = now,
+        });
+        await db.SaveChangesAsync(ct);
+
+        if (await AllocateBedAsync(stayId, admissionId, requestId, ward.Id, now, ct) == 0)
+        {
+            await transaction.RollbackAsync(ct);
+            db.ChangeTracker.Clear();
+            return new TransferResult.NoBedAvailable(ward.Name, await DescribeShortageAsync(ward.Id, ct));
+        }
+
+        var closed = await db.Database.ExecuteSqlInterpolatedAsync($"""
+            UPDATE dbo.bed_stays
+            SET ended_at = {now}, end_reason = N'transfer', concurrency_version = concurrency_version + 1
+            WHERE admission_id = {admissionId} AND ended_at IS NULL AND started_at <= {now}
+            """, ct);
+        if (closed == 0)
+        {
+            await transaction.RollbackAsync(ct);
+            db.ChangeTracker.Clear();
+            return new TransferResult.NotFound();
+        }
+
+        await transaction.CommitAsync(ct);
+        db.ChangeTracker.Clear();
+        return new TransferResult.Transferred(await GetByIdAsync(admissionId, ct)
+            ?? throw new InvalidOperationException($"Admission {admissionId} disappeared after transfer."));
+    }
+
     /// <summary>Cancelled episodes never became an admission, so nothing outside this class sees them.</summary>
     private IQueryable<AdmissionRow> Open() => db.Admissions.AsNoTracking().Where(a => a.CancelledAt == null);
 

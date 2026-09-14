@@ -1,15 +1,14 @@
 import { useCallback, useEffect, useState } from 'react'
-import { Admissions } from './components/Admissions'
+import { PatientFlow } from './components/PatientFlow'
 import { ErrorAlert } from './components/ErrorAlert'
 import { Login } from './components/Login'
-import { Patients } from './components/Patients'
 import { Hospital } from './components/Hospital'
 import { Layout } from './components/Layout'
 import { API_BASE, api } from './lib/api'
 import { canWrite, getToken, setToken, type Me } from './lib/auth'
 import { startSessionRecording } from './lib/session-recorder'
 import { configureTelemetry, track } from './lib/telemetry'
-import type { Admission, Patient, Ward } from './lib/types'
+import type { Admission, Ward } from './lib/types'
 
 configureTelemetry(API_BASE)
 
@@ -17,21 +16,19 @@ export default function App() {
   const [page, setPage] = useState<'hospital' | 'patients'>('hospital')
   const [me, setMe] = useState<Me | null>(null)
   const [booting, setBooting] = useState(!!getToken())
-  const [patients, setPatients] = useState<Patient[]>([])
   const [admissions, setAdmissions] = useState<Admission[]>([])
   const [wards, setWards] = useState<Ward[]>([])
+  const [locatePatientId, setLocatePatientId] = useState<string | null>(null)
   const [error, setError] = useState<unknown>(null)
 
   const refresh = useCallback(async () => {
     try {
       // One round trip for the whole page: the ward list carries live free-bed counts, so it is
       // refreshed with the admissions it constrains rather than fetched once and left to go stale.
-      const [p, a, w] = await Promise.all([
-        api<Patient[]>('/api/patients'),
+      const [a, w] = await Promise.all([
         api<Admission[]>('/api/admissions'),
         api<Ward[]>('/api/wards'),
       ])
-      setPatients(p)
       setAdmissions(a)
       setWards(w)
       setError(null)
@@ -65,7 +62,6 @@ export default function App() {
     track('auth.logout')
     setToken(null)
     setMe(null)
-    setPatients([])
     setAdmissions([])
     setWards([])
     setPage('hospital')
@@ -78,12 +74,9 @@ export default function App() {
   return (
     <Layout me={me} currentPage={page} onNavigate={setPage} onLogout={logout}>
       <div className={page === 'hospital' ? 'app-hospital' : ''}>
-        {page === 'hospital' ? <Hospital key={me.name} /> : <>
+        {page === 'hospital' ? <Hospital key={me.name} locatePatientId={locatePatientId} /> : <>
           <ErrorAlert error={error} />
-          <div className="grid">
-            <Patients patients={patients} canWrite={write} onChanged={refresh} />
-            <Admissions admissions={admissions} patients={patients} wards={wards} canWrite={write} onChanged={refresh} />
-          </div>
+          <PatientFlow admissions={admissions} wards={wards} canWrite={write} onChanged={refresh} onLocate={(patientId) => { setLocatePatientId(patientId); setPage('hospital') }} />
         </>}
       </div>
     </Layout>

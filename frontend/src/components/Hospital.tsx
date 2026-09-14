@@ -6,7 +6,9 @@ import { HospitalModel, type Inspection } from './HospitalModel'
 
 const formatTime = (iso: string) => new Date(iso).toLocaleString(undefined, { dateStyle: 'medium', timeStyle: 'short' })
 
-export function Hospital() {
+type Props = { locatePatientId?: string | null }
+
+export function Hospital({ locatePatientId = null }: Props) {
   const [source, setSource] = useState<'sql' | 'sample'>('sql')
   const [snapshot, setSnapshot] = useState<HospitalSnapshot | null>(null)
   const [error, setError] = useState<unknown>(null)
@@ -20,6 +22,7 @@ export function Hospital() {
   const [wardId, setWardId] = useState('')
   const [roomId, setRoomId] = useState('')
   const [bedId, setBedId] = useState('')
+  const [focusedBedId, setFocusedBedId] = useState('')
   const [hovered, setHovered] = useState<Inspection | null>(null)
   const [angle, setAngle] = useState(30)
   const [exploded, setExploded] = useState(true)
@@ -48,6 +51,7 @@ export function Hospital() {
 
   const hospitals = useMemo(() => hospitalHierarchy(snapshot?.beds ?? []), [snapshot])
   const hospital = hospitals.find(h => h.id === hospitalId) ?? hospitals[0]
+  const locatedBed = focusedBedId ? snapshot?.beds.find(b => b.id === focusedBedId) : undefined
   const floor = hospital?.floors.find(f => f.id === floorId)
   const detailFloor = floor ?? hospital?.floors[0]
   const ward = detailFloor?.wards.find(w => w.id === wardId) ?? detailFloor?.wards[0]
@@ -62,12 +66,34 @@ export function Hospital() {
   const inspection = hovered ?? selected
   const inspected = occupancy(inspection?.beds ?? [])
 
-  function chooseFloor(id: string) { setFloorId(id); setWardId(''); setRoomId(''); setBedId(''); setHovered(null) }
+  useEffect(() => {
+    if (!locatePatientId || !snapshot) return
+    const found = snapshot.beds.find(next => next.patientId === locatePatientId)
+    if (!found) return
+    const timer = setTimeout(() => {
+    // Location is an external navigation request: synchronise the hospital controls to it.
+    setHospitalId(found.hospitalId)
+    setFloorId(found.floorId)
+    setWardId(found.wardId)
+    setRoomId(found.roomId)
+    setBedId(found.id)
+    setFocusedBedId(found.id)
+    setExploded(false)
+    setHovered({
+      label: `${found.patientName ?? 'Patient'} · Bed ${found.number}`,
+      path: `${found.floorName} / ${found.wardName} / ${found.roomName}`,
+      beds: [found],
+    })
+    }, 0)
+    return () => clearTimeout(timer)
+  }, [locatePatientId, snapshot])
+
+  function chooseFloor(id: string) { setFloorId(id); setWardId(''); setRoomId(''); setBedId(''); setFocusedBedId(''); setHovered(null) }
   function selectBed(next: HospitalBed) {
-    setFloorId(next.floorId); setWardId(next.wardId); setRoomId(next.roomId); setBedId(next.id); setHovered(null)
+    setFloorId(next.floorId); setWardId(next.wardId); setRoomId(next.roomId); setBedId(next.id); setFocusedBedId(''); setHovered(null)
   }
   function changeSource(next: 'sql' | 'sample') {
-    setSource(next); setSnapshot(null); setError(null); setBusy(true); setAt(null); chooseFloor('all')
+    setSource(next); setSnapshot(null); setError(null); setBusy(true); setAt(null); setFocusedBedId(''); chooseFloor('all')
     setDraftAt(localDateTime(new Date(next === 'sample' ? SAMPLE_TIME : Date.now())))
   }
 
@@ -100,6 +126,7 @@ export function Hospital() {
       <button className="btn sm" data-track="refresh-hospital" onClick={() => setRefresh(n => n + 1)} disabled={busy}>{busy ? 'Loading…' : '↻ Refresh'}</button>
     </div>
     <ErrorAlert error={error} />
+    {locatedBed?.patientName && <p className="hospital-location-notice" role="status">Located <strong>{locatedBed.patientName}</strong> in {locatedBed.wardName}, {locatedBed.roomName}, bed {locatedBed.number}. The bed is highlighted in blue.</p>}
     {source === 'sample' && <p className="hospital-sample-notice">Sample preview — synthetic occupancy for exploring the 720-bed model. These counts are not database results.</p>}
 
     {!snapshot ? <div className="card hospital-load" role="status"><div className="hospital-load-icon">▥</div><h3>{busy ? 'Building your hospital view…' : 'Hospital data is unavailable'}</h3>
@@ -122,7 +149,7 @@ export function Hospital() {
             <button className={floorId === 'all' ? 'active' : ''} data-track="view-all-floors" aria-pressed={floorId === 'all'} onClick={() => chooseFloor('all')}>All floors</button>
             {hospital.floors.map(f => <button key={f.id} className={floorId === f.id ? 'active' : ''} data-track="view-floor" aria-pressed={floorId === f.id} onClick={() => chooseFloor(f.id)}>Level {f.number}</button>)}
           </div>
-          <HospitalModel hospital={hospital} floorId={floorId} angle={angle} exploded={exploded} onInspect={setHovered} onSelect={selectBed} />
+          <HospitalModel hospital={hospital} floorId={floorId} angle={angle} exploded={exploded} focusedBedId={locatedBed?.id} onInspect={setHovered} onSelect={selectBed} />
           <div className="hospital-scene-controls">
             <div><button className="btn ghost sm" data-track="rotate-hospital-left" aria-label="Rotate hospital left" onClick={() => setAngle(a => Math.max(-35, a - 15))}>↶</button>
               <button className="btn ghost sm" data-track="rotate-hospital-right" aria-label="Rotate hospital right" onClick={() => setAngle(a => Math.min(80, a + 15))}>↷</button>
@@ -150,7 +177,7 @@ export function Hospital() {
               onFocus={() => setHovered(null)} onClick={() => { setFloorId(detailFloor!.id); setWardId(ward.id); setRoomId(r.id); setBedId('') }}><span>{r.name}</span><strong>{occupancy(r.beds).occupied}<small>/{r.beds.length}</small></strong></button>)}</div>
             <p className="hospital-field-label">{room?.name} <span>Select a bed</span></p>
             <div className="hospital-beds">{room?.beds.map(b => <button key={b.id} className={`hospital-bed ${b.status} ${b.id === bedId ? 'selected' : ''}`} data-track="explore-bed" aria-pressed={b.id === bedId} onClick={() => selectBed(b)}><span className="hospital-bed-symbol" aria-hidden="true">▰</span><strong>Bed {b.number}</strong><small>{b.status}</small></button>)}</div>
-            <p className="hint">Occupancy only. Patient identities are not included.</p>
+            <p className="hint">Occupied beds show the current patient placement for authorised operational use.</p>
           </section>
         </aside>
       </div>

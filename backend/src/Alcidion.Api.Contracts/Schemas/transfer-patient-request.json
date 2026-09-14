@@ -1,0 +1,17 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://alcidion.health/schemas/transfer-patient-request.json",
+  "title": "TransferPatientRequest",
+  "description": "Body of POST /api/admissions/{id}/transfer. Shape and length only - whether the destination has a free bed stays with the Admissions aggregate.",
+  "type": "object",
+  "required": ["ward"],
+  "properties": {
+    "ward": {
+      "description": "Destination ward name, free text. Leading and trailing whitespace is accepted and trimmed.",
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 200,
+      "pattern": "\\S"
+    }
+  }
+}

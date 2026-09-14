@@ -125,3 +125,17 @@ export type RegisterPatientRequest = {
    */
   dateOfBirth: string
 }
+
+/**
+ * Body of POST /api/admissions/{id}/transfer. Shape and length only - whether the destination has
+ * a free bed stays with the Admissions aggregate.
+ * Open: the API ignores properties not listed here rather than refusing them.
+ * Generated from transfer-patient-request.json.
+ */
+export type TransferPatientRequest = {
+  /**
+   * Destination ward name, free text. Leading and trailing whitespace is accepted and trimmed.
+   * minLength: 1, maxLength: 200, pattern: \S
+   */
+  ward: string
+}

@@ -4,21 +4,38 @@ import { occupancy, type Hospital, type HospitalBed } from '../lib/hospital'
 export type Inspection = { label: string; path: string; beds: HospitalBed[] }
 type Props = {
   hospital: Hospital; floorId: string; angle: number; exploded: boolean
+  focusedBedId?: string | null
   onInspect: (inspection: Inspection | null) => void
   onSelect: (bed: HospitalBed) => void
 }
 
 /** Orthographic projection of real x/y/z coordinates. SVG keeps the scene crisp without a 3D runtime. */
-export function HospitalModel({ hospital, floorId, angle, exploded, onInspect, onSelect }: Props) {
+export function HospitalModel({ hospital, floorId, angle, exploded, focusedBedId, onInspect, onSelect }: Props) {
   const single = floorId !== 'all'
   const floors = single ? hospital.floors.filter(f => f.id === floorId) : hospital.floors
   const radians = angle * Math.PI / 180
-  const scale = single ? 1.55 : 1.08
+  const scale = focusedBedId ? 2.15 : single ? 1.55 : 1.08
   const spacing = exploded ? 108 : 46
   const base = single ? 355 : 405 + (floors.length - 1) * spacing / 2
-  const project = (x: number, y: number, z: number) => {
+  const focusedPosition = (() => {
+    if (!focusedBedId) return null
+    for (const [fi, floor] of floors.entries()) for (const [wi, ward] of floor.wards.entries()) {
+      const wx = 12 + wi % 2 * 204, wy = 12 + Math.floor(wi / 2) * 132
+      for (const [ri, room] of ward.rooms.entries()) for (const [bi, bed] of room.beds.entries()) {
+        if (bed.id === focusedBedId) return { x: wx + ri % 3 * 62 + 4 + bi % 3 * 18, y: wy + Math.floor(bi / 3) * 24 + 4, z: (single ? 0 : fi * spacing) + 7 }
+      }
+    }
+    return null
+  })()
+  const projectAt = (x: number, y: number, z: number, multiplier: number) => {
     const px = x - 206, py = y - 132
-    return `${(400 + (px * Math.cos(radians) - py * Math.sin(radians)) * scale).toFixed(1)},${(base + (px * Math.sin(radians) + py * Math.cos(radians)) * .48 * scale - z).toFixed(1)}`
+    return { x: 400 + (px * Math.cos(radians) - py * Math.sin(radians)) * multiplier, y: base + (px * Math.sin(radians) + py * Math.cos(radians)) * .48 * multiplier - z }
+  }
+  const project = (x: number, y: number, z: number) => {
+    const point = projectAt(x, y, z, scale)
+    if (!focusedPosition) return `${point.x.toFixed(1)},${point.y.toFixed(1)}`
+    const anchor = projectAt(focusedPosition.x, focusedPosition.y, focusedPosition.z, scale)
+    return `${(400 + point.x - anchor.x).toFixed(1)},${(380 + point.y - anchor.y).toFixed(1)}`
   }
   const face = (x: number, y: number, z: number, w: number, d: number) =>
     [project(x, y, z), project(x + w, y, z), project(x + w, y + d, z), project(x, y + d, z)].join(' ')
@@ -57,7 +74,7 @@ export function HospitalModel({ hospital, floorId, angle, exploded, onInspect, o
                 {box(rx, ry, z + 3, 58, 51, 3, 'model-room-shell')}
                 {room.beds.map((bed, bi) => {
                   const bx = rx + 4 + bi % 3 * 18, by = ry + 4 + Math.floor(bi / 3) * 24
-                  return <g key={bed.id} className={`model-bed ${bed.status}`} data-track="inspect-bed"
+                  return <g key={bed.id} className={`model-bed ${bed.status} ${bed.id === focusedBedId ? 'focused' : ''}`} data-track="inspect-bed"
                     onPointerOver={e => inspect(e, `Bed ${bed.number} · ${bed.status}`, `${floor.name} / ${ward.name} / ${room.name}`, [bed])}
                     onClick={e => { e.stopPropagation(); onSelect(bed) }}>
                     <title>{`${floor.name}, ${ward.name}, ${room.name}, Bed ${bed.number}: ${bed.status}`}</title>

@@ -20,7 +20,7 @@ export function Sidenav({ currentPage, onNavigate }: SidenavProps) {
         onClick={() => onNavigate('patients')}
         className={currentPage === 'patients' ? 'active' : ''}
       >
-        Patients & admissions
+        Patient flow
       </button>
     </nav>
   );

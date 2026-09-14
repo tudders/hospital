@@ -4,6 +4,7 @@ import type { RegisterPatientRequest } from '../lib/contracts'
 import { track } from '../lib/telemetry'
 import type { Patient } from '../lib/types'
 import { ErrorAlert } from './ErrorAlert'
+import { useToast } from './toast-context'
 
 type Props = {
   patients: Patient[]
@@ -17,6 +18,7 @@ const EMPTY: RegisterPatientRequest = { mrn: '', givenName: '', familyName: '', 
 const FORM_FIELDS = Object.keys(EMPTY)
 
 export function Patients({ patients, canWrite, onChanged }: Props) {
+  const { showToast } = useToast()
   const [form, setForm] = useState<RegisterPatientRequest>(EMPTY)
   const [error, setError] = useState<unknown>(null)
   const [busy, setBusy] = useState(false)
@@ -33,6 +35,7 @@ export function Patients({ patients, canWrite, onChanged }: Props) {
       track('patient.registered', { patientId: p.id })
       setForm(EMPTY)
       onChanged()
+      showToast('Patient details added successfully')
     } catch (err) {
       setError(err)
     } finally {

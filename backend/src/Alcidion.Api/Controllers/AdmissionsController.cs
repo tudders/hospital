@@ -42,4 +42,10 @@ public sealed class AdmissionsController(AdmissionService admissions) : ApiContr
     [Audited("patient.discharge")]
     public async Task<ActionResult<AdmissionDto>> Discharge(Guid id, CancellationToken ct) =>
         (await admissions.DischargeAsync(id, ct)).Match<ActionResult>(a => Ok(AdmissionDto.From(a)), FromError);
+
+    [HttpPost("{id:guid}/transfer")]
+    [Authorize(Policy = Policies.Clinician)]
+    [Audited("patient.transfer")]
+    public async Task<ActionResult<AdmissionDto>> Transfer(Guid id, [FromBody] TransferPatientRequest body, CancellationToken ct) =>
+        (await admissions.TransferAsync(id, body.ToWard(), ct)).Match<ActionResult>(a => Ok(AdmissionDto.From(a)), FromError);
 }

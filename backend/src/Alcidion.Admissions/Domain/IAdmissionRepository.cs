@@ -20,11 +20,21 @@ public abstract record AdmitResult
     public sealed record NoBedAvailable(string Ward, string Reason) : AdmitResult;
 }
 
+public abstract record TransferResult
+{
+    public sealed record Transferred(Admission Admission) : TransferResult;
+    public sealed record NotFound : TransferResult;
+    public sealed record UnknownWard(string Ward) : TransferResult;
+    public sealed record NoBedAvailable(string Ward, string Reason) : TransferResult;
+}
+
 public interface IAdmissionRepository
 {
     Task<Admission?> GetByIdAsync(Guid id, CancellationToken ct = default);
     Task<Admission?> GetActiveForPatientAsync(Guid patientId, CancellationToken ct = default);
     Task<IReadOnlyList<Admission>> ListAsync(CancellationToken ct = default);
+    Task<TransferResult> TransferAsync(Guid admissionId, string ward, DateTimeOffset now, CancellationToken ct = default) =>
+        Task.FromResult<TransferResult>(new TransferResult.NotFound());
 
     /// <summary>
     /// Admits the patient only if they have no open admission and a bed can be claimed in the

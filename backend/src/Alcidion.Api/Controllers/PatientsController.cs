@@ -18,8 +18,13 @@ public sealed record PatientDto(Guid Id, string Mrn, string GivenName, string Fa
 public sealed class PatientsController(PatientService patients) : ApiController
 {
     [HttpGet]
-    public async Task<ActionResult<IReadOnlyList<PatientDto>>> List(CancellationToken ct) =>
-        Ok((await patients.ListAsync(ct)).Select(PatientDto.From).ToList());
+    public async Task<ActionResult<IReadOnlyList<PatientDto>>> List([FromQuery] string? search, CancellationToken ct)
+    {
+        var results = string.IsNullOrWhiteSpace(search)
+            ? await patients.ListAsync(ct)
+            : await patients.SearchAsync(search, ct);
+        return Ok(results.Select(PatientDto.From).ToList());
+    }
 
     [HttpGet("{id:guid}")]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
