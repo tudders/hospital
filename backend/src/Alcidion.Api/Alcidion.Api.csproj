@@ -20,6 +20,7 @@
     <ProjectReference Include="..\Alcidion.Api.Contracts\Alcidion.Api.Contracts.csproj" />
     <ProjectReference Include="..\Alcidion.Patients\Alcidion.Patients.csproj" />
     <ProjectReference Include="..\Alcidion.Admissions\Alcidion.Admissions.csproj" />
+    <ProjectReference Include="..\Alcidion.Hospital\Alcidion.Hospital.csproj" />
   </ItemGroup>
 
 </Project>

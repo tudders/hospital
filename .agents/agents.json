@@ -1,0 +1,63 @@
+{
+  "agents": [
+    {
+      "name": "backend",
+      "description": "ASP.NET Core backend specialist for API endpoints, EF Core queries, and domain modeling",
+      "workspace": "backend",
+      "context": [
+        "backend/CONTEXT.md",
+        "backend/.claude/README.md",
+        "docs/adr/"
+      ],
+      "skills": [
+        "dotnet-webapi",
+        "optimizing-ef-core-queries",
+        "bounded-contexts-and-events",
+        "domain-modeling"
+      ]
+    },
+    {
+      "name": "frontend",
+      "description": "React/TypeScript specialist for UI components, forms, and state management",
+      "workspace": "frontend",
+      "context": [
+        "frontend/README.md",
+        "CONTEXT.md"
+      ],
+      "skills": []
+    },
+    {
+      "name": "integrator",
+      "description": "Coordinates changes across frontend and backend, manages API contracts",
+      "workspace": "both",
+      "context": [
+        "CONTEXT.md",
+        "docs/adr/",
+        "backend/.claude/README.md",
+        "frontend/README.md"
+      ],
+      "skills": [
+        "dotnet-webapi",
+        "bounded-contexts-and-events"
+      ]
+    },
+    {
+      "name": "tester",
+      "description": "Specialist in backend unit tests, integration tests, and test coverage",
+      "workspace": "backend",
+      "context": [
+        "backend/.claude/README.md",
+        "backend/tests/"
+      ],
+      "skills": [
+        "test-gap-analysis",
+        "test-anti-patterns",
+        "assertion-quality"
+      ]
+    }
+  ],
+  "defaults": {
+    "model": "claude-opus-5",
+    "workspace_detection": "directory"
+  }
+}

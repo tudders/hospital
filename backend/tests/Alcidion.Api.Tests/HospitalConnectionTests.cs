@@ -1,4 +1,4 @@
-using Alcidion.Api.Hospital;
+using Alcidion.Api.Configuration;
 using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;

@@ -43,12 +43,28 @@ public sealed class EfAdmissionRepository(AdmissionsDbContext db, ILogger<EfAdmi
         if (ward is null) return new TransferResult.UnknownWard(wardText);
 
         await using var transaction = await db.Database.BeginTransactionAsync(ct);
-        var locked = await db.Database.ExecuteSqlInterpolatedAsync($"""
-            UPDATE dbo.admissions
-            SET concurrency_version = concurrency_version + 1
-            WHERE id = {admissionId} AND admitted_at IS NOT NULL AND discharged_at IS NULL AND cancelled_at IS NULL
-            """, ct);
+        // Bumping the version is how this transaction takes the admission: a concurrent transfer or
+        // discharge blocks here rather than interleaving with the stay rewrite below.
+        var locked = await db.Admissions
+            .Where(a => a.Id == admissionId && a.AdmittedAt != null && a.DischargedAt == null && a.CancelledAt == null)
+            .ExecuteUpdateAsync(u => u.SetProperty(a => a.ConcurrencyVersion, a => a.ConcurrencyVersion + 1), ct);
         if (locked == 0)
+        {
+            await transaction.RollbackAsync(ct);
+            return new TransferResult.NotFound();
+        }
+
+        // The old stay closes before the new one opens. trg_bed_stays_no_overlap rejects two stays
+        // that overlap for one admission, so allocating first would make every transfer throw; and
+        // a same-ward transfer would otherwise count the patient against the ward's own capacity.
+        // Both stays meet at `now`, and the intervals are half-open, so nothing is double-counted.
+        var closed = await db.BedStays
+            .Where(s => s.AdmissionId == admissionId && s.EndedAt == null && s.StartedAt <= now)
+            .ExecuteUpdateAsync(u => u
+                .SetProperty(s => s.EndedAt, now)
+                .SetProperty(s => s.EndReason, "transfer")
+                .SetProperty(s => s.ConcurrencyVersion, s => s.ConcurrencyVersion + 1), ct);
+        if (closed == 0)
         {
             await transaction.RollbackAsync(ct);
             return new TransferResult.NotFound();
@@ -65,21 +81,10 @@ public sealed class EfAdmissionRepository(AdmissionsDbContext db, ILogger<EfAdmi
 
         if (await AllocateBedAsync(stayId, admissionId, requestId, ward.Id, now, ct) == 0)
         {
+            // Nothing was free: the rollback puts the patient back in the bed they were in.
             await transaction.RollbackAsync(ct);
             db.ChangeTracker.Clear();
             return new TransferResult.NoBedAvailable(ward.Name, await DescribeShortageAsync(ward.Id, ct));
-        }
-
-        var closed = await db.Database.ExecuteSqlInterpolatedAsync($"""
-            UPDATE dbo.bed_stays
-            SET ended_at = {now}, end_reason = N'transfer', concurrency_version = concurrency_version + 1
-            WHERE admission_id = {admissionId} AND ended_at IS NULL AND started_at <= {now}
-            """, ct);
-        if (closed == 0)
-        {
-            await transaction.RollbackAsync(ct);
-            db.ChangeTracker.Clear();
-            return new TransferResult.NotFound();
         }
 
         await transaction.CommitAsync(ct);
@@ -187,15 +192,14 @@ public sealed class EfAdmissionRepository(AdmissionsDbContext db, ILogger<EfAdmi
 
         await using var transaction = await db.Database.BeginTransactionAsync(ct);
 
-        // The predicate is the concurrency check: a second discharge matches no rows.
-        var closed = await db.Database.ExecuteSqlInterpolatedAsync($"""
-            UPDATE dbo.admissions
-            SET discharged_at = {dischargedAt}, concurrency_version = concurrency_version + 1
-            WHERE id = {admission.Id}
-              AND admitted_at IS NOT NULL
-              AND discharged_at IS NULL
-              AND cancelled_at IS NULL
-            """, ct);
+        // The predicate is the concurrency check: a second discharge matches no rows, and
+        // ExecuteUpdate reports how many it changed, so losing the race is a 0 rather than a silent
+        // overwrite. No row is read first, so there is no window between deciding and writing.
+        var closed = await db.Admissions
+            .Where(a => a.Id == admission.Id && a.AdmittedAt != null && a.DischargedAt == null && a.CancelledAt == null)
+            .ExecuteUpdateAsync(u => u
+                .SetProperty(a => a.DischargedAt, dischargedAt)
+                .SetProperty(a => a.ConcurrencyVersion, a => a.ConcurrencyVersion + 1), ct);
 
         if (closed == 0)
         {
@@ -205,17 +209,18 @@ public sealed class EfAdmissionRepository(AdmissionsDbContext db, ILogger<EfAdmi
 
         // Releasing the bed is part of discharging, not a follow-up someone might forget: the bed
         // has to be allocatable again the moment the admission is closed.
-        await db.Database.ExecuteSqlInterpolatedAsync($"""
-            UPDATE dbo.bed_stays
-            SET ended_at = {dischargedAt}, end_reason = N'discharge', concurrency_version = concurrency_version + 1
-            WHERE admission_id = {admission.Id} AND ended_at IS NULL AND started_at <= {dischargedAt}
-            """, ct);
+        await db.BedStays
+            .Where(s => s.AdmissionId == admission.Id && s.EndedAt == null && s.StartedAt <= dischargedAt)
+            .ExecuteUpdateAsync(u => u
+                .SetProperty(s => s.EndedAt, dischargedAt)
+                .SetProperty(s => s.EndReason, "discharge")
+                .SetProperty(s => s.ConcurrencyVersion, s => s.ConcurrencyVersion + 1), ct);
 
-        await db.Database.ExecuteSqlInterpolatedAsync($"""
-            UPDATE dbo.bed_requests
-            SET cancelled_at = {dischargedAt}, concurrency_version = concurrency_version + 1
-            WHERE admission_id = {admission.Id} AND fulfilled_at IS NULL AND cancelled_at IS NULL
-            """, ct);
+        await db.BedRequests
+            .Where(r => r.AdmissionId == admission.Id && r.FulfilledAt == null && r.CancelledAt == null)
+            .ExecuteUpdateAsync(u => u
+                .SetProperty(r => r.CancelledAt, dischargedAt)
+                .SetProperty(r => r.ConcurrencyVersion, r => r.ConcurrencyVersion + 1), ct);
 
         await transaction.CommitAsync(ct);
         return true;
@@ -226,6 +231,14 @@ public sealed class EfAdmissionRepository(AdmissionsDbContext db, ILogger<EfAdmi
     /// separated. UPDLOCK holds the chosen bed for this transaction and READPAST steps over a bed
     /// another allocation is already taking, instead of queueing behind it. Returns rows inserted:
     /// 0 means nothing was free within the ward's staffed limit.
+    /// <para>
+    /// The last raw statement left, and deliberately so. LINQ has no way to say <c>WITH (UPDLOCK,
+    /// ROWLOCK, READPAST)</c>, and expressing it as a query that picks a bed followed by an insert
+    /// that claims it reopens exactly the race ADR 0002 records this statement as closing: two
+    /// admissions reading the same free bed and both taking it. The other writes in this class are
+    /// <c>ExecuteUpdate</c> because nothing about them needs the SQL to be handwritten; this one
+    /// does.
+    /// </para>
     /// </summary>
     private Task<int> AllocateBedAsync(Guid stayId, Guid admissionId, Guid requestId, Guid wardId, DateTimeOffset now, CancellationToken ct) =>
         db.Database.ExecuteSqlInterpolatedAsync($"""

@@ -1,8 +1,9 @@
 using Alcidion.Admissions;
 using Alcidion.Api.Auth;
+using Alcidion.Api.Configuration;
 using Alcidion.Api.Contracts;
-using Alcidion.Api.Hospital;
 using Alcidion.Api.Observability;
+using Alcidion.Hospital;
 using Alcidion.Patients;
 using Alcidion.Shared;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -12,17 +13,18 @@ using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
 
 var builder = WebApplication.CreateBuilder(args);
-builder.Services.AddScoped<Alcidion.Api.Hospital.HospitalOccupancyReader>();
 
 // --- Domains (each bounded context registers its own services) ---
-// One resolved connection string decides the store for every domain: with it they persist to the
-// hospital database through EF Core, without it they run on their in-memory repositories, which is
-// what keeps the API startable (and the integration tests hermetic) with no database attached.
+// One resolved connection string decides the store for every context: with it they read and write
+// the hospital database through EF Core, without it the writing domains run on their in-memory
+// repositories and the occupancy view reports itself unavailable. Either way the API starts, which
+// is what keeps the integration tests hermetic with no database attached.
 var hospitalConnection = HospitalConnection.Resolve(builder.Configuration, builder.Environment);
 builder.Services
     .AddSharedKernel()
     .AddPatientsDomain(hospitalConnection)
-    .AddAdmissionsDomain(hospitalConnection);
+    .AddAdmissionsDomain(hospitalConnection)
+    .AddHospitalReadModel(hospitalConnection);
 
 // --- Web ---
 // Schema-generated request types bind and validate through their own formatter; everything else

@@ -1,4 +1,4 @@
-using Alcidion.Api.Hospital;
+using Alcidion.Hospital;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -7,7 +7,7 @@ namespace Alcidion.Api.Controllers;
 [Authorize]
 [Route("api/hospital-occupancy")]
 [ResponseCache(NoStore = true, Location = ResponseCacheLocation.None)]
-public sealed class HospitalOccupancyController(HospitalOccupancyReader reader) : ApiController
+public sealed class HospitalOccupancyController(IHospitalOccupancyReader reader) : ApiController
 {
     [HttpGet]
     public async Task<ActionResult<HospitalSnapshot>> Get([FromQuery] DateTimeOffset? at, CancellationToken ct) =>

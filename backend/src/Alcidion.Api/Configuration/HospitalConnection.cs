@@ -1,6 +1,6 @@
 using Microsoft.Data.SqlClient;
 
-namespace Alcidion.Api.Hospital;
+namespace Alcidion.Api.Configuration;
 
 /// <summary>
 /// Where the hospital database connection string comes from. One resolver, so the EF-backed
